@@ -353,15 +353,12 @@ export const checkEmploymentStatus = (etarget) => {
      */
 
     const checkSavedValues = () => {
-      console.log(employment.value);
-      console.log('openedModalValues: ', openedModalValues);
       if (
         employment.value === 'Отпуск' ||
         employment.value === 'Больничный' ||
         employment.value === 'Выходной'
       ) {
         openedModalValues.forEach((elem) => {
-          console.log('elem: ', elem);
           const elemType = elem.tagName.toLowerCase();
           switch (elemType) {
             case 'select':

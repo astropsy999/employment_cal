@@ -2,7 +2,7 @@
 
 const srvv =
   process.env.NODE_ENV === 'production'
-    ? 'https://telegram.giapdc.ru:8443'
+    ? ''
     : 'https://telegram.giapdc.ru:8443';
 const verifyLogin = '/index.php/VerifyLogin';
 const createNodeUrl = '/index.php/ObjectController/CreateNode';

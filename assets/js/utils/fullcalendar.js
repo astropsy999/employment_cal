@@ -365,9 +365,17 @@ export let renderCalendar = function renderCalendar(el, option) {
           const newMsEndDateTime = millioldEndDate + milliSecDelta;
           const newEndDateTime = new Date(newMsEndDateTime);
 
+          const eventEmploymentValue = info.event._def.extendedProps.employment;
+          const oldEventFactTime = info.oldEvent._def.extendedProps.factTime;
+          console.log('oldEventFactTime: ', oldEventFactTime);
+          console.log('eventEmploymentValue: ', eventEmploymentValue);
+          let newFactTime;
           // Новое фактическое время события
-
-          const newFactTime = oldFactTime - hoursDeltaStart + hoursDeltaEnd;
+          if (oldEventFactTime != 0) {
+            newFactTime = oldFactTime - hoursDeltaStart + hoursDeltaEnd;
+          } else {
+            newFactTime = 0;
+          }
 
           // Устанавливаем новое
 
