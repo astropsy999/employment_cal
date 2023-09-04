@@ -367,8 +367,6 @@ export let renderCalendar = function renderCalendar(el, option) {
 
           const eventEmploymentValue = info.event._def.extendedProps.employment;
           const oldEventFactTime = info.oldEvent._def.extendedProps.factTime;
-          console.log('oldEventFactTime: ', oldEventFactTime);
-          console.log('eventEmploymentValue: ', eventEmploymentValue);
           let newFactTime;
           // Новое фактическое время события
           if (oldEventFactTime != 0) {
