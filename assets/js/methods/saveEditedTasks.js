@@ -171,6 +171,8 @@ const saveEditedTasks = (eventEditObj) => {
       // Добавляем Методы
       setViewAndDateToLS(calendar);
 
+      // Обновление отредактированного события без перезагрузки
+
       location.reload();
     });
 };

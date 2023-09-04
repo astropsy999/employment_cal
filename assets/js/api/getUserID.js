@@ -32,7 +32,6 @@ export const getUserID = async () => {
 
     const data0 = res !== undefined ? res.data : [{ objID: '235986' }];
     sessionStorage.setItem('data0', JSON.stringify(data0));
-    console.log('data0[0]: ', data0[0]);
 
     return data0[0];
   } else {

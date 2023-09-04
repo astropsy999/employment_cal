@@ -481,9 +481,10 @@ export const editEvent = (info, calendar, modal) => {
 
       editSaveTaskBtn.addEventListener('click', (e) => {
         if (
-          locEditObj.value === 'Не выбрано' ||
-          kindOfEditTasks.value === 'Не выбрано' ||
-          eventEditSpentTime.classList.contains('is-invalid')
+          (locEditObj.value === 'Не выбрано' ||
+            kindOfEditTasks.value === 'Не выбрано' ||
+            eventEditSpentTime.classList.contains('is-invalid')) &&
+          employmentEdit.value === 'Работа'
         ) {
           if (locEditObj.value === 'Не выбрано') {
             locEditObj.classList.add('is-invalid');
