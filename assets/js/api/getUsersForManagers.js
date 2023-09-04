@@ -59,7 +59,7 @@ export const getUsersForManagers = async (userID, manName) => {
   getUsersFD.append('order[columnIndex]', '7416');
   getUsersFD.append('order[Order]', '0');
   getUsersFD.append('start', '0');
-  getUsersFD.append('length', '110');
+  getUsersFD.append('length', '200');
   getUsersFD.append('search[value]', '');
   getUsersFD.append('isFirst', '0');
   getUsersFD.append('isLoadTotal', '0');
