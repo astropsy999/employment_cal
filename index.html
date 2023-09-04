@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Календарь Фактической Занятости</title>
+    <link rel="stylesheet" href="assets/css/bootstrap-icons.css" />
+    <link href="assets/css/theme.min.css" rel="stylesheet" id="style-default" />
+    <link href="vendors/fullcalendar/main.min.css" rel="stylesheet" />
+    <link href="vendors/flatpickr/flatpickr.min.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div class="card mb-3 col-md-12 h-20">
+      <div class="temploaderWrapper">
+        <div class="lds-facebook">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+      <div class="card-header">
+        <div class="row gx-0 align-items-center">
+          <div class="col-auto d-flex justify-content-end order-md-1">
+            <button
+              class="btn icon-item icon-item-sm shadow-none p-0 me-1 ms-md-2"
+              type="button"
+              data-event="prev"
+              data-bs-toggle="tooltip"
+              title="Предыдущий"
+            >
+              <span class="fas fa-arrow-left"></span>
+            </button>
+            <button
+              class="btn icon-item icon-item-sm shadow-none p-0 me-1 me-lg-2"
+              type="button"
+              data-event="next"
+              data-bs-toggle="tooltip"
+              title="Следующий"
+            >
+              <span class="fas fa-arrow-right"></span>
+            </button>
+          </div>
+          <div class="col-auto col-md-auto order-md-2">
+            <h4 class="mb-0 fs-0 fs-sm-1 fs-lg-2 calendar-title"></h4>
+          </div>
+
+          <div class="col-md-auto d-md-none">
+            <hr />
+          </div>
+          <div class="col-auto d-flex order-md-0">
+            <button
+              class="btn btn-primary btn-sm"
+              type="button"
+              id="addTaskBtn"
+            >
+              <span class="fas fa-plus me-2"></span
+              ><span class="mobile-hide-text">Добавить задачу</span>
+            </button>
+          </div>
+          <div class="col col-md-auto d-flex justify-content-end order-md-3">
+            <button
+              class="btn btn-falcon-primary btn-sm todayBtn"
+              type="button"
+              data-event="today"
+            >
+              <i class="bi bi-calendar3-event"></i
+              ><span class="mobile-hide-text">Сегодня</span>
+            </button>
+          </div>
+          <div class="col col-md-auto d-flex justify-content-end order-md-3">
+            <button
+              class="btn btn-falcon-primary btn-sm m-1"
+              id="cutTimeView"
+              type="button"
+              data-event="cutTimeView"
+            >
+              <i class="bi bi-calendar-plus"></i
+              ><span class="mobile-hide-text">Полный вид</span>
+            </button>
+          </div>
+          <div class="col col-md-auto d-flex justify-content-end order-md-3">
+            <button
+              class="btn btn-falcon-success btn-sm m-1"
+              type="button"
+              data-event="refresh"
+            >
+              <i class="bi bi-arrow-clockwise"></i
+              ><span class="mobile-hide-text">Обновить</span>
+            </button>
+          </div>
+          <div class="col col-md-auto d-flex justify-content-end order-md-3">
+            <button
+              class="btn btn-falcon-success btn-sm btn-report m-1 spreedsheet"
+              type="button"
+              data-event="report"
+            >
+              <i class="bi bi-file-earmark-spreadsheet-fill"></i
+              ><span class="mobile-hide-text"></span>
+            </button>
+          </div>
+          <div
+            class="col d-flex justify-content-end order-md-2"
+            id="otherUsersWrapperID"
+          >
+            <div class="dropdown font-sans-serif me-md-2 calViewSwitcher">
+              <button
+                class="btn btn-falcon-default text-600 btn-sm dropdown-toggle dropdown-caret-none"
+                type="button"
+                id="email-filter"
+                data-bs-toggle="dropdown"
+                data-boundary="viewport"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <span
+                  class="data-view-title"
+                  data-view-title="data-view-title"
+                ></span
+                ><span class="fas fa-sort ms-2 fs--1"></span>
+              </button>
+              <div
+                class="dropdown-menu dropdown-menu-end border py-2"
+                aria-labelledby="email-filter"
+              >
+                <a
+                  class="active dropdown-item d-flex justify-content-between"
+                  href="#!"
+                  data-fc-view="timeGridWeek"
+                  >Неделя<span class="icon-check"
+                    ><span
+                      class="fas fa-check"
+                      data-fa-transform="down-4 shrink-4"
+                    ></span></span
+                ></a>
+                <a
+                  class="dropdown-item d-flex justify-content-between"
+                  href="#!"
+                  data-fc-view="dayGridMonth"
+                  >Месяц<span class="icon-check"
+                    ><span
+                      class="fas fa-check"
+                      data-fa-transform="down-4 shrink-4"
+                    ></span
+                  ></span> </a
+                ><a
+                  class="dropdown-item d-flex justify-content-between"
+                  href="#!"
+                  data-fc-view="timeGridDay"
+                  >День<span class="icon-check"
+                    ><span
+                      class="fas fa-check"
+                      data-fa-transform="down-4 shrink-4"
+                    ></span></span
+                ></a>
+                <a
+                  class="dropdown-item d-flex justify-content-between"
+                  href="#!"
+                  data-fc-view="listWeek"
+                  >Список<span class="icon-check"
+                    ><span
+                      class="fas fa-check"
+                      data-fa-transform="down-4 shrink-4"
+                    ></span
+                  ></span> </a
+                ><a
+                  class="dropdown-item d-flex justify-content-between"
+                  href="#!"
+                  data-fc-view="listYear"
+                  >Год<span class="icon-check"
+                    ><span
+                      class="fas fa-check"
+                      data-fa-transform="down-4 shrink-4"
+                    ></span></span
+                ></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="calendar-outline" id="appCalendar"></div>
+    </div>
+    <div class="modal fade" id="eventDetailsModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border"></div>
+      </div>
+    </div>
+    <!-- Модальное окно добавления события -->
+    <div class="modal fade" id="addEventModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content border">
+          <form id="addEventForm" autocomplete="off">
+            <div class="modal-header px-card bg-light border-bottom-0">
+              <h5 class="modal-title">Добавление задачи</h5>
+              <button
+                class="btn-close me-n1"
+                type="button"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body pb-0">
+              <div class="row check-mark">
+                <div class="col mb-2 employment">
+                  <label class="fs-0">Занятость</label>
+                  <select
+                    class="form-select"
+                    id="employment"
+                    name="employment"
+                  ></select>
+                </div>
+
+                <div class="col mb-2 object">
+                  <label class="fs-0">Объект</label>
+                  <select
+                    class="form-select modalValue"
+                    id="taskObj"
+                    name="taskobj"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+                <div class="col mb-2 object-mobile">
+                  <label class="fs-0">Локация</label>
+                  <select
+                    class="form-select location modalValue"
+                    id="locObj"
+                    name="locObj"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-8 mb-2">
+                  <label class="fs-0" for="eventTitle">Название задачи</label>
+                  <input
+                    class="form-control eventName"
+                    id="eventTitle"
+                    type="text"
+                    name="title"
+                    placeholder="Краткое описание"
+                  />
+                </div>
+                <div class="col-md-4 mb-2 postanovshik">
+                  <label class="fs-0">Постановщик</label>
+                  <select
+                    class="form-select modalValue"
+                    id="taskCreator"
+                    name="director"
+                  >
+                    <option
+                      class="zeroel"
+                      value="Не выбрано"
+                      selected="selected"
+                    >
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <label class="fs-0">Описание</label>
+                <textarea
+                  class="form-control modalValue"
+                  type="text"
+                  name="description"
+                  id="longDesc"
+                  placeholder="Подробное описание задачи..."
+                ></textarea>
+              </div>
+
+              <div class="row tasksubtaskregion">
+                <div class="col mb-2 vidrabot">
+                  <label class="fs-0">Вид работ</label>
+                  <select
+                    class="form-select typeoftasks modalValue"
+                    id="kindOfTasks"
+                    name="kindOfTasks"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+                <div class="col mb-2 podvid-rabot">
+                  <label class="fs-0">Подвид работ</label>
+                  <select
+                    class="form-select typeofsubtask modalValue"
+                    id="kindOfSubTask"
+                    name="kindOfSubTask"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col mb-2 startinput">
+                  <label class="fs-0 d-flex">Начало</label>
+                  <input
+                    class="form-control datetimepicker"
+                    id="eventStartDate"
+                    type="text"
+                    required="required"
+                    name="startDate"
+                    placeholder="дд.мм.гггг чч:мм"
+                    data-options='{"static":"true","enableTime":"true","dateFormat":"d.m.Y H:i"}'
+                  />
+                </div>
+
+                <div class="col mb-2 endinput">
+                  <label class="fs-0 d-flex">Окончание</label>
+                  <input
+                    class="form-control datetimepicker"
+                    id="eventEndDate"
+                    type="text"
+                    name="endDate"
+                    placeholder="дд.мм.гггг чч:мм"
+                    data-options='{"static":"true","enableTime":"true","dateFormat":"d.m.Y H:i"}'
+                  />
+                </div>
+                <div class="col-md-2 mb-2 spentTime">
+                  <label class="fs-0">Время, ч</label>
+                  <input
+                    class="form-control"
+                    id="eventSpentTime"
+                    type="number"
+                    name="endDate"
+                    placeholder="Затрачено, ч"
+                    step="0.5"
+                    min="0.5"
+                  />
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="fs-0">Источник</label>
+                  <input
+                    class="form-control pl-2 modalValue"
+                    id="eventSource"
+                    type="text"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+              <div class="woo"></div>
+
+              <div class="row">
+                <div class="col mb-2">
+                  <label class="fs-0">Примечание</label>
+                  <textarea
+                    class="form-control modalValue"
+                    id="eventNotes"
+                    type="text"
+                    placeholder=""
+                    rows="1"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div
+              class="card-footer d-flex justify-content-end align-items-center bg-light"
+            >
+              <button class="btn btn-primary px-4" id="addTaskToCalBtn">
+                Добавить
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Модальное окно массового добавления события -->
+    <div class="modal fade" id="miltiAddEventModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content border">
+          <form id="addEventForm" autocomplete="off">
+            <div class="modal-header px-card bg-light border-bottom-0">
+              <h5 class="modal-title">Массовое добавление задачи</h5>
+              <button
+                class="btn-close me-n1"
+                type="button"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body pb-0">
+              <div class="row check-mark">
+                <div class="col mb-2 employment">
+                  <label class="fs-0">Занятость</label>
+                  <select
+                    class="form-select"
+                    id="multiEmployment"
+                    name="employment"
+                  ></select>
+                </div>
+
+                <div class="col mb-2">
+                  <label class="fs-0">Объект</label>
+                  <select
+                    class="form-select modalValue"
+                    id="multiTaskObj"
+                    name="taskobj"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="fs-0">Локация</label>
+                  <select
+                    class="form-select location modalValue"
+                    id="multiLocObj"
+                    name="locObj"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-8 mb-2">
+                  <label class="fs-0" for="multiEventTitle"
+                    >Название задачи</label
+                  >
+                  <input
+                    class="form-control eventName"
+                    id="multiEventTitle"
+                    type="text"
+                    name="title"
+                    placeholder="Краткое описание"
+                  />
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="fs-0">Постановщик</label>
+                  <select
+                    class="form-select modalValue"
+                    id="multiTaskCreator"
+                    name="director"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <label class="fs-0">Описание</label>
+                <textarea
+                  class="form-control modalValue"
+                  type="text"
+                  name="description"
+                  id="multiLongDesc"
+                  placeholder="Подробное описание задачи..."
+                ></textarea>
+              </div>
+
+              <div class="row tasksubtaskregion">
+                <div class="col mb-2">
+                  <label class="fs-0">Вид работ</label>
+                  <select
+                    class="form-select typeoftasks modalValue"
+                    id="multiKindOfTasks"
+                    name="multiKindOfTasks"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+                <div class="col mb-2">
+                  <label class="fs-0">Подвид работ</label>
+                  <select
+                    class="form-select typeofsubtask modalValue"
+                    id="multiKindOfSubTask"
+                    name="multiKindOfSubTask"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mb-2">
+                  <label class="fs-0">Источник</label>
+                  <input
+                    class="form-control pl-2 modalValue"
+                    id="multiEventSource"
+                    type="text"
+                    placeholder=""
+                  />
+                </div>
+                <div class="woo"></div>
+                <div class="col mb-2">
+                  <label class="fs-0">Примечание</label>
+                  <textarea
+                    class="form-control modalValue"
+                    id="multiEventNotes"
+                    type="text"
+                    placeholder=""
+                    rows="1"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div
+              class="card-footer d-flex justify-content-end align-items-center bg-light"
+            >
+              <button
+                class="btn btn-primary px-4"
+                id="multiAddTaskToCalBtn"
+                type="submit"
+              >
+                Добавить
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Модальное окно массового добавления в месячном режиме-->
+    <div class="modal fade" id="addEventModalMassMonth" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content border">
+          <form id="addEventModalMassMonth" autocomplete="off">
+            <div class="modal-header px-card bg-light border-bottom-0">
+              <h5 class="modal-title">Добавление задач</h5>
+              <button
+                class="btn-close me-n1"
+                type="button"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body pb-0">
+              <div class="row check-mark">
+                <div class="col mb-2 employment">
+                  <label class="fs-0">Занятость</label>
+                  <select
+                    class="form-select"
+                    id="employmentMassMonth"
+                    name="employment"
+                  ></select>
+                </div>
+
+                <div class="col mb-2">
+                  <label class="fs-0">Объект</label>
+                  <select
+                    class="form-select modalValue"
+                    id="taskObjMassMonth"
+                    name="taskobj"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="fs-0">Локация</label>
+                  <select
+                    class="form-select location modalValue"
+                    id="locObjMassMonth"
+                    name="locObj"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-8 mb-2">
+                  <label class="fs-0" for="eventTitleMassMonth"
+                    >Название задачи</label
+                  >
+                  <input
+                    class="form-control eventName"
+                    id="eventTitleMassMonth"
+                    type="text"
+                    name="title"
+                    placeholder="Краткое описание"
+                  />
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="fs-0">Постановщик</label>
+                  <select
+                    class="form-select modalValue"
+                    id="taskCreatorMassMonth"
+                    name="director"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <label class="fs-0">Описание</label>
+                <textarea
+                  class="form-control modalValue"
+                  type="text"
+                  name="description"
+                  id="longDescMassMonth"
+                  placeholder="Подробное описание задачи..."
+                ></textarea>
+              </div>
+
+              <div class="row tasksubtaskregion">
+                <div class="col mb-2">
+                  <label class="fs-0">Вид работ</label>
+                  <select
+                    class="form-select typeoftasks modalValue"
+                    id="kindOfTasksMassMonth"
+                    name="kindOfTasks"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+                <div class="col mb-2">
+                  <label class="fs-0">Подвид работ</label>
+                  <select
+                    class="form-select typeofsubtask modalValue"
+                    id="kindOfSubTaskMassMonth"
+                    name="kindOfSubTask"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col mb-2">
+                  <label class="fs-0 d-flex">Дата начала</label>
+                  <input
+                    class="form-control datetimepicker"
+                    id="eventStartDateMassMonth"
+                    type="text"
+                    required="required"
+                    name="startDate"
+                    placeholder="дд.мм.гггг чч:мм"
+                    data-options='{"static":"true","enableTime":"true","dateFormat":"d.m.Y H:i"}'
+                  />
+                </div>
+
+                <div class="col mb-2">
+                  <label class="fs-0 d-flex">Дата окончания</label>
+                  <input
+                    class="form-control datetimepicker"
+                    id="eventEndDateMassMonth"
+                    type="text"
+                    name="endDate"
+                    placeholder="дд.мм.гггг чч:мм"
+                    data-options='{"static":"true","enableTime":"true","dateFormat":"d.m.Y H:i"}'
+                  />
+                </div>
+
+                <div class="col-md-2 mb-2 spentTime">
+                  <label class="fs-0">Время, ч</label>
+                  <input
+                    class="form-control"
+                    id="eventSpentTimeMassMonth"
+                    type="number"
+                    placeholder="Затрачено, ч"
+                    step="1"
+                    min="1"
+                    max="11"
+                  />
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="fs-0">Источник</label>
+                  <input
+                    class="form-control pl-2 modalValue"
+                    id="eventSourceMassMonth"
+                    type="text"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+              <div class="woo"></div>
+              <div class="row">
+                <div class="col mb-2">
+                  <label class="fs-0">Примечание</label>
+                  <textarea
+                    class="form-control modalValue"
+                    id="eventNotesMassMonth"
+                    type="text"
+                    placeholder=""
+                    rows="1"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div
+              class="card-footer d-flex justify-content-end align-items-center bg-light"
+            >
+              <button
+                class="btn btn-primary px-4"
+                id="addTaskToCalBtnMassMonth"
+                type="submit"
+              >
+                Добавить
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Модальное окно редактирования события -->
+    <div class="modal fade" id="editEventModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content border">
+          <form id="editEventForm" autocomplete="off">
+            <div class="modal-header px-card bg-light border-bottom-0">
+              <h5 class="modal-title">Редактирование задачи</h5>
+              <button
+                class="btn-close me-n1"
+                type="button"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body pb-0">
+              <div class="row check-mark">
+                <div class="col mb-2 employment">
+                  <label class="fs-0">Занятость</label>
+                  <select
+                    class="form-select"
+                    id="employmentEdit"
+                    name="employment"
+                  ></select>
+                </div>
+
+                <div class="col mb-2">
+                  <label class="fs-0">Объект</label>
+                  <select
+                    class="form-select modalValue"
+                    id="taskEditObj"
+                    name="taskobj"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <label class="fs-0">Локация</label>
+                  <select
+                    class="form-select location modalValue"
+                    id="locEditObj"
+                    name="locEditObj"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-8 mb-2">
+                  <label class="fs-0" for="eventEditTitle"
+                    >Название задачи</label
+                  >
+                  <input
+                    class="form-control eventName"
+                    id="eventEditTitle"
+                    type="text"
+                    name="title"
+                    placeholder="Краткое описание"
+                  />
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="fs-0">Постановщик</label>
+                  <select
+                    class="form-select modalValue"
+                    id="taskEditCreator"
+                    name="director"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <label class="fs-0">Описание</label>
+                <textarea
+                  class="form-control modalValue"
+                  type="text"
+                  name="description"
+                  id="longEditDesc"
+                  placeholder="Подробное описание задачи..."
+                ></textarea>
+              </div>
+
+              <div class="row tasksubtaskregion">
+                <div class="col mb-2">
+                  <label class="fs-0">Вид работ</label>
+                  <select
+                    class="form-select typeoftasks modalValue"
+                    id="kindOfEditTasks"
+                    name="kindOfTasks"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+                <div class="col mb-2">
+                  <label class="fs-0">Подвид работ</label>
+                  <select
+                    class="form-select typeofsubtask modalValue"
+                    id="kindOfSubEditTask"
+                    name="kindOfSubTask"
+                  >
+                    <option value="Не выбрано" selected="selected">
+                      Не выбрано
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col mb-2">
+                  <label class="fs-0 d-flex">Начало</label>
+                  <input
+                    class="form-control datetimepicker"
+                    id="eventEditStartDate"
+                    type="text"
+                    required="required"
+                    name="eventEditStartDate"
+                    placeholder="дд.мм.гггг чч:мм"
+                    data-options='{"static":"true","enableTime":"true","dateFormat":"d.m.Y H:i"}'
+                  />
+                </div>
+
+                <div class="col mb-2">
+                  <label class="fs-0 d-flex">Окончание</label>
+                  <input
+                    class="form-control datetimepicker"
+                    id="eventEditEndDate"
+                    type="text"
+                    name="eventEditEndDate"
+                    placeholder="дд.мм.гггг чч:мм"
+                    data-options='{"static":"true","enableTime":"true","dateFormat":"d.m.Y H:i"}'
+                  />
+                </div>
+                <div class="col-md-2 mb-2 spentTime">
+                  <label class="fs-0">Время, ч</label>
+                  <input
+                    class="form-control"
+                    id="eventEditSpentTime"
+                    type="number"
+                    name="endDate"
+                    placeholder="Затрачено, ч"
+                    step="0.5"
+                    min="0.5"
+                  />
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label class="fs-0">Источник</label>
+                  <input
+                    class="form-control pl-2 modalValue"
+                    id="eventEditSource"
+                    type="text"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+              <div class="woo"></div>
+              <div class="row">
+                <div class="col mb-2">
+                  <label class="fs-0">Примечание</label>
+                  <textarea
+                    class="form-control modalValue"
+                    id="eventEditNotes"
+                    type="text"
+                    placeholder=""
+                    rows="1"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div
+              class="card-footer d-flex justify-content-end align-items-center bg-light"
+            >
+              <button
+                class="btn btn-primary px-4"
+                id="editSaveTaskBtn"
+                type="submit"
+              >
+                Сохранить
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно согласования-->
+
+    <div class="modal fade" id="approveEmplModal" tabindex="-1">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content border">
+          <div class="modal-header px-card bg-light border-bottom-0">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Согласование занятости
+            </h5>
+          </div>
+          <div class="modal-body fs-0">
+            Вы хотите согласовать занятость сотруднику
+            <span class="userSurname" style="font-weight: bold"></span> в период
+            с
+            <span class="startApproveDate" style="font-weight: bold"></span> по
+            <span class="endApproveDate" style="font-weight: bold"></span>?
+            Продолжить?
+          </div>
+          <div
+            class="card-footer d-flex justify-content-end align-items-center bg-light"
+          >
+            <button
+              type="button"
+              class="btn btn-success m-2 approve-action"
+              data-dismiss="modal"
+            >
+              Да
+            </button>
+            <button
+              type="button"
+              class="btn btn-warning"
+              data-bs-dismiss="modal"
+            >
+              Нет
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно блокировки добавления занятости -->
+
+    <div class="modal fade" id="LockEmplModal" tabindex="-1">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content border">
+          <div class="modal-header px-card bg-light border-bottom-0">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Блокировка добавления занятости
+            </h5>
+          </div>
+          <div class="modal-body fs-0">
+            Вы хотите
+            <span class="text-danger"><b>заблокировать</b></span> возможность
+            добавления занятости сотруднику
+            <span class="lockedUserSurname" style="font-weight: bold"></span> в
+            период с
+            <span class="startLockDate" style="font-weight: bold"></span> по
+            <span class="endLockDate" style="font-weight: bold"></span>?
+            Продолжить?
+          </div>
+          <div
+            class="card-footer d-flex justify-content-end align-items-center bg-light"
+          >
+            <button
+              type="button"
+              class="btn btn-success m-2 lock-action"
+              data-dismiss="modal"
+            >
+              Да
+            </button>
+            <button
+              type="button"
+              class="btn btn-warning"
+              data-bs-dismiss="modal"
+            >
+              Нет
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Модальное окно разблокировки добавления занятости -->
+
+    <div class="modal fade" id="unLockEmplModal" tabindex="-1">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content border">
+          <div class="modal-header px-card bg-light border-bottom-0">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Разблокировка добавления занятости
+            </h5>
+          </div>
+          <div class="modal-body fs-0">
+            Вы хотите
+            <span class="text-success"><b>разблокировать</b></span> возможность
+            добавления занятости сотруднику
+            <span class="unLockedUserSurname" style="font-weight: bold"></span>
+            в период с
+            <span class="startUnlockDate" style="font-weight: bold"></span> по
+            <span class="endUnlockDate" style="font-weight: bold"></span>?
+            Продолжить?
+          </div>
+          <div
+            class="card-footer d-flex justify-content-end align-items-center bg-light"
+          >
+            <button
+              type="button"
+              class="btn btn-success m-2 unlock-action"
+              data-dismiss="modal"
+            >
+              Да
+            </button>
+            <button
+              type="button"
+              class="btn btn-warning"
+              data-bs-dismiss="modal"
+            >
+              Нет
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно информации о блокировке  -->
+
+    <div class="modal fade" id="LockInfo" tabindex="-1">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content border">
+          <div class="modal-header px-card bg-light border-bottom-0">
+            <h5 class="modal-title text-danger" id="exampleModalLabel">
+              Даты заблокированы
+            </h5>
+            <button
+              class="btn-close me-n1"
+              type="button"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body fs-0">
+            Данные даты заблокированы<span
+              class="lockUser"
+              style="font-weight: bold"
+            ></span
+            >! Выберите другие даты или обратитесь к руководителю для
+            разблокировки.
+          </div>
+          <div
+            class="card-footer d-flex justify-content-end align-items-center bg-light"
+          >
+            <button
+              type="button"
+              class="btn btn-warning"
+              data-bs-dismiss="modal"
+            >
+              Закрыть
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="vendors/fontawesome/all.min.js" type="module"></script>
+    <script src="vendors/list.js/list.min.js" type="module"></script>
+    <script src="assets/js/theme.js" type="module"></script>
+    <script src="vendors/flatpickr/flatpickr.min.js" type="module"></script>
+    <script src="vendors/dayjs/dayjs.min.js" type="module"></script>
+    <script src="vendors/flatpickr/ru.js" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+export const Selectors = {
+  ACTIVE: '.active',
+  ADD_EVENT_FORM: '#addEventForm',
+  ADD_EVENT_MODAL: '#addEventModal',
+  MULTI_ADD_EVENT_MODAL: '#miltiAddEventModal',
+  EDIT_EVENT_MODAL: '#editEventModal',
+  CALENDAR: '#appCalendar',
+  CALENDAR_TITLE: '.calendar-title',
+  DATA_CALENDAR_VIEW: '[data-fc-view]',
+  DATA_EVENT: '[data-event]',
+  DATA_VIEW_TITLE: '[data-view-title]',
+  EVENT_DETAILS_MODAL: '#eventDetailsModal',
+  EVENT_DETAILS_MODAL_CONTENT: '#eventDetailsModal .modal-content',
+  EVENT_START_DATE: '#addEventModal [name="startDate"]',
+  EVENT_END_DATE: '#addEventModal [name="endDate"]',
+  INPUT_TITLE: '[name="title"]',
+};
