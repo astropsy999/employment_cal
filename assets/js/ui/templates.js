@@ -64,9 +64,10 @@ export function getTemplate(event) {
   const editDeleteAvilable =
     event.extendedProps.isApproved === ''
       ? `<div class="modal-footer d-flex justify-content-end bg-light px-card border-top-0">
-
-<button class="btn btn-falcon-default btn-sm" id="editEventBtn" data-idx="${event.extendedProps.idx}"> <span class="fas fa-pencil-alt fs--2 mr-2"></span> Редактировать</button><button class="btn btn-falcon-primary btn-sm" id="delEventBtn" data-delID="${event.extendedProps.delID}" data-typeID="${event.extendedProps.typeID}"><i class="bi bi-trash-fill align-content-center"></i>Удалить <span class="fas fa-angle-right fs--2 ml-1"></span></button>
-</div>`
+      <button class="btn btn-falcon-default btn-sm" id="editEventBtn" data-idx="${event.extendedProps.idx}">
+      <span class="fas fa-pencil-alt fs--2 mr-2"></span> Редактировать</button>
+      <button class="btn btn-falcon-primary btn-sm" id="delEventBtn" data-delID="${event.extendedProps.delID}" data-typeID="${event.extendedProps.typeID}"><i class="bi bi-trash-fill align-content-center"></i>Удалить <span class="fas fa-angle-right fs--2 ml-1"></span></button>
+      </div>`
       : '';
 
   return `<div class="modal-header bg-light ps-card pe-5 border-bottom-0" tabindex="-1"><div>
@@ -74,7 +75,8 @@ export function getTemplate(event) {
     <p class="mb-0 fs--1 mt-1 ms-4"><b>Занятость: </b>${
       event.extendedProps.employment
     }</p>
-</div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+</div>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
 <div class="modal-body px-card pb-card pt-1 fs--1"><div class="d-flex mt-3">${
     getStackIcon('fas fa-user') +
     '<div class="flex-1"><b>Постановщик: </b><span class="mb-1">' +

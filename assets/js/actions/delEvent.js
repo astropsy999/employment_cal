@@ -7,6 +7,7 @@ export const delEvent = (
   modal,
   typeID,
   shiftKeyUp,
+  calendar,
 ) => {
   const delEventBtn = document.querySelector('#delEventBtn');
 
@@ -38,7 +39,9 @@ export const delEvent = (
     document.addEventListener('hide.bs.modal', () => {
       isMultiMode = false;
       document.addEventListener('keyup', shiftKeyUp);
+      calendar?.render();
     });
+    calendar?.render();
     modal.hide();
   });
 };

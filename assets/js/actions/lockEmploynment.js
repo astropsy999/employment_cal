@@ -168,7 +168,7 @@ export const lockEmploynment = (calendar) => {
         html: true,
         template: `<div style="max-width:fit-content;" class="popover" role="tooltip"><div class="popover-inner">
                 <div class="modal-body fs-0">
-                Есть несогласованные события.<br>
+                Есть несогласованные задачи!<br>
                 <b>Согласуете перед блокировкой?</b></div>
                 <div class="card-footer d-flex justify-content-center align-items-center bg-light p-0">
                 <button type='button' class='btn btn-success m-2 yesOnPopover'>Да</button>

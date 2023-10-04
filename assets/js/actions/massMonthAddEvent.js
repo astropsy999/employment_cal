@@ -404,6 +404,7 @@ export const massMonthAddEvent = (calendar, info) => {
                     kindOfTasksMassMonth.value === 'Не выбрано'
                       ? ''
                       : kindOfTasksMassMonth.value,
+                  isApproved: '',
                 },
               });
             });

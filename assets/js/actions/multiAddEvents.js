@@ -269,6 +269,7 @@ export const multipleAddEventsToBase = (multipleEventsArray, calendar) => {
               multiKindOfTasks.value === 'Не выбрано'
                 ? ''
                 : multiKindOfTasks.value,
+            isApproved: '',
           },
         });
       });

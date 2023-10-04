@@ -27799,3 +27799,14 @@ div[data-collapse] + .kanban-item {
   font-size: 50px;
   white-space: nowrap;
 }
+.fc-timegrid-col-misc {
+  display:none;
+}
+
+.fc-daygrid-day-events {
+  display:none;
+}
+
+/* .fc-dayGridMonth-view  {
+  display: none;
+} */

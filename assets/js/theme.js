@@ -196,6 +196,7 @@ const employmentCalendar = async () => {
     // инициализации объекта datesSet, которая происходит из-за повторного запуска определения или изменения интервала
     // времени
     let additionalRangeLoaded = false;
+    let dayCellContentLoaded = false;
 
     /* -------------------------------------------------------------------------- */
     /*                  ОСНОВНЫЕ НАСТРОЙКИ КАЛЕНДАРЯ                              */
@@ -206,9 +207,20 @@ const employmentCalendar = async () => {
         headerToolbar: false,
         nowIndicator: true,
         dayMaxEvents: 3,
-        allDaySlot: false,
+        allDaySlot: true,
+
+        allDayContent: function (info) {
+          return 'Σ';
+        },
         selectable: true,
         eventDrop,
+        eventAdd: function () {
+          calendar.render();
+        },
+        eventRemove: function () {
+          calendar.render();
+        },
+
         eventContent,
         contentHeight: 'auto',
         stickyHeaderDates: true,
@@ -229,6 +241,7 @@ const employmentCalendar = async () => {
         eventBackgroundColor: '#CEE2F2',
         eventClick: function eventClick(info) {
           const isRootUser = checkUserIDBySelector();
+
           const selectedUserLevel = Number(
             localStorage.getItem('managerLevel'),
           );
@@ -241,11 +254,13 @@ const employmentCalendar = async () => {
           } else {
             if (isRootUser) {
               var template = getTemplate(info.event);
+
               document.querySelector(
                 Selectors.EVENT_DETAILS_MODAL_CONTENT,
               ).innerHTML = template;
               var modal = new Modal(eventDetailsModal);
             } else {
+              console.log('isRootUserELSE: ', isRootUser);
               if (selectedUserLevel && currentUserLevel >= selectedUserLevel) {
                 template = getTemplateNoFooterNoDelete(info.event);
               } else {
@@ -345,10 +360,45 @@ const employmentCalendar = async () => {
             let dataSubTaskListValues = [];
 
             // Удаление задачи
-            delEvent(info, delID, isMultiMode, modal, shiftKeyUp);
+            delEvent(info, delID, isMultiMode, modal, shiftKeyUp, calendar);
             // Редактирование задачи
             editEvent(info, calendar, modal);
           }
+        },
+        dayCellContent: function (info) {
+          function calculateTotalHours(date) {
+            let totalHours = 0;
+            let currentDate = null;
+
+            let updatedEvents = calendar
+              ?.getEvents()
+              ?.map((event) => event.toPlainObject());
+
+            updatedEvents?.forEach((event) => {
+              const eventDate = new Date(event.start);
+              const factTime = Number(event.extendedProps.factTime);
+
+              // Если currentDate еще не установлена, установите ее и начните счет для выбранной даты
+              if (!currentDate) {
+                currentDate = new Date(eventDate);
+              }
+
+              // Если дата события совпадает с currentDate, добавьте factTime к totalHours
+              if (
+                date.getDate() === eventDate.getDate() &&
+                date.getMonth() === eventDate.getMonth() &&
+                date.getFullYear() === eventDate.getFullYear()
+              ) {
+                totalHours += factTime;
+              } else {
+                // Если дата события больше не совпадает, верните totalHours и начните новый счет
+                currentDate = new Date(eventDate);
+              }
+            });
+            return totalHours;
+          }
+
+          return calculateTotalHours(info.date);
         },
         datesSet: function (dateInfo) {
           // Дата начала недели после переключения на новую неделю
@@ -723,6 +773,8 @@ const employmentCalendar = async () => {
                 changeDirectZero(eventEndDate, eventSpentTime);
               });
             } else {
+              // calendar.setOption('allDaySlot', false);
+              // calendar.render();
               // Дата начала и окончания при выделении
               const startDate = info.start;
               const endDate = info.end;
@@ -1150,11 +1202,12 @@ const employmentCalendar = async () => {
               case 'refresh':
                 const refreshBtnAction = async () => {
                   tempLoader(true);
-                  let eventSources = calendar.getEventSources();
-                  let len = eventSources.length;
-                  for (let i = 0; i < len; i++) {
-                    eventSources[i].remove();
-                  }
+                  // let eventSources = calendar.getEventSources();
+                  // let len = calendar.getEventSources().length;
+                  // for (let i = 0; i < len; i++) {
+                  //   calendar.getEventSources()[i].remove();
+                  // }
+                  calendar.removeAllEvents();
                   const newUserData = await getSelectedUserData(
                     localStorage.getItem('iddb'),
                   );
@@ -1431,6 +1484,9 @@ const employmentCalendar = async () => {
           break;
 
         case 'dayGridMonth':
+          // calendar.setOption('allDaySlot', false);
+          // calendar.setOption('dayCellContent', false);
+          // calendar.render();
           if (approveBtn && lockBtn) {
             toggleElem(approveBtn, false);
             toggleElem(lockBtn, false);

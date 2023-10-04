@@ -286,6 +286,7 @@ export const addEventToUser = (calendar) => {
                 isApproved: '',
               },
             });
+            calendar.render();
             oftenSelectedCollectInLS(taskCreator);
 
             // Проверка и расширение границ времени при добавлении
