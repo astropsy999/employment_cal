@@ -5,12 +5,13 @@ import {
   toggleIcon,
 } from '../ui/checkBlockedDays';
 import { formatDate } from '../utils/mainGlobFunctions';
-import { Modal } from 'bootstrap';
+import { Modal, Popover, Tooltip } from 'bootstrap';
+import { fullCalendar } from '../utils/fullcalendar';
 
 export function convertToISODate(dateString) {
   const parts = dateString.split('.');
-  const day = parts[0].padStart(2, '0'); // Добавляем ведущий ноль, если день однозначный
-  const month = parts[1].padStart(2, '0'); // Добавляем ведущий ноль, если месяц однозначный
+  const day = parts[0].padStart(2, '0');
+  const month = parts[1].padStart(2, '0');
   const year = parts[2];
 
   return `${year}-${month}-${day}`;
@@ -29,6 +30,8 @@ export const lockEmploynment = (calendar) => {
     const selectedUser = otherUsers?.selectedOptions[0].textContent;
     const selectedUserId = otherUsers?.value;
 
+    let hasUnsubmittedEvents = false;
+
     const lockedUserSurname = document.querySelector('.lockedUserSurname');
     const unLockedUserSurname = document.querySelector('.unLockedUserSurname');
     lockedUserSurname.textContent = selectedUser;
@@ -36,6 +39,85 @@ export const lockEmploynment = (calendar) => {
 
     const lockEmplmodal = document.querySelector('#LockEmplModal');
     const unlockEmplmodal = document.querySelector('#unLockEmplModal');
+
+    const startDate = new Date(calendar.view.currentStart);
+    const endDate = new Date(calendar.view.currentEnd);
+
+    const currentEvents = calendar.getEvents();
+
+    const eventsInCurrentWeek = currentEvents.filter((event) => {
+      const eventStart = event.start;
+      return eventStart >= startDate && eventStart <= endDate;
+    });
+
+    if (eventsInCurrentWeek.length > 0) {
+      eventsInCurrentWeek.forEach((ev) => {
+        const isApproved = ev._def.extendedProps.isApproved;
+        if (isApproved === '') {
+          hasUnsubmittedEvents = true;
+          return;
+        }
+      });
+    }
+
+    const lastEvent = eventsInCurrentWeek.reduce(
+      (latestEvent, currentEvent) => {
+        const latestEventDate = latestEvent ? latestEvent.start : null;
+        const currentEventDate = currentEvent.start;
+
+        if (!latestEventDate || currentEventDate > latestEventDate) {
+          return currentEvent;
+        } else {
+          return latestEvent;
+        }
+      },
+      null,
+    );
+
+    eventsInCurrentWeek.sort((a, b) => a.start - b.start);
+
+    const approveAndLockAction = () => {
+      const yesOnPopover = document.querySelector('.yesOnPopover');
+      eventsInCurrentWeek.forEach((e) => {
+        const delID = e._def.extendedProps.delID;
+
+        const managerName = localStorage.getItem('managerName');
+
+        let formDataApproved = new FormData();
+
+        formDataApproved.append('ID', delID);
+        formDataApproved.append('TypeID', '1094');
+        formDataApproved.append('Data[0][name]', '9245');
+        formDataApproved.append('Data[0][value]', managerName);
+        formDataApproved.append('Data[0][isName]', 'false');
+        formDataApproved.append('Data[0][maninp]', 'false');
+        formDataApproved.append('Data[0][GroupID]', '2443');
+        formDataApproved.append('ParentObjID', localStorage.getItem('iddb'));
+        formDataApproved.append('CalcParamID', '-1');
+        formDataApproved.append('InterfaceID', '1593');
+        formDataApproved.append('ImportantInterfaceID', '');
+        formDataApproved.append('templ_mode', 'false');
+        formDataApproved.append('Ignor39', '0');
+
+        fetch(C.srvv + C.addValueObjTrue, {
+          credentials: 'include',
+          method: 'post',
+          body: formDataApproved,
+        }).then((response) => {
+          yesOnPopover.textContent = 'Согласовано';
+          const changedCalendarEvents = calendar.getEvents();
+          changedCalendarEvents.forEach((event) => {
+            if (event._def.defId === e._def.defId) {
+              event.setExtendedProp('isApproved', managerName);
+              event.dropable = false;
+              fullCalendar.fullCalendarInit();
+            }
+          });
+
+          lockingAction();
+        });
+      });
+    };
 
     let modal;
 
@@ -73,10 +155,47 @@ export const lockEmploynment = (calendar) => {
       return { lockingDatesArr, weekToBlockIDs };
     };
     modal.show();
+    if (
+      modal &&
+      modal._element.id === 'LockEmplModal' &&
+      modal._isShown &&
+      hasUnsubmittedEvents
+    ) {
+      let popover = new Popover('.lock-action', {
+        // container: '.modal-body',
+        placement: 'bottom',
+        title: 'Согласовать перед блокировкой?',
+        html: true,
+        template: `<div style="max-width:fit-content;" class="popover" role="tooltip"><div class="popover-inner">
+                <div class="modal-body fs-0">
+                Есть несогласованные события.<br>
+                <b>Согласуете перед блокировкой?</b></div>
+                <div class="card-footer d-flex justify-content-center align-items-center bg-light p-0">
+                <button type='button' class='btn btn-success m-2 yesOnPopover'>Да</button>
+                <button type='button' class='btn btn-success m-2 noOnPopover'>Нет</button>
+              <button type='button' class='btn btn-warning m-2 cancelPopover' >Отмена</button></div></div></div>`,
+        trigger: 'click',
+        sanitize: false,
+      });
+
+      popover._element.addEventListener('shown.bs.popover', () => {
+        const cancelButton = document.querySelector('.cancelPopover');
+        const noOnPopover = document.querySelector('.noOnPopover');
+        const yesOnPopover = document.querySelector('.yesOnPopover');
+
+        cancelButton.addEventListener('click', function () {
+          modal.hide();
+          popover.disable();
+        });
+
+        noOnPopover.addEventListener('click', lockingAction);
+        yesOnPopover.addEventListener('click', approveAndLockAction);
+        popover.disable();
+      });
+    }
 
     // Использование функции для преобразования дат
-    const startDate = new Date(calendar.view.currentStart);
-    const endDate = new Date(calendar.view.currentEnd);
+
     endDate.setDate(endDate.getDate() - 1);
 
     const startLockDate = document.querySelector('.startLockDate');
@@ -99,7 +218,7 @@ export const lockEmploynment = (calendar) => {
 
     // Подтверждение блокировки/разблокировки
 
-    const lockingAction = () => {
+    function lockingAction() {
       lockActionBtn.removeEventListener('click', lockingAction);
       unlockActionBtn.removeEventListener('click', lockingAction);
       weekToBlockIDs.forEach((ObjID) => {
@@ -187,9 +306,10 @@ export const lockEmploynment = (calendar) => {
         lockActionBtn.textContent = 'Да';
         unlockActionBtn.textContent = 'Да';
       }, 800);
-    };
-
-    lockActionBtn?.addEventListener('click', lockingAction);
+    }
+    if (!hasUnsubmittedEvents) {
+      lockActionBtn?.addEventListener('click', lockingAction);
+    }
     unlockActionBtn?.addEventListener('click', lockingAction);
   };
 

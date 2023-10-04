@@ -1,6 +1,8 @@
 import { getMethodsDropDown } from '../api/getDropDownData';
 import addMethodToClientTable from './addMethodToClientTable';
 import { selRemoveValidation } from '../utils/mainGlobFunctions';
+import { settings } from '../api/settings';
+
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
  * @param {*} etarget
@@ -18,7 +20,7 @@ const addWooContainer = (etarget) => {
     const checkMarkRow = etarget.querySelector('.check-mark');
     const checkElem = checkMarkRow.querySelector('.check-elem');
 
-    if (!checkElem) {
+    if (!checkElem && settings.isKRChekboxAvailable) {
       // Add check mark
       const checkMarkElem = document.createElement('div');
       checkMarkElem.classList.add('col-md-1', 'check-elem');

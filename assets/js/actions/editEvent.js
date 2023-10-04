@@ -19,6 +19,7 @@ import { grabJustAddedArray } from '../methods/grabMethodsDataTable';
 import addMethodToBase from '../methods/addMethodToBase';
 import { tempLoader } from '../ui/tempLoader';
 import { Modal } from 'bootstrap';
+import { settings } from '../api/settings';
 
 /**
  * Редактирование задачи
@@ -81,7 +82,7 @@ export const editEvent = (info, calendar, modal) => {
    * Проверяет условия для показа галочки КР и показывает или скрывает ее в нужном состоянии
    */
   const checkAndShowCheckMark = () => {
-    if (locObject === 'Заказчик') {
+    if (locObject === 'Заказчик' && settings.isKRChekboxAvailable) {
       const checkMarkRow = eventEditModal.querySelector('.check-mark');
       const checkElem = checkMarkRow.querySelector('.check-elem');
 
