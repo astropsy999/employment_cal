@@ -27673,7 +27673,6 @@ div[data-collapse] + .kanban-item {
   pointer-events: auto !important;
 }
 
-
 .lockBtn {
   margin-right: 7px !important;
   padding: 0 6px;
@@ -27684,6 +27683,13 @@ div[data-collapse] + .kanban-item {
 }
 .todayBtn {
   margin-right: 5px;
+}
+.refreshBtn {
+  padding: 0 6px;
+}
+.refreshBtn .bi {
+  padding-right: 0;
+  font-size: 18px;
 }
 .approveBtn .bi {
   padding-right: 0;

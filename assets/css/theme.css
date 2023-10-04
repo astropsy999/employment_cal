@@ -27665,6 +27665,11 @@ div[data-collapse] + .kanban-item {
 .spreedsheet {
   padding: 0 6px;
 }
+
+.refreshBtn .bi {
+  padding-right: 0;
+  font-size: 18px;
+}
 .todayBtn {
   margin-right: 5px;
 }

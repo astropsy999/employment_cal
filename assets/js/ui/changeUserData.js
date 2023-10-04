@@ -22,6 +22,7 @@ import {
  * @param {*} userID
  */
 export const changeUserData = (calendar, userID) => {
+  console.log('changeUserDataStart!!! ');
   const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
   eventTaskModalBtn.removeEventListener('click', addEventToUser);
   const userSelector = document.querySelector('#otherUsers');

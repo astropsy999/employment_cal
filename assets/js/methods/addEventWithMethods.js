@@ -1,4 +1,7 @@
 import { Modal } from 'bootstrap';
+import { getSelectedUserData } from '../api/getSlectedUserData';
+import { changeUserData } from '../ui/changeUserData';
+import { convertDateTime } from '../utils/mainGlobFunctions';
 /**
  * Функция для добавлиния события при наличии в задаче метода или таблицы методов
  * @param {*} firstEventObj
@@ -45,6 +48,10 @@ const addEventWithMethods = (
     employmentVal,
     calendar,
     krBase,
+    taskCreatorVal,
+    taskObjVal,
+    kindOfTasksVal,
+    kindOfSubTaskVal,
   } = firstEventObj;
 
   let formDataMet = new FormData();
@@ -198,7 +205,6 @@ const addEventWithMethods = (
             body: formDataaddMet,
           })
             .then((response) => {
-              location.reload();
               return response.json();
             })
             .then((data) => {
@@ -208,6 +214,47 @@ const addEventWithMethods = (
         } else {
           setViewAndDateToLS(calendar);
         }
+      });
+
+      const transformToMethods = (methodsArr) => {
+        const eventMeths = [];
+        methodsArr.forEach((meth) => {
+          const { method, params } = meth;
+          const { duration, objects, zones } = params;
+
+          eventMeths.push({
+            [method]: { duration, objQuant: objects, zones },
+          });
+        });
+
+        return eventMeths;
+      };
+
+      // Добавляем событие без перезагрузки
+      // Добавление задачи на клиенте (без перезагрузки)
+
+      calendar.addEvent({
+        title: titleVal,
+        allDay: false,
+        classNames: 'bg-soft-primary',
+        start: convertDateTime(startDate),
+        end: convertDateTime(endDate),
+        extendedProps: {
+          delID: parentID,
+          director: taskCreatorVal,
+          factTime: spentTimeVal,
+          fullDescription: longDesc.value,
+          notes: eventNotesVal,
+          object: taskObjVal,
+          source: eventSourceVal,
+          location: locationVal,
+          employment: employmentVal,
+          taskTypeNew: kindOfTasksVal === 'Не выбрано' ? '' : kindOfTasksVal,
+          subTaskTypeNew:
+            kindOfSubTaskVal === 'Не выбрано' ? '' : kindOfSubTaskVal,
+          isApproved: '',
+          methods: transformToMethods(methodsArray),
+        },
       });
     });
 };

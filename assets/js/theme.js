@@ -629,6 +629,9 @@ const employmentCalendar = async () => {
                   minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
                   maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
                 });
+
+                console.log('flatpickrStart: ', flatpickrStart);
+                console.log('flatpickrEnd: ', flatpickrEnd);
               } else {
                 flatpickrStart = flatpickr('#eventStartDate', {
                   static: true,
@@ -933,14 +936,18 @@ const employmentCalendar = async () => {
 
         const today = new Date();
 
+        const lockedDates = JSON.parse(
+          localStorage.getItem('lockedDatesArray'),
+        );
+
         const flatpickrStart = flatpickr('#eventStartDate', {
           dateFormat: 'd.m.Y H:i',
           enableTime: true,
           position: 'above',
           allowInput: true,
           locale: 'ru',
+          disable: lockedDates,
         });
-        console.log('flatpickrStart: ', flatpickrStart);
 
         const flatpickrEnd = flatpickr('#eventEndDate', {
           dateFormat: 'd.m.Y H:i',
@@ -948,8 +955,8 @@ const employmentCalendar = async () => {
           position: 'above',
           allowInput: true,
           locale: 'ru',
+          disable: lockedDates,
         });
-        console.log('flatpickrEnd: ', flatpickrEnd);
 
         const startOfDayTime = `${transformDateTime(today).slice(0, 10)} 09:00`;
         const endOfDayTime = `${transformDateTime(today).slice(0, 10)} 17:00`;
@@ -1141,7 +1148,42 @@ const employmentCalendar = async () => {
                 break;
 
               case 'refresh':
-                setViewAndDateToLS(calendar);
+                const refreshBtnAction = async () => {
+                  tempLoader(true);
+                  let eventSources = calendar.getEventSources();
+                  let len = eventSources.length;
+                  for (let i = 0; i < len; i++) {
+                    eventSources[i].remove();
+                  }
+                  const newUserData = await getSelectedUserData(
+                    localStorage.getItem('iddb'),
+                  );
+
+                  let { events, parentIdDataArr, lockedDatesArray } =
+                    parseResievedDataToCal(newUserData);
+
+                  localStorage.setItem(
+                    'parentIdDataArr',
+                    JSON.stringify(parentIdDataArr),
+                  );
+                  localStorage.setItem(
+                    'lockedDatesArray',
+                    JSON.stringify(lockedDatesArray),
+                  );
+
+                  sessionStorage.setItem('events', JSON.stringify(events));
+
+                  tempLoader(false);
+
+                  console.log('events: ', events);
+                  console.log('parentIdDataArr: ', parentIdDataArr);
+                  console.log('lockedDatesArray: ', lockedDatesArray);
+                  calendar.addEventSource(events);
+                };
+
+                refreshBtnAction();
+
+                console.log('RefreshEventStart!!! ');
                 break;
               case 'cutTimeView':
                 calendar.setOption('slotMinTime', '00:00:00');

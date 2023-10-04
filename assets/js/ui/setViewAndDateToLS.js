@@ -10,7 +10,7 @@ export const setViewAndDateToLS = (calendar) => {
         .context.currentDate.getTime();
       localStorage.setItem('startWeekDateMs', startWeekDateMs);
       localStorage.setItem('fcDefaultView', 'timeGridWeek');
-      location.reload();
+      // location.reload();
       break;
 
     case 'dayGridMonth':
@@ -20,7 +20,7 @@ export const setViewAndDateToLS = (calendar) => {
 
       localStorage.setItem('startMonthDateMs', startMonthDateMs);
       localStorage.setItem('fcDefaultView', 'dayGridMonth');
-      location.reload();
+      // location.reload();
       break;
 
     case 'timeGridDay':
@@ -29,7 +29,7 @@ export const setViewAndDateToLS = (calendar) => {
         .context.currentDate.getTime();
       localStorage.setItem('startDayDateMs', startDayDateMs);
       localStorage.setItem('fcDefaultView', 'timeGridDay');
-      location.reload();
+      // location.reload();
 
       break;
 
@@ -39,7 +39,7 @@ export const setViewAndDateToLS = (calendar) => {
         .context.currentDate.getTime();
       localStorage.setItem('startListWeekDateMs', startListWeekDateMs);
       localStorage.setItem('fcDefaultView', 'listWeek');
-      location.reload();
+      // location.reload();
 
       break;
 
@@ -49,7 +49,7 @@ export const setViewAndDateToLS = (calendar) => {
         .context.dateProfile.renderRange.start.getTime();
       localStorage.setItem('startlistYearDateMs', startlistYearDateMs);
       localStorage.setItem('fcDefaultView', 'listYear');
-      location.reload();
+      // location.reload();
 
       break;
   }

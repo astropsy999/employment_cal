@@ -54,7 +54,7 @@ const addMethodToBase = (methodsArr, delID, api) => {
         const { object, parent } = data.results[0];
 
         if (idx == methodsArr.length - 1) {
-          location.reload();
+          // location.reload();
         }
       });
   });
