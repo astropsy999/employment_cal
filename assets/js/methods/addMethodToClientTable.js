@@ -51,6 +51,7 @@ const addMethodToClientTable = () => {
     };
 
     wooMetodsArray.push(methStringObj);
+    console.log('wooMetodsArray: ', wooMetodsArray);
 
     let tBody = document.querySelector('.methods-tbody');
 

@@ -2,6 +2,7 @@ import * as C from '../config';
 import {
   notChoosenCleaning,
   transformDateTime,
+  transformToMethods,
 } from '../utils/mainGlobFunctions';
 import addMethodToBase from '../methods/addMethodToBase';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
@@ -224,6 +225,7 @@ export const multipleAddEventsToBase = (multipleEventsArray, calendar) => {
       })
       .then((data) => {
         const objID = data.results[0].object;
+        console.log('🚀 ~ file: multiAddEvents.js:228 ~ .then ~ objID:', objID);
         justAddedDelID = objID;
 
         if (
@@ -270,6 +272,7 @@ export const multipleAddEventsToBase = (multipleEventsArray, calendar) => {
                 ? ''
                 : multiKindOfTasks.value,
             isApproved: '',
+            methods: transformToMethods(massMethTbl, objID),
           },
         });
       });

@@ -5,6 +5,7 @@
  * @param {*} api
  */
 const showMethodsTable = (eventInfo, wooElem, api) => {
+  console.log('showMethodsTable: ');
   const { srvv, addValueObjTrue, deleteNodeURL } = api;
   let isEditMode = false;
 
@@ -74,10 +75,14 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * @param {*} methData
    */
   const sendEditedMethodToBase = (methData) => {
+    console.log('methData: ', methData);
+    console.log('sendEditedMethodToBase: ');
     const { methVal, durVal, objqVal, zonesVal, editID } = methData;
 
     const editEventModal = document.querySelector('#editEventModal');
     const delID = editEventModal.getAttribute('delID');
+
+    // return;
 
     let formDataEdMeth = new FormData();
 
@@ -129,6 +134,7 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * @param {*} ev
    */
   const switchOffEditModeBase = (ev) => {
+    console.log('switchOffEditModeBase: ');
     let edMetDataObj = {};
 
     const editedString = ev.target.closest('tr');
@@ -233,8 +239,11 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * @param {*} ev
    */
   const deleteStringOfTableBase = (ev) => {
+    console.log('deleteStringOfTableBase: ');
     const delStr = ev.target.closest('tr');
+    console.log('delStr: ', delStr);
     const methDelID = delStr.getAttribute('editid');
+    console.log('methDelID: ', methDelID);
     delStr.remove();
 
     fetch(srvv + deleteNodeURL + `?ID=${methDelID}&TypeID=1149&TabID=1685`, {
@@ -242,9 +251,12 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
       method: 'GET',
     })
       .then((response) => {
-        console.log('Метод удален');
-        return response;
+        return response.json();
       })
+      .then((data) => {
+        console.log('Метод удален');
+      })
+
       .catch(function (error) {
         console.log('Ошибка отправки удаления метода', error);
       });

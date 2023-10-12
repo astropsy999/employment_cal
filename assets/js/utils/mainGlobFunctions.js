@@ -165,8 +165,8 @@ export const sendNewEndDateTimeToBase = (
 
 export const selValidation = (elem) => {
   // Находим название элемента
-  const selLabel = elem.previousElementSibling;
-  selLabel.classList.add('val-selector');
+  const selLabel = elem?.previousElementSibling;
+  selLabel?.classList.add('val-selector');
 };
 
 // Функция снятия отметки обязательности заполнения поля для валидации
@@ -375,13 +375,13 @@ export const checkEmploymentStatus = (etarget) => {
       }
     };
 
-    employment.removeEventListener('change', checkSavedValues);
-    employment.addEventListener('change', checkSavedValues);
+    employment?.removeEventListener('change', checkSavedValues);
+    employment?.addEventListener('change', checkSavedValues);
 
     if (
-      (employment.value === 'Отпуск' ||
-        employment.value === 'Больничный' ||
-        employment.value === 'Выходной') &&
+      (employment?.value === 'Отпуск' ||
+        employment?.value === 'Больничный' ||
+        employment?.value === 'Выходной') &&
       !worked
     ) {
       eventName.value = employment.value;
@@ -393,14 +393,14 @@ export const checkEmploymentStatus = (etarget) => {
     } else {
       localStorage.setItem('isWorked', '1');
       //   eventName.value = "";
-      eventName.removeAttribute('disabled');
+      eventName?.removeAttribute('disabled');
       spentTime ? spentTime.removeAttribute('disabled') : null;
       selValidation(location);
       selValidation(typeoftasks);
       rangeHoursBetweenDates();
     }
 
-    if (location.value === 'В дороге') {
+    if (location?.value === 'В дороге') {
       selRemoveValidation(typeoftasks);
     }
   };
@@ -575,6 +575,31 @@ export const unblockBtnAddTitle = (...btns) => {
       }
     });
   }
+};
+
+/**
+ * Функция преобразует массив методов в массив объектов, где каждый объект содержит информацию о методе и его параметрах.
+ * @param {Array} methodsArr - Массив методов, которые нужно преобразовать.
+ * @returns {Array} Возвращает массив объектов, где каждый объект содержит информацию о методе и его параметрах.
+ */
+export const transformToMethods = (methodsArr, editID) => {
+  const eventMeths = [];
+  methodsArr.forEach((meth, i) => {
+    const { method, params } = meth;
+
+    const { duration, objects, zones } = params;
+
+    eventMeths.push({
+      [method]: {
+        duration,
+        objQuant: objects,
+        zones,
+        editID: editID + (i + 1),
+      },
+    });
+  });
+
+  return eventMeths;
 };
 
 export { isOutOfRange };

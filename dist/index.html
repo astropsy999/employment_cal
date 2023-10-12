@@ -6,9 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Календарь Фактической Занятости</title>
-
-    <script type="module" crossorigin src="./assets/main-178ebf3d.js"></script>
-    <link rel="stylesheet" href="./assets/index-ffa1e148.css" />
+    
+    
+    
+    
+    <script type="module" crossorigin src="./assets/main-6c11b8aa.js"></script>
+    <link rel="stylesheet" href="./assets/index-dec15c7c.css">
   </head>
 
   <body>
@@ -82,11 +85,12 @@
           </div>
           <div class="col col-md-auto d-flex justify-content-end order-md-3">
             <button
-              class="btn btn-falcon-success btn-sm m-1"
+              class="btn btn-falcon-success btn-sm m-1 refreshBtn"
               type="button"
               data-event="refresh"
             >
-              <i class="bi bi-arrow-clockwise"></i>
+              <i class="bi bi-arrow-clockwise"></i
+              ><span class="mobile-hide-text"></span>
             </button>
           </div>
           <div class="col col-md-auto d-flex justify-content-end order-md-3">
@@ -977,9 +981,7 @@
             <button
               type="button"
               class="btn btn-success m-2 lock-action"
-              data-bs-dismiss="modal"
-              data-bs-container="modal-body"
-              data-bs-placement="bottom"
+              data-dismiss="modal"
             >
               Да
             </button>
@@ -1074,5 +1076,12 @@
         </div>
       </div>
     </div>
+
+    
+    
+    
+    
+    
+    
   </body>
 </html>

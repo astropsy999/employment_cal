@@ -123,6 +123,7 @@ export const changeUserData = (calendar, userID) => {
       calendar.addEventSource(events);
 
       tempLoader(false);
+      calendar.render();
 
       // Проверяем наличие событий в текущем диапазоне дат
       const activeStart = calendar.view.activeStart;

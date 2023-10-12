@@ -60,6 +60,7 @@ import {
   timeInputsValidation,
   transformDateTime,
   blockBtnAddTitle,
+  sendNewEndDateTimeToBase,
 } from './utils/mainGlobFunctions.js';
 import { toggleElem } from './utils/toggleElem.js';
 
@@ -208,6 +209,17 @@ const employmentCalendar = async () => {
         nowIndicator: true,
         dayMaxEvents: 3,
         allDaySlot: true,
+        // views: {
+        //   dayGridMonth: {
+        //     allDaySlot: false,
+        //   },
+        //   timeGridWeek: {
+        //     allDaySlot: true,
+        //   },
+        //   timeGridDay: {
+        //     allDaySlot: true,
+        //   },
+        // },
 
         allDayContent: function (info) {
           return 'Σ';
@@ -361,8 +373,11 @@ const employmentCalendar = async () => {
 
             // Удаление задачи
             delEvent(info, delID, isMultiMode, modal, shiftKeyUp, calendar);
+
+            const clickedEvent = info.event;
+            console.log('clickedEvent: ', clickedEvent);
             // Редактирование задачи
-            editEvent(info, calendar, modal);
+            editEvent(info, calendar, modal, clickedEvent);
           }
         },
         dayCellContent: function (info) {
@@ -401,6 +416,7 @@ const employmentCalendar = async () => {
           return calculateTotalHours(info.date);
         },
         datesSet: function (dateInfo) {
+          console.log('datesSet: ');
           // Дата начала недели после переключения на новую неделю
           const findStartDate = dateInfo.startStr.slice(0, 10);
           // Дата конца недели после переключения на новую неделю
@@ -841,6 +857,73 @@ const employmentCalendar = async () => {
             }
           }
         },
+        eventResize: function (info) {
+          const isApproved = info.event.extendedProps.isApproved;
+
+          if (isApproved !== undefined && isApproved !== '') {
+            info.revert(); // Запретить изменение размера события
+          } else {
+            const slotmintime = calendar.getOption('slotMinTime');
+            const slotmaxtime = calendar.getOption('slotMaxTime');
+
+            // При изменении размера события отправляем данные в базу о новом времени окончания события
+
+            // Получаем delID события из объекта info
+
+            const changeTimeId = info.oldEvent._def.extendedProps.delID;
+
+            // Получаем factTime
+
+            const oldFactTime = +info.oldEvent._def.extendedProps.factTime;
+
+            // Дата начала текущего события
+            const oldEventStartDate = info.oldEvent._instance.range.start;
+
+            // Дата окончания текущего события
+            const oldEventEndDate = info.oldEvent._instance.range.end;
+            const millioldStartDate = oldEventStartDate.getTime();
+            const millioldEndDate = oldEventEndDate.getTime();
+
+            // Определяем величину изменения
+            const milliSecDeltaStart = info.startDelta.milliseconds;
+            const milliSecDelta = info.endDelta.milliseconds;
+            const hoursDeltaStart = milliSecDeltaStart / 3600000;
+            const hoursDeltaEnd = milliSecDelta / 3600000;
+
+            // Новая дата начала
+            const newMsStartDateTime = millioldStartDate + milliSecDeltaStart;
+            const newStartDateTime = new Date(newMsStartDateTime);
+            // Новая дата окончания
+            const newMsEndDateTime = millioldEndDate + milliSecDelta;
+            const newEndDateTime = new Date(newMsEndDateTime);
+
+            const eventEmploymentValue =
+              info.event._def.extendedProps.employment;
+            const oldEventFactTime = info.oldEvent._def.extendedProps.factTime;
+            let newFactTime;
+            // Новое фактическое время события
+            if (oldEventFactTime != 0) {
+              newFactTime = oldFactTime - hoursDeltaStart + hoursDeltaEnd;
+            } else {
+              newFactTime = 0;
+            }
+
+            // Устанавливаем новое
+
+            const theEvent = info.event;
+
+            theEvent.setExtendedProp('factTime', newFactTime.toString());
+
+            sendNewEndDateTimeToBase(
+              changeTimeId,
+              newFactTime,
+              newStartDateTime,
+              newEndDateTime,
+            );
+
+            calendar.render();
+          }
+        },
       });
 
       // Блокировка дат
@@ -1202,11 +1285,7 @@ const employmentCalendar = async () => {
               case 'refresh':
                 const refreshBtnAction = async () => {
                   tempLoader(true);
-                  // let eventSources = calendar.getEventSources();
-                  // let len = calendar.getEventSources().length;
-                  // for (let i = 0; i < len; i++) {
-                  //   calendar.getEventSources()[i].remove();
-                  // }
+
                   calendar.removeAllEvents();
                   const newUserData = await getSelectedUserData(
                     localStorage.getItem('iddb'),
@@ -1228,15 +1307,12 @@ const employmentCalendar = async () => {
 
                   tempLoader(false);
 
-                  console.log('events: ', events);
-                  console.log('parentIdDataArr: ', parentIdDataArr);
-                  console.log('lockedDatesArray: ', lockedDatesArray);
                   calendar.addEventSource(events);
+                  calendar.render();
                 };
 
                 refreshBtnAction();
 
-                console.log('RefreshEventStart!!! ');
                 break;
               case 'cutTimeView':
                 calendar.setOption('slotMinTime', '00:00:00');
@@ -1295,7 +1371,7 @@ const employmentCalendar = async () => {
                           enableTime: false,
                           locale: 'ru',
                           onClose: function (selectedDates, dateStr) {
-                            period = dateStr.split('—');
+                            period = dateStr?.split('—');
                           },
                         });
 
@@ -1484,9 +1560,7 @@ const employmentCalendar = async () => {
           break;
 
         case 'dayGridMonth':
-          // calendar.setOption('allDaySlot', false);
           // calendar.setOption('dayCellContent', false);
-          // calendar.render();
           if (approveBtn && lockBtn) {
             toggleElem(approveBtn, false);
             toggleElem(lockBtn, false);

@@ -1,7 +1,12 @@
 import { Modal } from 'bootstrap';
 import { getSelectedUserData } from '../api/getSlectedUserData';
 import { changeUserData } from '../ui/changeUserData';
-import { convertDateTime } from '../utils/mainGlobFunctions';
+import {
+  convertDateTime,
+  transformToMethods,
+} from '../utils/mainGlobFunctions';
+import { tempLoader } from '../ui/tempLoader';
+import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
 /**
  * Функция для добавлиния события при наличии в задаче метода или таблицы методов
  * @param {*} firstEventObj
@@ -209,26 +214,13 @@ const addEventWithMethods = (
             })
             .then((data) => {
               const { object, parent } = data.results[0];
-              setViewAndDateToLS(calendar);
+
+              // setViewAndDateToLS(calendar);
             });
         } else {
-          setViewAndDateToLS(calendar);
+          // setViewAndDateToLS(calendar);
         }
       });
-
-      const transformToMethods = (methodsArr) => {
-        const eventMeths = [];
-        methodsArr.forEach((meth) => {
-          const { method, params } = meth;
-          const { duration, objects, zones } = params;
-
-          eventMeths.push({
-            [method]: { duration, objQuant: objects, zones },
-          });
-        });
-
-        return eventMeths;
-      };
 
       // Добавляем событие без перезагрузки
       // Добавление задачи на клиенте (без перезагрузки)
@@ -240,7 +232,7 @@ const addEventWithMethods = (
         start: convertDateTime(startDate),
         end: convertDateTime(endDate),
         extendedProps: {
-          delID: parentID,
+          delID: object,
           director: taskCreatorVal,
           factTime: spentTimeVal,
           fullDescription: longDesc.value,
@@ -253,9 +245,16 @@ const addEventWithMethods = (
           subTaskTypeNew:
             kindOfSubTaskVal === 'Не выбрано' ? '' : kindOfSubTaskVal,
           isApproved: '',
-          methods: transformToMethods(methodsArray),
+          methods: transformToMethods(methodsArray, object),
         },
       });
+
+      // if (
+      //   localStorage.getItem('managerName') ===
+      //   localStorage.getItem('selectedUserName')
+      // ) {
+      //   location.reload();
+      // }
     });
 };
 

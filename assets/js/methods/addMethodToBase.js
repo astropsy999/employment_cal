@@ -4,7 +4,7 @@
  * @param {*} delID
  * @param {*} api
  */
-const addMethodToBase = (methodsArr, delID, api) => {
+export const addMethodToBase = (methodsArr, delID, api) => {
   const { srvv, createNodeUrl } = api;
 
   methodsArr.forEach((element, idx) => {
@@ -52,10 +52,11 @@ const addMethodToBase = (methodsArr, delID, api) => {
       })
       .then((data) => {
         const { object, parent } = data.results[0];
+        console.log('object: ', object);
 
-        if (idx == methodsArr.length - 1) {
-          // location.reload();
-        }
+        // if (idx == methodsArr.length - 1) {
+        //   location.reload();
+        // }
       });
   });
 };

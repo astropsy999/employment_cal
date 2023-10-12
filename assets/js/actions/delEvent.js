@@ -9,6 +9,7 @@ export const delEvent = (
   shiftKeyUp,
   calendar,
 ) => {
+  console.log('🚀 ~ file: delEvent.js:12 ~ delID:', delID);
   const delEventBtn = document.querySelector('#delEventBtn');
 
   delEventBtn?.addEventListener('click', (e) => {

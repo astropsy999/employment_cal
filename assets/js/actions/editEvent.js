@@ -8,6 +8,7 @@ import {
   cleanAndDefaultKindOfSubTaskSelector,
   changeDirectZero,
   transformDateTime,
+  addZeroBefore,
 } from '../utils/mainGlobFunctions';
 import * as GDD from '../api/getDropDownData';
 import * as C from '../config';
@@ -20,6 +21,7 @@ import addMethodToBase from '../methods/addMethodToBase';
 import { tempLoader } from '../ui/tempLoader';
 import { Modal } from 'bootstrap';
 import { settings } from '../api/settings';
+import { stretchViewDepEvents } from '../ui/stretchViewDepEvents';
 
 /**
  * Редактирование задачи
@@ -37,7 +39,8 @@ const api = {
   GetExcelforCalc: C.GetExcelforCalc,
 };
 
-export const editEvent = (info, calendar, modal) => {
+export const editEvent = (info, calendar, modal, editedEvent) => {
+  console.log('editedEvent: ', editedEvent);
   const eventEditTitle = document.querySelector('#eventEditTitle');
   const taskEditCreator = document.querySelector('#taskEditCreator');
   const taskEditObj = document.querySelector('#taskEditObj');
@@ -78,6 +81,7 @@ export const editEvent = (info, calendar, modal) => {
     kindOfSubEditTask,
     localStorage.getItem('iddb'),
   );
+
   /**
    * Проверяет условия для показа галочки КР и показывает или скрывает ее в нужном состоянии
    */
@@ -238,6 +242,7 @@ export const editEvent = (info, calendar, modal) => {
 
   if (editEventBtn) {
     editEventBtn.addEventListener('click', (e) => {
+      tempLoader(true);
       let delID = info.event._def.extendedProps.delID;
 
       kindOfEditTasks.addEventListener('change', () => {
@@ -247,9 +252,47 @@ export const editEvent = (info, calendar, modal) => {
       modal.hide();
       updateKindOfEditSubtaskListOnChange();
       let jAmethodsTable;
+      let justRemovedMethods = [];
 
       document.addEventListener('shown.bs.modal', (e) => {
+        const openedModal = e.target;
+        console.log('openedModal: ', openedModal);
+
+        const woo = openedModal.querySelector('.woo');
+
+        woo?.addEventListener('click', (e) => {
+          const isDeleteBtnClicked =
+            e.target.classList.contains('delete-string');
+
+          if (isDeleteBtnClicked) {
+            const deletedString = e.target.closest('tr');
+            const methName = deletedString.querySelector('.bg-info').innerText;
+            const duration = deletedString.children[1].innerText;
+            const objects = deletedString.children[2].innerText.trim();
+            const zones = deletedString.children[3].innerText;
+            const deletedMethodObj = {
+              method: methName,
+              params: { duration, objects, zones },
+            };
+
+            justRemovedMethods.push(deletedMethodObj);
+          }
+        });
+
         const addWooMetBtn = document.querySelector('#addWooMet');
+
+        // openedModal.addEventListener('change', () => {
+        //   console.log('addEventListenerchange');
+        //   if (
+        //     addWooMetBtn &&
+        //     (kindOfEditTasks.value === 'Техническое диагностирование' ||
+        //       kindOfSubEditTask.value === 'Проведение контроля в лаборатории')
+        //   ) {
+        //     addWooMetBtn.addEventListener('click', () => {
+        //       jAmethodsTable = document.querySelector('.methods-tbody');
+        //     });
+        //   }
+        // });
 
         if (
           addWooMetBtn &&
@@ -262,7 +305,7 @@ export const editEvent = (info, calendar, modal) => {
         }
       });
 
-      let selectedTaskID;
+      // let selectedTaskID;
 
       modal = new Modal(editEventModal);
       editEventModal.setAttribute('delID', delID);
@@ -546,6 +589,7 @@ export const editEvent = (info, calendar, modal) => {
             fourthCol: C.fourthCol,
             fifthCol: C.fifthCol,
             dataObjID: neededIDsObj[taskEditObj.value] || '',
+            dataObjVal: taskEditObj.value,
             sixthCol: C.sixthCol,
             kindOfEditTasksID:
               neededIDsObj[kindOfEditTasks.value] ||
@@ -560,6 +604,7 @@ export const editEvent = (info, calendar, modal) => {
                 kindOfSubEditTask.options.selectedIndex
               ].getAttribute('subtaskid') ||
               '',
+            kindOfSubEditTaskVal: kindOfSubEditTask.value,
             fourthCol: C.fourthCol,
             titleEditVal: eventEditTitle.value,
             longEditDeskVal: longEditDesc.value,
@@ -567,6 +612,7 @@ export const editEvent = (info, calendar, modal) => {
             spentEditTimeVal: eventEditSpentTime.value,
             tenthCol: C.tenthCol,
             taskEditCreatorID: neededIDsObj[taskEditCreator.value] || '',
+            taskEditCreatorVal: taskEditCreator.value,
             eleventhCol: C.eleventhCol,
             eventEditSourceVal: eventEditSource.value,
             eventEditNotesVal: eventEditNotes.value,
@@ -594,15 +640,26 @@ export const editEvent = (info, calendar, modal) => {
           };
 
           // return
-
-          saveEditedTasks(mainEventEditObject);
+          let updatedMethods;
           if (jAmethodsTable) {
             addMethodToBase(grabJustAddedArray(jAmethodsTable), delID, api);
+            updatedMethods = grabJustAddedArray(jAmethodsTable);
+            console.log('updatedMethods: ', updatedMethods);
           }
+
+          saveEditedTasks(
+            mainEventEditObject,
+            editedEvent,
+            updatedMethods,
+            justRemovedMethods,
+          );
         }
+
+        modal.hide();
       });
       editEventModal.addEventListener('hide.bs.modal', () => {
         delID = '';
+        editedEvent = '';
       });
     });
   }

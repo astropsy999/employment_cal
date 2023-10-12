@@ -1,23 +1,35 @@
 import * as C from '../config';
+import { stretchViewDepEvents } from '../ui/stretchViewDepEvents';
+import { addZeroBefore, transformToMethods } from '../utils/mainGlobFunctions';
 /**
  * Сохранение отредактированных данных в таблице методов
  * @param {*} eventEditObj
  */
-const saveEditedTasks = (eventEditObj) => {
+const saveEditedTasks = (
+  eventEditObj,
+  editedEvent,
+  updatedMethods,
+  justRemovedMethods,
+) => {
+  console.log('eventEditObj: ', eventEditObj);
+
   const {
     delID,
     dataObjID,
+    dataObjVal,
     fourthCol,
     fifthCol,
     dataGroupID,
     kindOfEditTasksID,
     kindOfSubEditTaskID,
+    kindOfSubEditTaskVal,
     titleEditVal,
     longEditDeskVal,
     ninthCol,
     spentEditTimeVal,
     tenthCol,
     taskEditCreatorID,
+    taskEditCreatorVal,
     eleventhCol,
     eventEditSourceVal,
     eventEditNotesVal,
@@ -31,7 +43,6 @@ const saveEditedTasks = (eventEditObj) => {
     dataInterfaceID,
     addValueObjTrue,
     srvv,
-    setViewAndDateToLS,
     calendar,
     krBase,
     emplEditVal,
@@ -39,6 +50,10 @@ const saveEditedTasks = (eventEditObj) => {
     savedTaskFromServer,
     kindOfEditTasksVal,
   } = eventEditObj;
+
+  // Минимальное и максимальное время которое отображает календарь в данный момент
+  let minViewTime = calendar.getOption('slotMinTime');
+  let maxViewTime = calendar.getOption('slotMaxTime');
 
   /**
    * Удаление всех методов если был изменен Вид работ при редактировании
@@ -73,6 +88,8 @@ const saveEditedTasks = (eventEditObj) => {
   };
 
   if (savedTaskFromServer !== kindOfEditTasksVal && methodsFromServer) {
+    console.log('methodsFromServer: ', methodsFromServer);
+    console.log('savedTaskFromServer: ', savedTaskFromServer);
     deleteAllMethodsIfChangedType(methodsFromServer);
   }
 
@@ -163,18 +180,89 @@ const saveEditedTasks = (eventEditObj) => {
     credentials: 'include',
     method: 'post',
     body: formDataSaveEdited,
-  })
-    .then((response) => {
-      // return
-    })
-    .then((data) => {
-      // Добавляем Методы
-      setViewAndDateToLS(calendar);
+  }).then((response) => {
+    // Обновление отредактированного события без перезагрузки
 
-      // Обновление отредактированного события без перезагрузки
+    if (editedEvent) {
+      editedEvent?.setProp('title', titleEditVal);
+      editedEvent?.setExtendedProp('delID', delID);
+      editedEvent?.setExtendedProp('location', locationVal);
+      editedEvent?.setExtendedProp('director', taskEditCreatorVal);
+      editedEvent?.setExtendedProp('employment', emplEditVal);
+      editedEvent?.setExtendedProp('factTime', spentEditTimeVal);
+      editedEvent?.setExtendedProp('fullDescription', longEditDeskVal);
+      editedEvent?.setExtendedProp('notes', eventEditNotesVal);
+      editedEvent?.setExtendedProp('object', dataObjVal);
+      editedEvent?.setExtendedProp('source', eventEditSourceVal);
+      editedEvent?.setExtendedProp(
+        'subTaskTypeNew',
+        kindOfSubEditTaskVal != 'Не выбрано' ? kindOfSubEditTaskVal : '',
+      );
+      editedEvent?.setExtendedProp('taskTypeNew', kindOfEditTasksVal);
 
-      location.reload();
-    });
+      if (updatedMethods) {
+        console.log('updatedMethods: ', updatedMethods);
+        methodsFromServer
+          ? editedEvent?.setExtendedProp('methods', [
+              ...methodsFromServer,
+              ...transformToMethods(updatedMethods, delID),
+            ])
+          : editedEvent?.setExtendedProp('methods', [
+              ...transformToMethods(updatedMethods, delID),
+            ]);
+      } else {
+        editedEvent?.setExtendedProp('methods', methodsFromServer);
+      }
+
+      if (justRemovedMethods) {
+        const currentMethods = editedEvent._def.extendedProps.methods;
+        const updateCurrentMethods = currentMethods?.filter((meth) => {
+          const methName = Object.keys(meth)[0];
+          return !justRemovedMethods.some(
+            (removedMeth) => removedMeth.method === methName,
+          );
+        });
+
+        editedEvent?.setExtendedProp('methods', updateCurrentMethods);
+      }
+
+      if (
+        !updatedMethods &&
+        justRemovedMethods.length === 0 &&
+        methodsFromServer
+      ) {
+        location.reload();
+      }
+      // Функция для преобразования даты в формат, подходящий для создания объекта Date
+      function convertDate(dateString) {
+        let parts = dateString.split(' ');
+        let dateParts = parts[0].split('.');
+        let timeParts = parts[1].split(':');
+        return new Date(
+          dateParts[2],
+          dateParts[1] - 1,
+          dateParts[0],
+          timeParts[0],
+          timeParts[1],
+        );
+      }
+      let newStartDate = convertDate(startEditDate);
+      let newStartDateHours = newStartDate.getHours();
+      if (newStartDateHours < parseInt(minViewTime)) {
+        calendar.setOption('slotMinTime', `${newStartDateHours}:00:00`);
+      }
+      let newEndDate = convertDate(endEditDate);
+      let newEndDateHours = newEndDate.getHours();
+      if (newEndDateHours > parseInt(maxViewTime)) {
+        calendar.setOption('slotMaxTime', `${newEndDateHours}:59:00`);
+      }
+
+      editedEvent?.setStart(newStartDate);
+      editedEvent?.setEnd(newEndDate);
+    }
+
+    calendar.render();
+  });
 };
 
 export default saveEditedTasks;

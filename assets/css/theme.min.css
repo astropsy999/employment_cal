@@ -27800,13 +27800,13 @@ div[data-collapse] + .kanban-item {
   white-space: nowrap;
 }
 .fc-timegrid-col-misc {
-  display:none;
+  display: none;
 }
 
 .fc-daygrid-day-events {
-  display:none;
+  margin-bottom: -30px !important;
 }
 
-/* .fc-dayGridMonth-view  {
-  display: none;
-} */
+.fc-dayGridMonth-view .fc-daygrid-day-frame {
+  margin-bottom: 30px !important;
+}
