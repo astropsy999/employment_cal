@@ -43,7 +43,6 @@ export const multipleAddEventsToBase = (multipleEventsArray, calendar) => {
     multiKindOfSubTask.value === 'Проведение контроля в лаборатории'
   ) {
     methodsTable = document.querySelector('.methods-tbody');
-    console.log('methodsTable: ', methodsTable);
   }
 
   multipleEventsArray.forEach((eventLength) => {
@@ -225,7 +224,6 @@ export const multipleAddEventsToBase = (multipleEventsArray, calendar) => {
       })
       .then((data) => {
         const objID = data.results[0].object;
-        console.log('🚀 ~ file: multiAddEvents.js:228 ~ .then ~ objID:', objID);
         justAddedDelID = objID;
 
         if (

@@ -4,7 +4,6 @@
  * @param {boolean} onOff - Флаг, указывающий, нужно ли показать (true) или скрыть (false) элемент
  */
 export const toggleElem = (elem, onOff) => {
-  //   console.log('elem: ', elem);
   // Проверяем, существует ли элемент
   if (elem) {
     if (onOff) {

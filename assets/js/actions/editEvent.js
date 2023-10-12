@@ -40,7 +40,6 @@ const api = {
 };
 
 export const editEvent = (info, calendar, modal, editedEvent) => {
-  console.log('editedEvent: ', editedEvent);
   const eventEditTitle = document.querySelector('#eventEditTitle');
   const taskEditCreator = document.querySelector('#taskEditCreator');
   const taskEditObj = document.querySelector('#taskEditObj');
@@ -256,7 +255,6 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
       document.addEventListener('shown.bs.modal', (e) => {
         const openedModal = e.target;
-        console.log('openedModal: ', openedModal);
 
         const woo = openedModal.querySelector('.woo');
 
@@ -280,19 +278,6 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
         });
 
         const addWooMetBtn = document.querySelector('#addWooMet');
-
-        // openedModal.addEventListener('change', () => {
-        //   console.log('addEventListenerchange');
-        //   if (
-        //     addWooMetBtn &&
-        //     (kindOfEditTasks.value === 'Техническое диагностирование' ||
-        //       kindOfSubEditTask.value === 'Проведение контроля в лаборатории')
-        //   ) {
-        //     addWooMetBtn.addEventListener('click', () => {
-        //       jAmethodsTable = document.querySelector('.methods-tbody');
-        //     });
-        //   }
-        // });
 
         if (
           addWooMetBtn &&
@@ -644,7 +629,6 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
           if (jAmethodsTable) {
             addMethodToBase(grabJustAddedArray(jAmethodsTable), delID, api);
             updatedMethods = grabJustAddedArray(jAmethodsTable);
-            console.log('updatedMethods: ', updatedMethods);
           }
 
           saveEditedTasks(

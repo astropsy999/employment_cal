@@ -13,7 +13,6 @@ export function updateDayCell(info, lockedDatesArr) {
 
   if (isDateLocked(date)) {
     const dayCell = info.el.querySelector('.fc-timegrid-col-frame');
-    console.log('dayCell: ', dayCell);
     toggleIcon('unlock');
 
     const overlay = document.createElement('div');
@@ -53,7 +52,6 @@ export function setDayCellDidMount(lockedDatesArr) {
 
     if (isDateLocked(date)) {
       const dayCell = info.el.querySelector('.fc-timegrid-col-frame');
-      console.log('dayCell: ', dayCell);
       toggleIcon('unlock');
 
       const overlay = document.createElement('div');

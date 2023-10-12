@@ -1,6 +1,10 @@
 import * as C from '../config';
 import { stretchViewDepEvents } from '../ui/stretchViewDepEvents';
-import { addZeroBefore, transformToMethods } from '../utils/mainGlobFunctions';
+import {
+  addZeroBefore,
+  refreshBtnAction,
+  transformToMethods,
+} from '../utils/mainGlobFunctions';
 /**
  * Сохранение отредактированных данных в таблице методов
  * @param {*} eventEditObj
@@ -11,8 +15,6 @@ const saveEditedTasks = (
   updatedMethods,
   justRemovedMethods,
 ) => {
-  console.log('eventEditObj: ', eventEditObj);
-
   const {
     delID,
     dataObjID,
@@ -55,6 +57,9 @@ const saveEditedTasks = (
   let minViewTime = calendar.getOption('slotMinTime');
   let maxViewTime = calendar.getOption('slotMaxTime');
 
+  const isMethodsAvailable =
+    kindOfEditTasksVal === 'Техническое диагностирование';
+
   /**
    * Удаление всех методов если был изменен Вид работ при редактировании
    * @param {*} methodsFromServer
@@ -65,9 +70,6 @@ const saveEditedTasks = (
     methodsFromServer.forEach((delId) => {
       methDelIDArr.push(Object.values(delId)[0]['editID']);
     });
-    console.log('methDelIDArr: ', methDelIDArr);
-
-    console.log('deleteAllMethodsIfChangedType СТАРТ! ');
 
     methDelIDArr.forEach((methDelID) => {
       fetch(
@@ -88,8 +90,6 @@ const saveEditedTasks = (
   };
 
   if (savedTaskFromServer !== kindOfEditTasksVal && methodsFromServer) {
-    console.log('methodsFromServer: ', methodsFromServer);
-    console.log('savedTaskFromServer: ', savedTaskFromServer);
     deleteAllMethodsIfChangedType(methodsFromServer);
   }
 
@@ -200,8 +200,7 @@ const saveEditedTasks = (
       );
       editedEvent?.setExtendedProp('taskTypeNew', kindOfEditTasksVal);
 
-      if (updatedMethods) {
-        console.log('updatedMethods: ', updatedMethods);
+      if (updatedMethods && isMethodsAvailable) {
         methodsFromServer
           ? editedEvent?.setExtendedProp('methods', [
               ...methodsFromServer,
@@ -210,11 +209,15 @@ const saveEditedTasks = (
           : editedEvent?.setExtendedProp('methods', [
               ...transformToMethods(updatedMethods, delID),
             ]);
+        editedEvent.setProp('classNames', 'bg-soft-secondary skeleton');
+        refreshBtnAction(calendar);
       } else {
         editedEvent?.setExtendedProp('methods', methodsFromServer);
+        // editedEvent.setProp('classNames', 'bg-soft-secondary skeleton');
+        // refreshBtnAction(calendar);
       }
 
-      if (justRemovedMethods) {
+      if (justRemovedMethods && isMethodsAvailable) {
         const currentMethods = editedEvent._def.extendedProps.methods;
         const updateCurrentMethods = currentMethods?.filter((meth) => {
           const methName = Object.keys(meth)[0];
@@ -224,15 +227,20 @@ const saveEditedTasks = (
         });
 
         editedEvent?.setExtendedProp('methods', updateCurrentMethods);
+        editedEvent.setProp('classNames', 'bg-soft-secondary skeleton');
+        refreshBtnAction(calendar);
       }
 
       if (
         !updatedMethods &&
         justRemovedMethods.length === 0 &&
-        methodsFromServer
+        methodsFromServer &&
+        isMethodsAvailable
       ) {
-        location.reload();
+        editedEvent.setProp('classNames', 'bg-soft-secondary skeleton');
+        refreshBtnAction(calendar);
       }
+
       // Функция для преобразования даты в формат, подходящий для создания объекта Date
       function convertDate(dateString) {
         let parts = dateString.split(' ');

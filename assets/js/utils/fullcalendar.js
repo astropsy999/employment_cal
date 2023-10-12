@@ -27,7 +27,6 @@ export let renderCalendar = function renderCalendar(el, option) {
       // editable: true,
       selectable: true,
       select: function (info) {
-        console.log('info: ', info);
         // Проверяем, является ли выбранная дата или интервал дат заблокированным
         const isDateLocked = (date) => {
           const lockedDatesArr = JSON.parse(
@@ -60,9 +59,7 @@ export let renderCalendar = function renderCalendar(el, option) {
 
           const rangeHoursBetweenDates = () => {
             const start = eventStartDate.value;
-            console.log('start: ', start);
             const end = eventEndDate.value;
-            console.log('end: ', end);
 
             const convStrt = convertDateTime(start);
             const convEnd = convertDateTime(end);

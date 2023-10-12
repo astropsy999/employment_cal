@@ -83,8 +83,6 @@ export const getUsersForManagers = async (userID, manName) => {
       });
     let usersIDsDepthsArr = [];
 
-    console.log('res: ', res);
-
     res.data.forEach((item) => {
       //   for (let key in item) {
       //     usersIDsDepthsArr.push( {name: item[2].Value, iddbId: item[2].ObjID}, dep: item[5].Value});
@@ -92,7 +90,6 @@ export const getUsersForManagers = async (userID, manName) => {
     });
 
     usersIDsObj = { ...usersIDsObj, [manName]: userID };
-    console.log('usersIDsObj: ', usersIDsObj);
     // Сохраняем данные в сессии
 
     sessionStorage.setItem('usersIDsObj', JSON.stringify(usersIDsObj));

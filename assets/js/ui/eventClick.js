@@ -19,7 +19,6 @@ export const eventClick = (info, calendar) => {
     return true;
   };
   const isRootUser = checkUserIDBySelector();
-  console.log('isRootUser: ', isRootUser);
   const selectedUserLevel = Number(localStorage.getItem('managerLevel'));
   const currentUserLevel = Number(localStorage.getItem('currentManagerLevel'));
   if (info.event.url) {
@@ -27,15 +26,12 @@ export const eventClick = (info, calendar) => {
     info.jsEvent.preventDefault();
   } else {
     if (isRootUser) {
-      console.log('isRootUser: ', isRootUser);
       var template = getTemplate(info.event);
       document.querySelector(Selectors.EVENT_DETAILS_MODAL_CONTENT).innerHTML =
         template;
       var modal = new Modal(eventDetailsModal);
     } else {
       if (selectedUserLevel && currentUserLevel >= selectedUserLevel) {
-        console.log('currentUserLevel: ', currentUserLevel);
-        console.log('selectedUserLevel: ', selectedUserLevel);
         template = getTemplateNoFooterNoDelete(info.event);
       } else {
         template = getTemplateNoFooter(info.event);

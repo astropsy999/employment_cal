@@ -9,6 +9,10 @@ import {
   dataInterfaceID,
 } from '../config';
 
+import { getSelectedUserData } from '../api/getSlectedUserData';
+import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
+import { tempLoader } from '../ui/tempLoader';
+
 //  Функция форматирования даты из объекта даты в привычный вид дд.мм.гггг
 export function formatDate(date) {
   const day = String(date.getDate()).padStart(2, '0');
@@ -584,7 +588,7 @@ export const unblockBtnAddTitle = (...btns) => {
  */
 export const transformToMethods = (methodsArr, editID) => {
   const eventMeths = [];
-  methodsArr.forEach((meth, i) => {
+  methodsArr?.forEach((meth, i) => {
     const { method, params } = meth;
 
     const { duration, objects, zones } = params;
@@ -600,6 +604,24 @@ export const transformToMethods = (methodsArr, editID) => {
   });
 
   return eventMeths;
+};
+
+export const refreshBtnAction = async (calendar) => {
+  tempLoader(true);
+  const newUserData = await getSelectedUserData(localStorage.getItem('iddb'));
+
+  let { events, parentIdDataArr, lockedDatesArray } =
+    parseResievedDataToCal(newUserData);
+
+  localStorage.setItem('parentIdDataArr', JSON.stringify(parentIdDataArr));
+  localStorage.setItem('lockedDatesArray', JSON.stringify(lockedDatesArray));
+
+  sessionStorage.setItem('events', JSON.stringify(events));
+
+  tempLoader(false);
+  calendar.removeAllEvents();
+  calendar.addEventSource(events);
+  calendar.render();
 };
 
 export { isOutOfRange };

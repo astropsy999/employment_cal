@@ -3,6 +3,7 @@ import { getSelectedUserData } from '../api/getSlectedUserData';
 import { changeUserData } from '../ui/changeUserData';
 import {
   convertDateTime,
+  refreshBtnAction,
   transformToMethods,
 } from '../utils/mainGlobFunctions';
 import { tempLoader } from '../ui/tempLoader';
@@ -159,8 +160,6 @@ const addEventWithMethods = (
       return response.json();
     })
     .then((data) => {
-      console.log('data: ', data);
-
       const { object, parent } = data.results[0];
 
       Modal.getInstance(addEventModal).hide();
@@ -222,13 +221,18 @@ const addEventWithMethods = (
         }
       });
 
+      const isRootUser =
+        localStorage.getItem('managerName') ===
+        localStorage.getItem('selectedUserName');
+
       // Добавляем событие без перезагрузки
-      // Добавление задачи на клиенте (без перезагрузки)
 
       calendar.addEvent({
         title: titleVal,
         allDay: false,
-        classNames: 'bg-soft-primary',
+        classNames: isRootUser
+          ? 'bg-soft-secondary skeleton'
+          : 'bg-soft-primary',
         start: convertDateTime(startDate),
         end: convertDateTime(endDate),
         extendedProps: {
@@ -249,12 +253,12 @@ const addEventWithMethods = (
         },
       });
 
-      // if (
-      //   localStorage.getItem('managerName') ===
-      //   localStorage.getItem('selectedUserName')
-      // ) {
-      //   location.reload();
-      // }
+      if (isRootUser) {
+        tempLoader(true);
+        setTimeout(() => {
+          refreshBtnAction(calendar);
+        }, 300);
+      }
     });
 };
 

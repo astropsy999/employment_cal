@@ -272,7 +272,6 @@ const employmentCalendar = async () => {
               ).innerHTML = template;
               var modal = new Modal(eventDetailsModal);
             } else {
-              console.log('isRootUserELSE: ', isRootUser);
               if (selectedUserLevel && currentUserLevel >= selectedUserLevel) {
                 template = getTemplateNoFooterNoDelete(info.event);
               } else {
@@ -375,7 +374,6 @@ const employmentCalendar = async () => {
             delEvent(info, delID, isMultiMode, modal, shiftKeyUp, calendar);
 
             const clickedEvent = info.event;
-            console.log('clickedEvent: ', clickedEvent);
             // Редактирование задачи
             editEvent(info, calendar, modal, clickedEvent);
           }
@@ -416,8 +414,7 @@ const employmentCalendar = async () => {
           return calculateTotalHours(info.date);
         },
         datesSet: function (dateInfo) {
-          console.log('datesSet: ');
-          // Дата начала недели после переключения на новую неделю
+          // Дата начала недели посл  е переключения на новую неделю
           const findStartDate = dateInfo.startStr.slice(0, 10);
           // Дата конца недели после переключения на новую неделю
           const findEndtDate = dateInfo.endStr.slice(0, 10);
@@ -695,9 +692,6 @@ const employmentCalendar = async () => {
                   minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
                   maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
                 });
-
-                console.log('flatpickrStart: ', flatpickrStart);
-                console.log('flatpickrEnd: ', flatpickrEnd);
               } else {
                 flatpickrStart = flatpickr('#eventStartDate', {
                   static: true,

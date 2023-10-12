@@ -27736,8 +27736,8 @@ div[data-collapse] + .kanban-item {
   display: none;
   position: absolute;
   background: rgba(0, 0, 0, 0.5);
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   z-index: 10;
 }
 .lds-facebook {
@@ -27809,4 +27809,37 @@ div[data-collapse] + .kanban-item {
 
 .fc-dayGridMonth-view .fc-daygrid-day-frame {
   margin-bottom: 30px !important;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  cursor: not-allowed;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.skeleton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }

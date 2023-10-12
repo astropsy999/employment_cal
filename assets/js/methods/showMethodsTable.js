@@ -5,7 +5,6 @@
  * @param {*} api
  */
 const showMethodsTable = (eventInfo, wooElem, api) => {
-  console.log('showMethodsTable: ');
   const { srvv, addValueObjTrue, deleteNodeURL } = api;
   let isEditMode = false;
 
@@ -17,7 +16,6 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
     (taskTypeNew === 'Техническое диагностирование' ||
       subTaskTypeNew === 'Проведение контроля в лаборатории')
   ) {
-    console.log('taskTypeNew: ', taskTypeNew);
     const tableElemHeader = document.createElement('div');
     tableElemHeader.innerHTML = `<div class="table-responsive scrollbar">
           <table class="table table-hover table-sm table-bordered">
@@ -75,8 +73,6 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * @param {*} methData
    */
   const sendEditedMethodToBase = (methData) => {
-    console.log('methData: ', methData);
-    console.log('sendEditedMethodToBase: ');
     const { methVal, durVal, objqVal, zonesVal, editID } = methData;
 
     const editEventModal = document.querySelector('#editEventModal');
@@ -134,7 +130,6 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * @param {*} ev
    */
   const switchOffEditModeBase = (ev) => {
-    console.log('switchOffEditModeBase: ');
     let edMetDataObj = {};
 
     const editedString = ev.target.closest('tr');
@@ -239,11 +234,8 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * @param {*} ev
    */
   const deleteStringOfTableBase = (ev) => {
-    console.log('deleteStringOfTableBase: ');
     const delStr = ev.target.closest('tr');
-    console.log('delStr: ', delStr);
     const methDelID = delStr.getAttribute('editid');
-    console.log('methDelID: ', methDelID);
     delStr.remove();
 
     fetch(srvv + deleteNodeURL + `?ID=${methDelID}&TypeID=1149&TabID=1685`, {
