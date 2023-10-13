@@ -52,7 +52,6 @@ export const addMethodToBase = (methodsArr, delID, api) => {
       })
       .then((data) => {
         const { object, parent } = data.results[0];
-        console.log('object: ', object);
 
         // if (idx == methodsArr.length - 1) {
         //   location.reload();

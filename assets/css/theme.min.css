@@ -27843,3 +27843,25 @@ div[data-collapse] + .kanban-item {
     transform: translateX(100%);
   }
 }
+
+.loadingBtn::before {
+  content: '';
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 3px;
+  padding-left: 0 !important;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

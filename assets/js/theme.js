@@ -63,6 +63,7 @@ import {
   sendNewEndDateTimeToBase,
 } from './utils/mainGlobFunctions.js';
 import { toggleElem } from './utils/toggleElem.js';
+import { buttonLoader } from './ui/buttonLoader';
 
 export const api = {
   srvv,
@@ -962,6 +963,9 @@ const employmentCalendar = async () => {
       const locObj = JSON.parse(sessionStorage.getItem('locObj'));
       const emplObj = JSON.parse(sessionStorage.getItem('emplObj'));
 
+      const isMethodsAvailableMode =
+        multiKindOfTasks.value === 'Техническое диагностирование';
+
       selValidation(multiKindOfTasks);
       selValidation(multiLocations);
 
@@ -1026,6 +1030,7 @@ const employmentCalendar = async () => {
         ) {
           // multiLocations.classList.add("is-invalid");
           e.preventDefault();
+          buttonLoader(multiAddTaskToCalBtn, true);
           multipleAddEventsToBase(multipleEventsArray, calendar);
           localStorage.setItem('fcDefaultView', calendar.view.type);
           modal.hide();

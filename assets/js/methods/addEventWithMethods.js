@@ -8,6 +8,7 @@ import {
 } from '../utils/mainGlobFunctions';
 import { tempLoader } from '../ui/tempLoader';
 import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
+import { buttonLoader } from '../ui/buttonLoader';
 /**
  * Функция для добавлиния события при наличии в задаче метода или таблицы методов
  * @param {*} firstEventObj
@@ -61,6 +62,7 @@ const addEventWithMethods = (
   } = firstEventObj;
 
   let formDataMet = new FormData();
+  const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
 
   formDataMet.append('ObjTypeID', OBJTYPEID);
   formDataMet.append('ParentID', parentID);
@@ -256,8 +258,9 @@ const addEventWithMethods = (
       if (isRootUser) {
         tempLoader(true);
         setTimeout(() => {
+          buttonLoader(eventTaskModalBtn);
           refreshBtnAction(calendar);
-        }, 300);
+        }, 999);
       }
     });
 };

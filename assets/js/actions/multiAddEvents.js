@@ -1,11 +1,14 @@
 import * as C from '../config';
 import {
   notChoosenCleaning,
+  refreshBtnAction,
   transformDateTime,
   transformToMethods,
 } from '../utils/mainGlobFunctions';
 import addMethodToBase from '../methods/addMethodToBase';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
+import { buttonLoader } from '../ui/buttonLoader';
+import { tempLoader } from '../ui/tempLoader';
 
 const api = {
   srvv: C.srvv,
@@ -36,6 +39,16 @@ export const multipleAddEventsToBase = (multipleEventsArray, calendar) => {
   const multiEventNotes = document.querySelector('#multiEventNotes');
   const multiLocations = document.querySelector('#multiLocObj');
   const multiEmployment = document.querySelector('#multiEmployment');
+
+  const multiAddTaskToCalBtn = document.querySelector('#multiAddTaskToCalBtn');
+
+  const isRootUser =
+    localStorage.getItem('managerName') ===
+    localStorage.getItem('selectedUserName');
+
+  const isMethodsAvailableMode =
+    multiKindOfTasks.value === 'Техническое диагностирование' ||
+    multiKindOfSubTask.value === 'Проведение контроля в лаборатории';
 
   let methodsTable;
   if (
@@ -238,7 +251,10 @@ export const multipleAddEventsToBase = (multipleEventsArray, calendar) => {
         calendar.addEvent({
           title: multiEventTitle.value,
           allDay: false,
-          classNames: 'bg-soft-primary',
+          classNames:
+            isRootUser && isMethodsAvailableMode
+              ? 'bg-soft-secondary skeleton'
+              : 'bg-soft-primary',
           start: eventLength.start,
           end: eventLength.end,
           extendedProps: {
@@ -273,6 +289,18 @@ export const multipleAddEventsToBase = (multipleEventsArray, calendar) => {
             methods: transformToMethods(massMethTbl, objID),
           },
         });
+
+        if (isRootUser && isMethodsAvailableMode) {
+          tempLoader(true);
+          setTimeout(() => {
+            buttonLoader(multiAddTaskToCalBtn);
+            refreshBtnAction(calendar);
+          }, 999);
+        }
+
+        if (!isMethodsAvailableMode) {
+          buttonLoader(multiAddTaskToCalBtn);
+        }
       });
   });
 };

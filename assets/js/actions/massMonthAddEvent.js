@@ -5,6 +5,7 @@ import {
   getParentIDfromDate,
   notChoosenCleaning,
   convertDateTime,
+  refreshBtnAction,
 } from '../utils/mainGlobFunctions';
 import * as GDD from '../api/getDropDownData';
 import * as C from '../config';
@@ -12,6 +13,8 @@ import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
 import addMethodToBase from '../methods/addMethodToBase';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
 import { Modal } from 'bootstrap';
+import { tempLoader } from '../ui/tempLoader';
+import { buttonLoader } from '../ui/buttonLoader';
 
 const api = {
   srvv: C.srvv,
@@ -63,6 +66,10 @@ export const massMonthAddEvent = (calendar, info) => {
   const dataCreator = JSON.parse(sessionStorage.getItem('dataCreator'));
   const locObj = JSON.parse(sessionStorage.getItem('locObj'));
   const emplObj = JSON.parse(sessionStorage.getItem('emplObj'));
+
+  const isRootUser =
+    localStorage.getItem('managerName') ===
+    localStorage.getItem('selectedUserName');
 
   // Выпадающие списки
 
@@ -140,6 +147,11 @@ export const massMonthAddEvent = (calendar, info) => {
     eventEndDateMassMonth.value = transformDateTime(realEnd).slice(0, 10);
 
     addTaskToCalBtnMassMonth.addEventListener('click', (e) => {
+      const isMethodsAvailableMode =
+        kindOfTasksMassMonth.value === 'Техническое диагностирование' ||
+        kindOfSubTaskMassMonth.value === 'Проведение контроля в лаборатории';
+
+      buttonLoader(addEventModalMassMonth, true);
       const checkEmploymentMode = () => {
         const emplModeMass = document.querySelector('#employmentMassMonth');
         if (
@@ -371,7 +383,10 @@ export const massMonthAddEvent = (calendar, info) => {
               calendar.addEvent({
                 title: eventTitleMassMonth.value,
                 allDay: false,
-                classNames: 'bg-soft-primary',
+                classNames:
+                  isRootUser && isMethodsAvailableMode
+                    ? 'bg-soft-secondary skeleton'
+                    : 'bg-soft-primary',
                 start: convertDateTime(startDateTime),
                 end: convertDateTime(endDateTime),
                 extendedProps: {
@@ -407,6 +422,18 @@ export const massMonthAddEvent = (calendar, info) => {
                   isApproved: '',
                 },
               });
+
+              if (isRootUser && isMethodsAvailableMode) {
+                tempLoader(true);
+                setTimeout(() => {
+                  buttonLoader(addTaskToCalBtnMassMonth);
+                  refreshBtnAction(calendar);
+                }, 999);
+              }
+
+              if (!isMethodsAvailableMode) {
+                buttonLoader(addTaskToCalBtnMassMonth);
+              }
             });
         });
         localStorage.setItem('fcDefaultView', calendar.view.type);

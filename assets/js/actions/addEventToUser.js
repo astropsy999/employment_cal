@@ -6,6 +6,7 @@ import addEventWithMethods from '../methods/addEventWithMethods';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
 import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
 import { Modal } from 'bootstrap';
+import { buttonLoader } from '../ui/buttonLoader';
 
 /**
  * Добавление задачи в календарь другого пользователя(сотрудника)
@@ -31,6 +32,19 @@ export const addEventToUser = (calendar) => {
 
     const addEventModal = document.querySelector('#addEventModal');
     const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
+
+    addEventModal.addEventListener('hidden.bs.modal', function (event) {
+      buttonLoader(eventTaskModalBtn);
+    });
+
+    const isMethodsAvailableMode =
+      kindOfTasks.value === 'Техническое диагностирование' ||
+      kindOfSubTask.value === 'Проведение контроля в лаборатории';
+
+    const isRootUser =
+      localStorage.getItem('managerName') ===
+      localStorage.getItem('selectedUserName');
+
     let justAddedDelID = '';
     const iddb = localStorage.getItem('iddb');
 
@@ -131,6 +145,8 @@ export const addEventToUser = (calendar) => {
         const parentID = findParentID(parentIdDataArr, eventStartDate.value);
 
         // Отправляем новый event в базу
+
+        buttonLoader(eventTaskModalBtn, true);
 
         let formDataEv2 = new FormData();
 
@@ -315,6 +331,10 @@ export const addEventToUser = (calendar) => {
               'slotMaxTime',
               `${mainFunc.addZeroBefore(setEndHours)}:59:59`,
             );
+
+            if (!isMethodsAvailableMode) {
+              buttonLoader(eventTaskModalBtn);
+            }
           });
 
         localStorage.setItem('fcDefaultView', calendar.view.type);
