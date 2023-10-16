@@ -9,6 +9,7 @@ import {
   getMonthRange,
   blockBtnAddTitle,
   unblockBtnAddTitle,
+  clearMonthCells,
 } from '../utils/mainGlobFunctions';
 import {
   addBlockOverlays,
@@ -56,6 +57,10 @@ export const changeUserData = (calendar, userID) => {
 
       removeOverlays();
 
+      if (calendar.view.type === 'dayGridMonth') {
+        clearMonthCells();
+      }
+      calendar?.removeAllEvents();
       tempLoader(true);
 
       localStorage.removeItem('managerLevel');

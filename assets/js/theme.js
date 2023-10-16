@@ -61,6 +61,9 @@ import {
   transformDateTime,
   blockBtnAddTitle,
   sendNewEndDateTimeToBase,
+  addTotalTimeToMonthCells,
+  calculateTotalHours,
+  clearMonthCells,
 } from './utils/mainGlobFunctions.js';
 import { toggleElem } from './utils/toggleElem.js';
 import { buttonLoader } from './ui/buttonLoader';
@@ -380,41 +383,93 @@ const employmentCalendar = async () => {
           }
         },
         dayCellContent: function (info) {
-          function calculateTotalHours(date) {
-            let totalHours = 0;
-            let currentDate = null;
+          // function calculateTotalHours(date) {
+          //   let totalHours = 0;
+          //   let currentDate = null;
 
-            let updatedEvents = calendar
-              ?.getEvents()
-              ?.map((event) => event.toPlainObject());
+          //   let updatedEvents = calendar
+          //     ?.getEvents()
+          //     ?.map((event) => event.toPlainObject());
 
-            updatedEvents?.forEach((event) => {
-              const eventDate = new Date(event.start);
-              const factTime = Number(event.extendedProps.factTime);
+          //   updatedEvents?.forEach((event) => {
+          //     const eventDate = new Date(event.start);
+          //     const factTime = Number(event.extendedProps.factTime);
 
-              // Если currentDate еще не установлена, установите ее и начните счет для выбранной даты
-              if (!currentDate) {
-                currentDate = new Date(eventDate);
-              }
+          //     // Если currentDate еще не установлена, установите ее и начните счет для выбранной даты
+          //     if (!currentDate) {
+          //       currentDate = new Date(eventDate);
+          //     }
 
-              // Если дата события совпадает с currentDate, добавьте factTime к totalHours
-              if (
-                date.getDate() === eventDate.getDate() &&
-                date.getMonth() === eventDate.getMonth() &&
-                date.getFullYear() === eventDate.getFullYear()
-              ) {
-                totalHours += factTime;
-              } else {
-                // Если дата события больше не совпадает, верните totalHours и начните новый счет
-                currentDate = new Date(eventDate);
-              }
-            });
-            return totalHours;
+          //     // Если дата события совпадает с currentDate, добавьте factTime к totalHours
+          //     if (
+          //       date.getDate() === eventDate.getDate() &&
+          //       date.getMonth() === eventDate.getMonth() &&
+          //       date.getFullYear() === eventDate.getFullYear()
+          //     ) {
+          //       totalHours += factTime;
+          //     } else {
+          //       // Если дата события больше не совпадает, верните totalHours и начните новый счет
+          //       currentDate = new Date(eventDate);
+          //     }
+          //   });
+          //   return totalHours;
+          // }
+
+          // if (info.view.type !== 'dayGridMonth') {
+          //   return calculateTotalHours(info.date);
+          // }
+
+          if (info.view.type === 'dayGridMonth') {
+            // console.log('info.date: ', info.date);
+            // const monthView = document.querySelector('.fc-dayGridMonth-view'); // Найти родительский элемент месяца
+            // const getAllCells = monthView.querySelectorAll(
+            //   'td[role="gridcell"]',
+            // ); // Найти все ячейки месяца
+            // getAllCells.forEach((cell) => {
+            //   const cellDate = cell.getAttribute('data-date');
+            //   const totalHours = calculateTotalHours(new Date(cellDate));
+            //   const hoursElement = document.createElement('div');
+            //   hoursElement.classList.add('hours');
+            //   hoursElement.textContent = totalHours;
+            //   cell.appendChild(hoursElement);
+            // });
+            return info.dayNumberText;
+          } else {
+            return calculateTotalHours(info.date, calendar);
           }
-
-          return calculateTotalHours(info.date);
         },
         datesSet: function (dateInfo) {
+          if (calendar?.view.type === 'dayGridMonth') {
+            addTotalTimeToMonthCells(calendar);
+            // setTimeout(function () {
+            //   const monthView = document.querySelector('.fc-dayGridMonth-view');
+            //   const getAllCells = monthView.querySelectorAll(
+            //     'td[role="gridcell"]',
+            //   );
+
+            //   getAllCells.forEach((cell) => {
+            //     const cellDate = cell.getAttribute('data-date');
+            //     const totalHours = calculateTotalHours(new Date(cellDate));
+            //     const hoursElement = document.createElement('div');
+            //     hoursElement.classList.add('hours');
+
+            //     hoursElement.innerHTML = '';
+            //     if (Number.isInteger(totalHours)) {
+            //       hoursElement.textContent = `${totalHours}ч`;
+            //     } else {
+            //       hoursElement.textContent = `${totalHours.toFixed(1)}ч`;
+            //       hoursElement.style.fontSize = '10px';
+            //     }
+            //     if (totalHours < 8) {
+            //       hoursElement.style.backgroundColor = `var(--falcon-red)`;
+            //     }
+            //     const topWrapper = cell.querySelector('.fc-daygrid-day-top');
+            //     if (totalHours > 0) {
+            //       topWrapper.append(hoursElement);
+            //     }
+            //   });
+            // }, 0);
+          }
           // Дата начала недели посл  е переключения на новую неделю
           const findStartDate = dateInfo.startStr.slice(0, 10);
           // Дата конца недели после переключения на новую неделю
@@ -564,6 +619,7 @@ const employmentCalendar = async () => {
             toggleIcon('lock');
           }
         },
+
         select: function (info) {
           // Проверяем, является ли выбранная дата или интервал дат заблокированным
           const isDateLocked = (date) => {
@@ -1283,6 +1339,9 @@ const employmentCalendar = async () => {
 
               case 'refresh':
                 const refreshBtnAction = async () => {
+                  if (calendar?.view.type === 'dayGridMonth') {
+                    clearMonthCells();
+                  }
                   tempLoader(true);
 
                   calendar.removeAllEvents();
@@ -1308,6 +1367,9 @@ const employmentCalendar = async () => {
 
                   calendar.addEventSource(events);
                   calendar.render();
+                  if (calendar?.view.type === 'dayGridMonth') {
+                    addTotalTimeToMonthCells(calendar);
+                  }
                 };
 
                 refreshBtnAction();

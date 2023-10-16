@@ -606,7 +606,45 @@ export const transformToMethods = (methodsArr, editID) => {
   return eventMeths;
 };
 
+// Расчет общего времени за день
+export function calculateTotalHours(date, calendar) {
+  let totalHours = 0;
+  let currentDate = null;
+
+  let updatedEvents = calendar
+    ?.getEvents()
+    ?.map((event) => event.toPlainObject());
+
+  updatedEvents?.forEach((event) => {
+    const eventDate = new Date(event.start);
+    const factTime = Number(event.extendedProps.factTime);
+
+    // Если currentDate еще не установлена, установите ее и начните счет для выбранной даты
+    if (!currentDate) {
+      currentDate = new Date(eventDate);
+    }
+
+    // Если дата события совпадает с currentDate, добавьте factTime к totalHours
+    if (
+      date.getDate() === eventDate.getDate() &&
+      date.getMonth() === eventDate.getMonth() &&
+      date.getFullYear() === eventDate.getFullYear()
+    ) {
+      totalHours += factTime;
+    } else {
+      // Если дата события больше не совпадает, верните totalHours и начните новый счет
+      currentDate = new Date(eventDate);
+    }
+  });
+  return totalHours;
+}
+
+// Обновление данных календаря без полной перезагрузки
+
 export const refreshBtnAction = async (calendar) => {
+  if (calendar?.view.type === 'dayGridMonth') {
+    clearMonthCells();
+  }
   tempLoader(true);
   const newUserData = await getSelectedUserData(localStorage.getItem('iddb'));
 
@@ -619,9 +657,56 @@ export const refreshBtnAction = async (calendar) => {
   sessionStorage.setItem('events', JSON.stringify(events));
 
   tempLoader(false);
-  calendar.removeAllEvents();
-  calendar.addEventSource(events);
-  calendar.render();
+  calendar?.removeAllEvents();
+  calendar?.addEventSource(events);
+  calendar?.render();
+  if (calendar?.view.type === 'dayGridMonth') {
+    addTotalTimeToMonthCells(calendar);
+  }
+};
+
+// Функция для очистки ячеек в режиме Месяца
+export function clearMonthCells() {
+  const monthView = document.querySelector('.fc-dayGridMonth-view');
+  const getAllCells = monthView.querySelectorAll('td[role="gridcell"]');
+
+  getAllCells.forEach((cell) => {
+    const hoursElement = cell.querySelector('.hours');
+    if (hoursElement) {
+      hoursElement.remove();
+    }
+  });
+}
+
+// Добавление общего времени в ячейки в режиме месяца
+
+export const addTotalTimeToMonthCells = (calendar) => {
+  setTimeout(function () {
+    const monthView = document.querySelector('.fc-dayGridMonth-view');
+    const getAllCells = monthView.querySelectorAll('td[role="gridcell"]');
+
+    getAllCells.forEach((cell) => {
+      const cellDate = cell.getAttribute('data-date');
+      const totalHours = calculateTotalHours(new Date(cellDate), calendar);
+      const hoursElement = document.createElement('div');
+      hoursElement.classList.add('hours');
+
+      hoursElement.innerHTML = '';
+      if (Number.isInteger(totalHours)) {
+        hoursElement.textContent = `${totalHours}ч`;
+      } else {
+        hoursElement.textContent = `${totalHours.toFixed(1)}ч`;
+        hoursElement.style.fontSize = '10px';
+      }
+      if (totalHours < 8) {
+        hoursElement.style.backgroundColor = `var(--falcon-red)`;
+      }
+      const topWrapper = cell.querySelector('.fc-daygrid-day-top');
+      if (totalHours > 0) {
+        topWrapper.append(hoursElement);
+      }
+    });
+  }, 0);
 };
 
 export { isOutOfRange };

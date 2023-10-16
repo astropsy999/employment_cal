@@ -27865,3 +27865,25 @@ div[data-collapse] + .kanban-item {
     transform: rotate(360deg);
   }
 }
+
+.fc-daygrid-day-frame .hours {
+  position: absolute;
+  left: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  background-color: var(--falcon-blue);
+  opacity: 0.9;
+  border-radius: 50%;
+  padding: 5px 6px;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  /* top:  */
+}
+
+.fc .fc-day-today:not(.fc-popover) .fc-daygrid-day-frame {
+  border: none;
+}
