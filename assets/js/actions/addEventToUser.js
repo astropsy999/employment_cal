@@ -342,24 +342,7 @@ export const addEventToUser = (calendar) => {
       } else {
         e.preventDefault();
 
-        const validateTotalTimeOnObject = () => {
-          const eventSpentTime = document.querySelector('#eventSpentTime');
-          const eventSpentTimeVal = Number(eventSpentTime.value);
-          const wooTimeArr = [...document.querySelectorAll('.wootime')];
-          const wooTimeinput = document.querySelector('#wooTime');
-          const startValue = Number(wooTimeinput.value) || 0;
-
-          const wooTimeTotal = wooTimeArr.reduce((acc, arr) => {
-            return acc + Number(arr.innerText);
-          }, startValue);
-
-          if (wooTimeTotal > eventSpentTimeVal) {
-            return false;
-          }
-
-          return true;
-        };
-        const validateTotalTime = validateTotalTimeOnObject();
+        const validateTotalTime = mainFunc.validateTotalTimeOnObject('single');
 
         if (validateTotalTime === true) {
           const kr = document.querySelector('#flexCheckDefault');

@@ -709,4 +709,33 @@ export const addTotalTimeToMonthCells = (calendar) => {
   }, 0);
 };
 
+// Валидация общего времени за день vs общего времени затраченного на методы
+
+export const validateTotalTimeOnObject = (mode) => {
+  let eventSpentTime;
+  switch (mode) {
+    case 'single':
+      eventSpentTime = document.querySelector('#eventSpentTime');
+      break;
+    case 'month':
+      eventSpentTime = dicument.querySelector('#eventSpentTimeMassMonth');
+      break;
+  }
+
+  const eventSpentTimeVal = Number(eventSpentTime.value);
+  const wooTimeArr = [...document.querySelectorAll('.wootime')];
+  const wooTimeinput = document.querySelector('#wooTime');
+  const startValue = Number(wooTimeinput.value) || 0;
+
+  const wooTimeTotal = wooTimeArr.reduce((acc, arr) => {
+    return acc + Number(arr.innerText);
+  }, startValue);
+
+  if (wooTimeTotal > eventSpentTimeVal) {
+    return false;
+  }
+
+  return true;
+};
+
 export { isOutOfRange };
