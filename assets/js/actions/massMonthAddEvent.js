@@ -6,6 +6,9 @@ import {
   notChoosenCleaning,
   convertDateTime,
   refreshBtnAction,
+  validateTotalTimeOnObject,
+  handleWooTime,
+  calculateTotalHours,
 } from '../utils/mainGlobFunctions';
 import * as GDD from '../api/getDropDownData';
 import * as C from '../config';
@@ -147,6 +150,8 @@ export const massMonthAddEvent = (calendar, info) => {
     eventEndDateMassMonth.value = transformDateTime(realEnd).slice(0, 10);
 
     addTaskToCalBtnMassMonth.addEventListener('click', (e) => {
+      // e.preventDefault();
+      // return;
       const isMethodsAvailableMode =
         kindOfTasksMassMonth.value === 'Техническое диагностирование' ||
         kindOfSubTaskMassMonth.value === 'Проведение контроля в лаборатории';
@@ -184,6 +189,7 @@ export const massMonthAddEvent = (calendar, info) => {
       };
 
       const valCondition = validateCondition(valCond);
+      const validateTotalTime = validateTotalTimeOnObject('month');
 
       if (valCondition) {
         if (locationsMassMonth.value === 'Не выбрано') {
@@ -194,15 +200,21 @@ export const massMonthAddEvent = (calendar, info) => {
           kindOfTasksMassMonth.classList.add('is-invalid');
         }
         e.preventDefault();
+      } else if (!validateTotalTime) {
+        handleWooTime('month');
+        e.preventDefault();
+        return;
       } else {
         e.preventDefault();
 
+        // return;
         let methodsTable;
         methodsTable = document.querySelector('.methods-tbody');
 
         // Создание событий по нажатию кнопки
         let massMethTbl;
         if (methodsTable) {
+          tempLoader(true);
           massMethTbl = grabMethodsDataTable(methodsTable);
         }
 
@@ -432,6 +444,7 @@ export const massMonthAddEvent = (calendar, info) => {
               }
 
               if (!isMethodsAvailableMode) {
+                calculateTotalHours();
                 buttonLoader(addTaskToCalBtnMassMonth);
               }
             });
@@ -440,12 +453,14 @@ export const massMonthAddEvent = (calendar, info) => {
         modal.hide();
         calendar.destroy();
         calendar.render();
+
         eventsDatesArr = [];
       }
     });
 
     document.addEventListener('hide.bs.modal', () => {
       eventsDatesArr = [];
+      // addTotalTimeToMonthCells();
     });
   }
 };

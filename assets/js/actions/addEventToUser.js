@@ -427,61 +427,7 @@ export const addEventToUser = (calendar) => {
             setViewAndDateToLS,
           );
         } else {
-          const cell = document.querySelector('.timeHeaderMeth');
-          const wooTimeArr = [...document.querySelectorAll('.wootime')];
-          const wooTimeinput = document.querySelector('#wooTime');
-          const startValue = Number(wooTimeinput.value) || 0;
-
-          wooTimeinput.addEventListener('change', () => {
-            wooTimeinput.classList.remove('is-invalid');
-            wooTimeinput.style.color = '';
-          });
-
-          const wooTimeTotal = wooTimeArr.reduce((acc, arr) => {
-            return acc + Number(arr.innerText);
-          }, startValue);
-          if (cell) {
-            cell.innerText = `!Время, ${wooTimeTotal}ч!`;
-            cell.style.color = 'red';
-            cell.style.border = '2px solid red';
-            const eventSpentTime = document.querySelector('#eventSpentTime');
-            eventSpentTime.classList.add('is-invalid');
-            eventSpentTime.style.color = 'red';
-            wooTimeinput.classList.add('is-invalid');
-            wooTimeinput.style.color = 'red';
-          } else {
-            wooTimeinput.classList.add('is-invalid');
-            wooTimeinput.style.color = 'red';
-            eventSpentTime.classList.add('is-invalid');
-            eventSpentTime.style.color = 'red';
-          }
-
-          function updateWooTime() {
-            const cell = document.querySelector('.timeHeaderMeth');
-            const wooTimeArr = [...document.querySelectorAll('.wootime')];
-            const wooTimeTotal = wooTimeArr.reduce((acc, arr) => {
-              return acc + Number(arr.innerText);
-            }, startValue);
-            const eventSpentTime = document.querySelector('#eventSpentTime');
-            cell.innerText = `Время, ${wooTimeTotal}ч`;
-            if (wooTimeTotal <= Number(eventSpentTime.value)) {
-              eventSpentTime.classList.remove('is-invalid');
-              eventSpentTime.style.color = '';
-              cell.style.color = '';
-              cell.style.border = '';
-            }
-          }
-
-          const methodsTbody = document.querySelector('.methods-tbody');
-          const observer = new MutationObserver(function (mutations) {
-            updateWooTime();
-          });
-
-          const config = { childList: true };
-
-          observer.observe(methodsTbody, config);
-
-          return;
+          mainFunc.handleWooTime('single');
         }
       }
     }

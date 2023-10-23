@@ -35,7 +35,6 @@ export const delEvent = (
         console.log('error', error);
       });
     info.event.remove();
-
     document.addEventListener('hide.bs.modal', () => {
       isMultiMode = false;
       document.addEventListener('keyup', shiftKeyUp);

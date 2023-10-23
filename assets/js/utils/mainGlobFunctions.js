@@ -619,12 +619,12 @@ export function calculateTotalHours(date, calendar) {
     const eventDate = new Date(event.start);
     const factTime = Number(event.extendedProps.factTime);
 
-    // Если currentDate еще не установлена, установите ее и начните счет для выбранной даты
+    // Если currentDate еще не установлена, устанавливаем и начинаем счет для выбранной даты
     if (!currentDate) {
       currentDate = new Date(eventDate);
     }
 
-    // Если дата события совпадает с currentDate, добавьте factTime к totalHours
+    // Если дата события совпадает с currentDate, добавляем factTime к totalHours
     if (
       date.getDate() === eventDate.getDate() &&
       date.getMonth() === eventDate.getMonth() &&
@@ -632,7 +632,7 @@ export function calculateTotalHours(date, calendar) {
     ) {
       totalHours += factTime;
     } else {
-      // Если дата события больше не совпадает, верните totalHours и начните новый счет
+      // Если дата события больше не совпадает, вернем totalHours и начнем новый счет
       currentDate = new Date(eventDate);
     }
   });
@@ -709,33 +709,111 @@ export const addTotalTimeToMonthCells = (calendar) => {
   }, 0);
 };
 
-// Валидация общего времени за день vs общего времени затраченного на методы
+// Назначение селектора в зависимости от режима отображения
 
-export const validateTotalTimeOnObject = (mode) => {
+const spentTimeMode = (mode) => {
   let eventSpentTime;
   switch (mode) {
     case 'single':
       eventSpentTime = document.querySelector('#eventSpentTime');
       break;
     case 'month':
-      eventSpentTime = dicument.querySelector('#eventSpentTimeMassMonth');
+      eventSpentTime = document.querySelector('#eventSpentTimeMassMonth');
       break;
   }
+
+  return eventSpentTime;
+};
+
+// Валидация общего времени за день vs общего времени затраченного на методы
+
+export const validateTotalTimeOnObject = (mode) => {
+  const eventSpentTime = spentTimeMode(mode);
 
   const eventSpentTimeVal = Number(eventSpentTime.value);
   const wooTimeArr = [...document.querySelectorAll('.wootime')];
   const wooTimeinput = document.querySelector('#wooTime');
-  const startValue = Number(wooTimeinput.value) || 0;
+  const startValue = Number(wooTimeinput?.value) || 0;
 
   const wooTimeTotal = wooTimeArr.reduce((acc, arr) => {
     return acc + Number(arr.innerText);
   }, startValue);
 
   if (wooTimeTotal > eventSpentTimeVal) {
+    eventSpentTime.classList.add('is-invalid');
+    eventSpentTime.style.color = 'red';
     return false;
   }
 
   return true;
 };
+
+// Подсветка ячеек при неудачной валидации времени методов
+
+export function handleWooTime(mode) {
+  const cell = document.querySelector('.timeHeaderMeth');
+  const wooTimeArr = [...document.querySelectorAll('.wootime')];
+  const wooTimeinput = document.querySelector('#wooTime');
+  const startValue = Number(wooTimeinput?.value) || 0;
+
+  wooTimeinput.addEventListener('change', () => {
+    wooTimeinput.classList.remove('is-invalid');
+    wooTimeinput.style.color = '';
+  });
+
+  const wooTimeTotal = wooTimeArr.reduce((acc, arr) => {
+    return acc + Number(arr.innerText);
+  }, startValue);
+
+  const eventSpentTime = spentTimeMode(mode);
+
+  eventSpentTime.addEventListener('change', () => {
+    eventSpentTime.classList.remove('is-invalid');
+    eventSpentTime.style.color = '';
+  });
+
+  if (cell) {
+    cell.innerText = `!Время, ${wooTimeTotal}ч!`;
+    cell.style.color = 'red';
+    cell.style.border = '2px solid red';
+
+    eventSpentTime.classList.add('is-invalid');
+    eventSpentTime.style.color = 'red';
+    wooTimeinput.classList.add('is-invalid');
+    wooTimeinput.style.color = 'red';
+  } else {
+    wooTimeinput.classList.add('is-invalid');
+    wooTimeinput.style.color = 'red';
+    eventSpentTime.classList.add('is-invalid');
+    eventSpentTime.style.color = 'red';
+  }
+
+  function updateWooTime(mode) {
+    const cell = document.querySelector('.timeHeaderMeth');
+    const wooTimeArr = [...document.querySelectorAll('.wootime')];
+    const wooTimeTotal = wooTimeArr.reduce((acc, arr) => {
+      return acc + Number(arr.innerText);
+    }, startValue);
+    const eventSpentTime = spentTimeMode(mode);
+    cell.innerText = `Время, ${wooTimeTotal}ч`;
+    if (wooTimeTotal <= Number(eventSpentTime.value)) {
+      eventSpentTime.classList.remove('is-invalid');
+      eventSpentTime.style.color = '';
+      cell.style.color = '';
+      cell.style.border = '';
+    }
+  }
+
+  const methodsTbody = document.querySelector('.methods-tbody');
+  const observer = new MutationObserver(function (mutations) {
+    updateWooTime(mode);
+  });
+
+  const config = { childList: true };
+
+  observer.observe(methodsTbody, config);
+
+  return;
+}
 
 export { isOutOfRange };

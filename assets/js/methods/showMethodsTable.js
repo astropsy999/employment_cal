@@ -78,6 +78,44 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
     const editEventModal = document.querySelector('#editEventModal');
     const delID = editEventModal.getAttribute('delID');
 
+    const methodsTbody = editEventModal.querySelector('.methods-tbody');
+    console.log('methodsTbody: ', methodsTbody);
+
+    function sumUneditedMethodsTime() {
+      let tableRows = methodsTbody.querySelectorAll('tr.hover-actions-trigger');
+      let sum = 0;
+      tableRows.forEach((row) => {
+        let secondColumnValue = parseInt(row.children[1].textContent);
+        if (!isNaN(secondColumnValue)) {
+          sum += secondColumnValue;
+        }
+      });
+      return sum;
+    }
+
+    const allMethodsTimeSum = sumUneditedMethodsTime();
+    console.log('allMethodsTimeSum: ', allMethodsTimeSum);
+    const editedSpentTime = document.querySelector('#eventEditSpentTime');
+
+    const editedSpentTimeValue = document.querySelector(
+      '#eventEditSpentTime',
+    ).value;
+    console.log('editedSpentTimeValue: ', editedSpentTimeValue);
+
+    if (allMethodsTimeSum > editedSpentTimeValue) {
+      editedSpentTime.classList.add('is-invalid');
+      editedSpentTime.style.color = 'red';
+
+      const timeHeader = document.querySelector(
+        'th[scope="col"]:nth-of-type(2)',
+      );
+
+      timeHeader.style.border = '2px solid red';
+      timeHeader.style.color = 'red';
+
+      return;
+    }
+
     // return;
 
     let formDataEdMeth = new FormData();
@@ -208,9 +246,11 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
                 </div>`;
         }
       });
+
       const saveEditedBtn = document.querySelector('.save-edited');
       saveEditedBtn.addEventListener('click', (e) => {
         const editedString = e.target.closest('tr');
+
         const metSelTd = editedString.querySelector('.methods-select');
         const selMetSel = metSelTd.querySelector('select');
 
