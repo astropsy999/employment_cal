@@ -444,8 +444,10 @@ export const massMonthAddEvent = (calendar, info) => {
               }
 
               if (!isMethodsAvailableMode) {
-                calculateTotalHours();
+                // calculateTotalHours();
                 buttonLoader(addTaskToCalBtnMassMonth);
+                calendar.prev();
+                calendar.next();
               }
             });
         });
@@ -460,6 +462,9 @@ export const massMonthAddEvent = (calendar, info) => {
 
     document.addEventListener('hide.bs.modal', () => {
       eventsDatesArr = [];
+      eventSpentTimeMassMonth.classList.remove('is-invalid');
+      eventSpentTimeMassMonth.style.color = 'unset';
+
       // addTotalTimeToMonthCells();
     });
   }

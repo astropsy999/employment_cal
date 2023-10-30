@@ -644,6 +644,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       editEventModal.addEventListener('hide.bs.modal', () => {
         delID = '';
         editedEvent = '';
+        editSaveTaskBtn.removeAttribute('disabled');
       });
     });
   }

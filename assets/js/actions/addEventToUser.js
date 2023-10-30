@@ -431,5 +431,6 @@ export const addEventToUser = (calendar) => {
         }
       }
     }
+    calendar.render();
   };
 };

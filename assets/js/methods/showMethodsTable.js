@@ -7,6 +7,7 @@
 const showMethodsTable = (eventInfo, wooElem, api) => {
   const { srvv, addValueObjTrue, deleteNodeURL } = api;
   let isEditMode = false;
+  const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn');
 
   const methodsArray = eventInfo.extendedProps.methods;
   const taskTypeNew = eventInfo.extendedProps.taskTypeNew;
@@ -79,7 +80,6 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
     const delID = editEventModal.getAttribute('delID');
 
     const methodsTbody = editEventModal.querySelector('.methods-tbody');
-    console.log('methodsTbody: ', methodsTbody);
 
     function sumUneditedMethodsTime() {
       let tableRows = methodsTbody.querySelectorAll('tr.hover-actions-trigger');
@@ -94,13 +94,11 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
     }
 
     const allMethodsTimeSum = sumUneditedMethodsTime();
-    console.log('allMethodsTimeSum: ', allMethodsTimeSum);
     const editedSpentTime = document.querySelector('#eventEditSpentTime');
 
     const editedSpentTimeValue = document.querySelector(
       '#eventEditSpentTime',
     ).value;
-    console.log('editedSpentTimeValue: ', editedSpentTimeValue);
 
     if (allMethodsTimeSum > editedSpentTimeValue) {
       editedSpentTime.classList.add('is-invalid');
@@ -109,9 +107,10 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
       const timeHeader = document.querySelector(
         'th[scope="col"]:nth-of-type(2)',
       );
-
+      timeHeader.textContent = `Время методов не может быть > ${editedSpentTimeValue}ч`;
       timeHeader.style.border = '2px solid red';
       timeHeader.style.color = 'red';
+      editSaveTaskBtn.setAttribute('disabled', 'disabled');
 
       return;
     }

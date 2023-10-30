@@ -141,18 +141,18 @@ const addMethodToClientTable = () => {
       const saveEditedBtn = document.querySelector('.save-edited');
       saveEditedBtn.addEventListener('click', (e) => {
         const editedString = e.target.closest('tr');
-        const metSelTd = editedString.querySelector('.methods-select');
-        const selMetSel = metSelTd.querySelector('select');
+        const metSelTd = editedString?.querySelector('.methods-select');
+        const selMetSel = metSelTd?.querySelector('select');
 
-        if (selMetSel.value !== 'Не выбрано') {
+        if (selMetSel && selMetSel.value !== 'Не выбрано') {
           switchOffEditMode(e);
         } else {
-          selMetSel.classList.add('is-invalid');
-          selMetSel.addEventListener('change', () => {
-            if (selMetSel.value !== 'Не выбрано') {
+          selMetSel?.classList.add('is-invalid');
+          selMetSel?.addEventListener('change', () => {
+            if (selMetSel && selMetSel.value !== 'Не выбрано') {
               selMetSel.classList.remove('is-invalid');
             } else {
-              selMetSel.classList.add('is-invalid');
+              selMetSel?.classList.add('is-invalid');
             }
           });
         }

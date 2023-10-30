@@ -1,4 +1,8 @@
 import { srvv, delObjMassUrl, delTabID } from '../config';
+import {
+  calculateTotalHours,
+  clearMonthCells,
+} from '../utils/mainGlobFunctions';
 
 export const delEvent = (
   info,
@@ -28,6 +32,8 @@ export const delEvent = (
       body: formDataDel,
     })
       .then((response) => {
+        info.view.calendar.prev();
+        info.view.calendar.next();
         return response.json();
       })
 
@@ -35,12 +41,16 @@ export const delEvent = (
         console.log('error', error);
       });
     info.event.remove();
+
     document.addEventListener('hide.bs.modal', () => {
       isMultiMode = false;
       document.addEventListener('keyup', shiftKeyUp);
-      calendar?.render();
+
+      // calendar?.render();
     });
-    calendar?.render();
+    // calendar?.render();
     modal.hide();
   });
+
+  calendar?.render();
 };
