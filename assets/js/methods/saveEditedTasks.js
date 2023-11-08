@@ -213,8 +213,8 @@ const saveEditedTasks = (
         refreshBtnAction(calendar);
       } else {
         editedEvent?.setExtendedProp('methods', methodsFromServer);
-        // editedEvent.setProp('classNames', 'bg-soft-secondary skeleton');
-        // refreshBtnAction(calendar);
+        editedEvent.setProp('classNames', 'bg-soft-secondary skeleton');
+        refreshBtnAction(calendar);
       }
 
       if (justRemovedMethods && isMethodsAvailable) {

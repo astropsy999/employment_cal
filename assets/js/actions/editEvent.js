@@ -9,6 +9,7 @@ import {
   changeDirectZero,
   transformDateTime,
   addZeroBefore,
+  validateTotalTimeOnObject,
 } from '../utils/mainGlobFunctions';
 import * as GDD from '../api/getDropDownData';
 import * as C from '../config';
@@ -22,6 +23,7 @@ import { tempLoader } from '../ui/tempLoader';
 import { Modal } from 'bootstrap';
 import { settings } from '../api/settings';
 import { stretchViewDepEvents } from '../ui/stretchViewDepEvents';
+import { isInvalidElem } from '../utils/toggleElem';
 
 /**
  * Редактирование задачи
@@ -509,6 +511,11 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       });
 
       editSaveTaskBtn.addEventListener('click', (e) => {
+        if (!validateTotalTimeOnObject()) {
+          e.preventDefault();
+          isInvalidElem(eventEditSpentTime);
+          return;
+        }
         if (
           (locEditObj.value === 'Не выбрано' ||
             kindOfEditTasks.value === 'Не выбрано' ||

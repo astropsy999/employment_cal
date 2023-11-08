@@ -15,3 +15,14 @@ export const toggleElem = (elem, onOff) => {
     }
   }
 };
+
+// Включает отключает состояние при валидации
+
+export const isInvalidElem = (elem) => {
+  elem?.classList.add('is-invalid');
+  elem.style.color = 'red';
+};
+export const isValidElem = (elem) => {
+  elem?.classList.remove('is-invalid');
+  elem.style.color = 'unset';
+};

@@ -33,9 +33,11 @@ export const addEventToUser = (calendar) => {
     const addEventModal = document.querySelector('#addEventModal');
     const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
 
-    addEventModal.addEventListener('hidden.bs.modal', function (event) {
+    eventTaskModalBtn.addEventListener('hidden.bs.modal', function (event) {
       buttonLoader(eventTaskModalBtn);
     });
+
+    buttonLoader(eventTaskModalBtn, 'true');
 
     const isMethodsAvailableMode =
       kindOfTasks.value === 'Техническое диагностирование' ||
@@ -99,6 +101,7 @@ export const addEventToUser = (calendar) => {
       }
 
       e.preventDefault();
+      buttonLoader(eventTaskModalBtn);
     } else {
       if (
         kindOfTasks.value !== 'Техническое диагностирование' &&
@@ -138,6 +141,8 @@ export const addEventToUser = (calendar) => {
           }
         };
 
+        // buttonLoader(eventTaskModalBtn, true);
+
         // Вычисляем дату на которую кликнул пользователь и ParentID
 
         // Находим ParentID
@@ -145,8 +150,6 @@ export const addEventToUser = (calendar) => {
         const parentID = findParentID(parentIdDataArr, eventStartDate.value);
 
         // Отправляем новый event в базу
-
-        buttonLoader(eventTaskModalBtn, true);
 
         let formDataEv2 = new FormData();
 

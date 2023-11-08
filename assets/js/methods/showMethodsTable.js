@@ -1,3 +1,6 @@
+import { wooTimeIsOver } from '../utils/mainGlobFunctions';
+import { isInvalidElem, isValidElem } from '../utils/toggleElem';
+
 /**
  * Показ/скрытие таблицы с методами
  * @param {*} eventInfo
@@ -52,7 +55,7 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
                          <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${method}</div>
                        </div>
                      </td>
-                     <td class="align-middle text-nowrap ed">${methodParams['duration']}</td>
+                     <td class="align-middle text-nowrap ed wootime">${methodParams['duration']}</td>
                      <td class="w-auto ed">
                      ${methodParams['objQuant']}
                      </td>
@@ -101,8 +104,9 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
     ).value;
 
     if (allMethodsTimeSum > editedSpentTimeValue) {
-      editedSpentTime.classList.add('is-invalid');
-      editedSpentTime.style.color = 'red';
+      isInvalidElem(editedSpentTime);
+
+      editedSpentTime.addEventListener('change', () => {});
 
       const timeHeader = document.querySelector(
         'th[scope="col"]:nth-of-type(2)',
@@ -248,20 +252,38 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
 
       const saveEditedBtn = document.querySelector('.save-edited');
       saveEditedBtn.addEventListener('click', (e) => {
+        const editedSpentTime = document.querySelector('#eventEditSpentTime');
         const editedString = e.target.closest('tr');
 
         const metSelTd = editedString.querySelector('.methods-select');
         const selMetSel = metSelTd.querySelector('select');
 
         if (selMetSel.value !== 'Не выбрано') {
-          switchOffEditModeBase(e);
+          const wooTimes = document.querySelectorAll('.wootime');
+          let totalWooTime = 0;
+
+          wooTimes.forEach((time) => {
+            let content = time.innerHTML;
+            if (content.includes('<input')) {
+              let value = time.querySelector('input').value;
+              totalWooTime += +value;
+            } else {
+              totalWooTime += +content;
+            }
+          });
+          if (totalWooTime <= editedSpentTime.value) {
+            switchOffEditModeBase(e);
+            isValidElem(editedSpentTime);
+          } else {
+            isInvalidElem(editedSpentTime);
+          }
         } else {
-          selMetSel.classList.add('is-invalid');
+          isInvalidElem(selMetSel);
           selMetSel.addEventListener('change', () => {
             if (selMetSel.value !== 'Не выбрано') {
-              selMetSel.classList.remove('is-invalid');
+              isValidElem(selMetSel);
             } else {
-              selMetSel.classList.add('is-invalid');
+              isInvalidElem(selMetSel);
             }
           });
         }

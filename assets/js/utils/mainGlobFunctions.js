@@ -12,6 +12,8 @@ import {
 import { getSelectedUserData } from '../api/getSlectedUserData';
 import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
 import { tempLoader } from '../ui/tempLoader';
+import { isInvalidElem, isValidElem } from './toggleElem';
+import { buttonLoader } from '../ui/buttonLoader';
 
 //  Функция форматирования даты из объекта даты в привычный вид дд.мм.гггг
 export function formatDate(date) {
@@ -728,7 +730,13 @@ const spentTimeMode = (mode) => {
 // Валидация общего времени за день vs общего времени затраченного на методы
 
 export const validateTotalTimeOnObject = (mode) => {
-  const eventSpentTime = spentTimeMode(mode);
+  let eventSpentTime;
+
+  if (mode) {
+    eventSpentTime = spentTimeMode(mode);
+  } else {
+    eventSpentTime = document.querySelector('#eventEditSpentTime');
+  }
 
   const eventSpentTimeVal = Number(eventSpentTime.value);
   const wooTimeArr = [...document.querySelectorAll('.wootime')];
@@ -755,10 +763,12 @@ export function handleWooTime(mode) {
   const wooTimeArr = [...document.querySelectorAll('.wootime')];
   const wooTimeinput = document.querySelector('#wooTime');
   const startValue = Number(wooTimeinput?.value) || 0;
+  const addEventBtn = document.querySelector('#addTaskToCalBtn');
 
   wooTimeinput.addEventListener('change', () => {
-    wooTimeinput.classList.remove('is-invalid');
-    wooTimeinput.style.color = '';
+    // wooTimeinput.classList.remove('is-invalid');
+    // wooTimeinput.style.color = '';
+    isValidElem(wooTimeinput);
   });
 
   const wooTimeTotal = wooTimeArr.reduce((acc, arr) => {
@@ -768,8 +778,9 @@ export function handleWooTime(mode) {
   const eventSpentTime = spentTimeMode(mode);
 
   eventSpentTime.addEventListener('change', () => {
-    eventSpentTime.classList.remove('is-invalid');
-    eventSpentTime.style.color = '';
+    // eventSpentTime.classList.remove('is-invalid');
+    // eventSpentTime.style.color = '';
+    isValidElem(eventSpentTime);
   });
 
   if (cell) {
@@ -777,15 +788,23 @@ export function handleWooTime(mode) {
     cell.style.color = 'red';
     cell.style.border = '2px solid red';
 
-    eventSpentTime.classList.add('is-invalid');
-    eventSpentTime.style.color = 'red';
-    wooTimeinput.classList.add('is-invalid');
-    wooTimeinput.style.color = 'red';
+    isInvalidElem(wooTimeinput);
+    isInvalidElem(wooTimeinput);
+
+    buttonLoader(addEventBtn);
+
+    // eventSpentTime.classList.add('is-invalid');
+    // eventSpentTime.style.color = 'red';
+    // wooTimeinput.classList.add('is-invalid');
+    // wooTimeinput.style.color = 'red';
   } else {
-    wooTimeinput.classList.add('is-invalid');
-    wooTimeinput.style.color = 'red';
-    eventSpentTime.classList.add('is-invalid');
-    eventSpentTime.style.color = 'red';
+    isInvalidElem(wooTimeinput);
+    isInvalidElem(eventSpentTime);
+    buttonLoader(addEventBtn);
+    // wooTimeinput.classList.add('is-invalid');
+    // wooTimeinput.style.color = 'red';
+    // eventSpentTime.classList.add('is-invalid');
+    // eventSpentTime.style.color = 'red';
   }
 
   function updateWooTime(mode) {
@@ -797,8 +816,9 @@ export function handleWooTime(mode) {
     const eventSpentTime = spentTimeMode(mode);
     cell.innerText = `Время, ${wooTimeTotal}ч`;
     if (wooTimeTotal <= Number(eventSpentTime.value)) {
-      eventSpentTime.classList.remove('is-invalid');
-      eventSpentTime.style.color = '';
+      // eventSpentTime.classList.remove('is-invalid');
+      // eventSpentTime.style.color = '';
+      isValidElem(eventSpentTime);
       cell.style.color = '';
       cell.style.border = '';
     }
@@ -815,5 +835,35 @@ export function handleWooTime(mode) {
 
   return;
 }
+
+/**
+ * Проверяет общую сумму часов методов, сравнивается с затраченным временем за день и возвращает true если перебор
+ */
+
+export const wooTimeIsOver = () => {
+  const eventSpentTime = document.querySelector('#eventSpentTime');
+  const eventEditSpentTime = document.querySelector('#eventEditSpentTime');
+  // Находим сумму часов методов
+  const wooTimes = document.querySelectorAll('.wootime');
+  const wooTime = document.querySelector('#wooTime');
+  let totalWooTime = 0;
+
+  wooTimes.forEach((time) => {
+    totalWooTime += +time.innerHTML;
+  });
+
+  // Находим общее время завтраченное за день
+  let dayTime = +eventEditSpentTime.value || +eventSpentTime.value;
+
+  // Время добавляемого/редактируемого метода
+  let addingTime = +wooTime.value;
+
+  // Сравниваем
+  if (dayTime !== 0 && totalWooTime + addingTime > dayTime) {
+    return true;
+  }
+
+  return false;
+};
 
 export { isOutOfRange };

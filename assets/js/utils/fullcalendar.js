@@ -322,71 +322,6 @@ export let renderCalendar = function renderCalendar(el, option) {
       eventResizableFromStart: true,
       droppable: false,
       eventDurationEditable: true,
-      // eventResize: function (info) {
-      //   const isApproved = info.event.extendedProps.isApproved;
-
-      //   if (isApproved !== undefined && isApproved !== '') {
-      //     info.revert(); // Запретить изменение размера события
-      //   } else {
-      //     const slotmintime = calendar.getOption('slotMinTime');
-      //     const slotmaxtime = calendar.getOption('slotMaxTime');
-
-      //     // При изменении размера события отправляем данные в базу о новом времени окончания события
-
-      //     // Получаем delID события из объекта info
-
-      //     const changeTimeId = info.oldEvent._def.extendedProps.delID;
-
-      //     // Получаем factTime
-
-      //     const oldFactTime = +info.oldEvent._def.extendedProps.factTime;
-
-      //     // Дата начала текущего события
-      //     const oldEventStartDate = info.oldEvent._instance.range.start;
-
-      //     // Дата окончания текущего события
-      //     const oldEventEndDate = info.oldEvent._instance.range.end;
-      //     const millioldStartDate = oldEventStartDate.getTime();
-      //     const millioldEndDate = oldEventEndDate.getTime();
-
-      //     // Определяем величину изменения
-      //     const milliSecDeltaStart = info.startDelta.milliseconds;
-      //     const milliSecDelta = info.endDelta.milliseconds;
-      //     const hoursDeltaStart = milliSecDeltaStart / 3600000;
-      //     const hoursDeltaEnd = milliSecDelta / 3600000;
-
-      //     // Новая дата начала
-      //     const newMsStartDateTime = millioldStartDate + milliSecDeltaStart;
-      //     const newStartDateTime = new Date(newMsStartDateTime);
-      //     // Новая дата окончания
-      //     const newMsEndDateTime = millioldEndDate + milliSecDelta;
-      //     const newEndDateTime = new Date(newMsEndDateTime);
-
-      //     const eventEmploymentValue = info.event._def.extendedProps.employment;
-      //     const oldEventFactTime = info.oldEvent._def.extendedProps.factTime;
-      //     let newFactTime;
-      //     // Новое фактическое время события
-      //     if (oldEventFactTime != 0) {
-      //       newFactTime = oldFactTime - hoursDeltaStart + hoursDeltaEnd;
-      //     } else {
-      //       newFactTime = 0;
-      //     }
-
-      //     // Устанавливаем новое
-
-      //     const theEvent = info.event;
-
-      //     theEvent.setExtendedProp('factTime', newFactTime.toString());
-
-      //     sendNewEndDateTimeToBase(
-      //       changeTimeId,
-      //       newFactTime,
-      //       newStartDateTime,
-      //       newEndDateTime,
-      //       calendar,
-      //     );
-      //   }
-      // },
       locale: 'ru',
       firstDay: 1,
       direction: document.querySelector('html').getAttribute('dir'),
@@ -442,4 +377,11 @@ export let fullCalendarInit = async function fullCalendarInit() {
 export let fullCalendar = {
   renderCalendar: renderCalendar,
   fullCalendarInit: fullCalendarInit,
+};
+
+export const forceCalendarRecalculate = (cal) => {
+  cal.prev();
+  cal.next();
+  cal.next();
+  cal.prev();
 };

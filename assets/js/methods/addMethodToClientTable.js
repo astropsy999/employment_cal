@@ -1,3 +1,7 @@
+import { buttonLoader } from '../ui/buttonLoader';
+import { wooTimeIsOver } from '../utils/mainGlobFunctions';
+import { isInvalidElem, isValidElem } from '../utils/toggleElem';
+
 export let wooMetodsArray = [];
 /**
  * Добавление методов в таблицу на клиенте
@@ -9,6 +13,8 @@ const addMethodToClientTable = () => {
   const wooZones = document.querySelector('#wooZones');
   const tHead = document.querySelector('.thead-dark');
   let isEditMode = false;
+  const eventEditSpentTime = document.querySelector('#eventEditSpentTime');
+
   /**
    * Удаление строки в таблице методов
    * @param {*} ev
@@ -38,7 +44,12 @@ const addMethodToClientTable = () => {
     }
   };
 
-  if (wooMetod.value && wooMetod.value !== 'Не выбрано' && wooTime.value) {
+  if (
+    wooMetod.value &&
+    wooMetod.value !== 'Не выбрано' &&
+    wooTime.value &&
+    !wooTimeIsOver()
+  ) {
     if (!tHead) {
       addHeaderOfTable();
     }
@@ -85,16 +96,19 @@ const addMethodToClientTable = () => {
     wooMetod.classList.remove('is-invalid');
     wooTime.classList.remove('is-invalid');
   } else if (!wooMetod.value || wooMetod.value === 'Не выбрано') {
-    wooMetod.classList.add('is-invalid');
+    isInvalidElem(wooMetod);
     wooMetod.addEventListener('change', () => {
       if (wooMetod.value !== 'Не выбрано') {
-        wooMetod.classList.remove('is-invalid');
+        isValidElem(wooMetod);
       }
     });
-  } else if (!wooTime.value) {
-    wooTime.classList.add('is-invalid');
+  } else if (!wooTime.value || wooTimeIsOver()) {
+    isInvalidElem(wooTime);
+    isInvalidElem(eventEditSpentTime);
+
     wooTime.addEventListener('focus', () => {
-      wooTime.classList.remove('is-invalid');
+      isValidElem(wooTime);
+      isValidElem(eventEditSpentTime);
     });
   }
 
@@ -147,12 +161,13 @@ const addMethodToClientTable = () => {
         if (selMetSel && selMetSel.value !== 'Не выбрано') {
           switchOffEditMode(e);
         } else {
-          selMetSel?.classList.add('is-invalid');
+          // selMetSel?.classList.add('is-invalid');
+          isInvalidElem(selMetSel);
           selMetSel?.addEventListener('change', () => {
             if (selMetSel && selMetSel.value !== 'Не выбрано') {
-              selMetSel.classList.remove('is-invalid');
+              isValidElem(selMetSel);
             } else {
-              selMetSel?.classList.add('is-invalid');
+              isInvalidElem(selMetSel);
             }
           });
         }

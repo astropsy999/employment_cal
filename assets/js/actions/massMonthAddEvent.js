@@ -9,6 +9,7 @@ import {
   validateTotalTimeOnObject,
   handleWooTime,
   calculateTotalHours,
+  transformToMethods,
 } from '../utils/mainGlobFunctions';
 import * as GDD from '../api/getDropDownData';
 import * as C from '../config';
@@ -18,6 +19,7 @@ import grabMethodsDataTable from '../methods/grabMethodsDataTable';
 import { Modal } from 'bootstrap';
 import { tempLoader } from '../ui/tempLoader';
 import { buttonLoader } from '../ui/buttonLoader';
+import { forceCalendarRecalculate } from '../utils/fullcalendar';
 
 const api = {
   srvv: C.srvv,
@@ -432,6 +434,7 @@ export const massMonthAddEvent = (calendar, info) => {
                       ? ''
                       : kindOfTasksMassMonth.value,
                   isApproved: '',
+                  methods: transformToMethods(massMethTbl),
                 },
               });
 
@@ -444,18 +447,17 @@ export const massMonthAddEvent = (calendar, info) => {
               }
 
               if (!isMethodsAvailableMode) {
-                // calculateTotalHours();
                 buttonLoader(addTaskToCalBtnMassMonth);
-                calendar.prev();
-                calendar.next();
+                forceCalendarRecalculate(calendar);
               }
+              tempLoader(false);
+              forceCalendarRecalculate(calendar);
             });
         });
         localStorage.setItem('fcDefaultView', calendar.view.type);
         modal.hide();
         calendar.destroy();
         calendar.render();
-
         eventsDatesArr = [];
       }
     });
@@ -464,8 +466,6 @@ export const massMonthAddEvent = (calendar, info) => {
       eventsDatesArr = [];
       eventSpentTimeMassMonth.classList.remove('is-invalid');
       eventSpentTimeMassMonth.style.color = 'unset';
-
-      // addTotalTimeToMonthCells();
     });
   }
 };

@@ -4,6 +4,7 @@ import { getSelectedUserData } from '../api/getSlectedUserData';
 import { isManager } from '../api/isManager';
 import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
 import { tempLoader } from '../ui/tempLoader';
+import { forceCalendarRecalculate } from '../utils/fullcalendar';
 import {
   formatDate,
   getMonthRange,
@@ -51,11 +52,13 @@ export const changeUserData = (calendar, userID) => {
       unblockBtnAddTitle(lockBtn);
 
       calendar.removeAllEvents();
+
       sessionStorage.setItem('events', JSON.stringify([]));
       // Получаем дату начала текущей недели
       const currentDateStart = calendar.currentData.currentDate;
 
       removeOverlays();
+      clearMonthCells();
 
       if (calendar.view.type === 'dayGridMonth') {
         clearMonthCells();
@@ -127,6 +130,7 @@ export const changeUserData = (calendar, userID) => {
       calendar.addEventSource(events);
 
       tempLoader(false);
+      forceCalendarRecalculate(calendar);
       calendar.render();
 
       // Проверяем наличие событий в текущем диапазоне дат
