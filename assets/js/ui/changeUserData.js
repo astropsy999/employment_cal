@@ -58,7 +58,7 @@ export const changeUserData = (calendar, userID) => {
       const currentDateStart = calendar.currentData.currentDate;
 
       removeOverlays();
-      clearMonthCells();
+      // clearMonthCells();
 
       if (calendar.view.type === 'dayGridMonth') {
         clearMonthCells();
