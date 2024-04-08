@@ -4,14 +4,14 @@ import _ from 'lodash';
  * @param {*} data
  * @returns
  */
-export const parseResievedDataToCal = (data) => {
+export const parseResievedDataToCal = (data: HTMLElement[]) => {
   const events = [];
   const parentIdDataArr = [];
   let methodsArr = [];
   let eventMethodsArr = [];
   const isLockedArray = [];
 
-  data.forEach((item, idx) => {
+  data.forEach((item: any, idx: any) => {
     // Обходим полученный массив данных, превращаем строки в таблицу и парсим нужные значения в соответствующих ячейках
 
     const parser = new DOMParser();
@@ -20,56 +20,87 @@ export const parseResievedDataToCal = (data) => {
       'text/html',
     );
 
+    const getTextContent = (className: string): string | undefined => {
+      const element = htmItem.querySelector(className) as HTMLElement;
+      return element?.innerText;
+  };
+
+  const getAttribute = (className: string, attribute: string): string | null => {
+    const element = htmItem.querySelector(className);
+    return element?.getAttribute(attribute);
+};
+
     //ParentID
-    const parID = htmItem.querySelector('.c_i-1').getAttribute('o');
-    // Дата
-    const date = htmItem.querySelector('.c_i-1').innerText;
-    // Краткое описание
-    const shortDescription = htmItem.querySelector('.c_i-4').innerText;
-    // Объект
-    const object = htmItem.querySelector('.c_i-5').innerText;
-    // Вид работ
-    const taskType = htmItem.querySelector('.c_i-6').innerText;
-    // Подвид работ
-    const subTaskType = htmItem.querySelector('.c_i-7').innerText;
-    // Полное описание
-    const fullDescription = htmItem.querySelector('.c_i-8').innerText;
-    // Фактически затраченное время
-    const factTime = htmItem.querySelector('.c_i-9').innerText;
-    // Постановщик
-    const director = htmItem.querySelector('.c_i-10').innerText;
-    // Источник
-    const source = htmItem.querySelector('.c_i-11').innerText;
-    // Примечания
-    const notes = htmItem.querySelector('.c_i-12').innerText;
-    // Дата и время начала
-    const startDateTime = htmItem.querySelector('.c_i-13').innerText;
-    // Дата и время окончания
-    const endDateTime = htmItem.querySelector('.c_i-14').innerText;
-    // Локация
-    const location = htmItem.querySelector('.c_i-15').innerText;
-    // Метод
-    const method = htmItem.querySelector('.c_i-16').innerText;
-    // Продолжительность
-    const duration = htmItem.querySelector('.c_i-17').innerText;
-    // Количество объектов
-    const objQuant = htmItem.querySelector('.c_i-18').innerText;
-    // Количество зон
-    const zones = htmItem.querySelector('.c_i-19').innerText;
-    // КР
-    const kr = htmItem.querySelector('.c_i-20').innerText;
-    // Занятость
-    const employment = htmItem.querySelector('.c_i-21').innerText;
-    // Новый Вид работ
-    const taskTypeNew = htmItem.querySelector('.c_i-22').innerText;
-    // Новый подвид работ
-    const subTaskTypeNew = htmItem.querySelector('.c_i-23').innerText;
-    // Согласование
-    const isApproved = htmItem.querySelector('.c_i-24').innerText;
-    // Блокировка
-    const isLocked = htmItem.querySelector('.c_i-25').innerText;
-    const isLockedElem = htmItem.querySelector('.c_i-25');
-    const lockedID = isLockedElem.getAttribute('o');
+    const parID = getAttribute('.c_i-1', 'o');
+       // Дата
+    const date = getTextContent('.c_i-1');
+
+       // Краткое описание
+      const shortDescription = getTextContent('.c_i-4');
+       // Объект
+      const object = getTextContent('.c_i-5');
+       // Вид работ
+      const taskType = getTextContent('.c_i-6');
+   
+       // Подвид работ
+       const subTaskType = getTextContent('.c_i-7');
+   
+       // Полное описание
+       const fullDescription = getTextContent('.c_i-8');
+   
+       // Фактически затраченное время
+       const factTime = getTextContent('.c_i-9');
+   
+       // Постановщик
+       const director = getTextContent('.c_i-10');
+   
+       // Источник
+       const source = getTextContent('.c_i-11');
+   
+       // Примечания
+       const notes = getTextContent('.c_i-12');
+   
+       // Дата и время начала
+       const startDateTime = getTextContent('.c_i-13');
+   
+       // Дата и время окончания
+       const endDateTime = getTextContent('.c_i-14');
+   
+       // Локация
+       const location = getTextContent('.c_i-15');
+   
+       // Метод
+       const method = getTextContent('.c_i-16');
+   
+       // Продолжительность
+       const duration = getTextContent('.c_i-17');
+   
+       // Количество объектов
+       const objQuant = getTextContent('.c_i-18');
+   
+       // Количество зон
+       const zones = getTextContent('.c_i-19');
+   
+       // КР
+       const kr = getTextContent('.c_i-20');
+   
+       // Занятость
+       const employment = getTextContent('.c_i-21');
+   
+       // Новый Вид работ
+       const taskTypeNew = getTextContent('.c_i-22');
+   
+       // Новый подвид работ
+       const subTaskTypeNew = getTextContent('.c_i-23');
+   
+       // Согласование
+       const isApproved = getTextContent('.c_i-24');
+   
+       // Блокировка
+       const isLocked = getTextContent('.c_i-25');
+   
+       const isLockedElem = htmItem.querySelector('.c_i-25');
+       const lockedID = isLockedElem?.getAttribute('o');
 
     // Method editID
     const editID = htmItem.querySelector('.c_i-16').getAttribute('o');
@@ -197,10 +228,10 @@ export const parseResievedDataToCal = (data) => {
   });
 
   // Функция для получения массива заблокированных дат
-  function getLockedDatesArray(parentIDsDatesArr, isLockedArr) {
+  function getLockedDatesArray(parentIDsDatesArr: any[], isLockedArr: string | any[]) {
     const lockedDatesArray = [];
 
-    parentIDsDatesArr.forEach((parentObj) => {
+    parentIDsDatesArr.forEach((parentObj: { [x: string]: any; }) => {
       const key = Object.keys(parentObj)[0];
       if (isLockedArr.includes(key)) {
         lockedDatesArray.push(parentObj[key]);

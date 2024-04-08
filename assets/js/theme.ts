@@ -1,15 +1,14 @@
-//константы конфига
-import { addEventToCal } from './actions/addEvent';
-import { approveEmploynment } from './actions/approveEmploynment';
-import { delEvent } from './actions/delEvent';
-import { editEvent } from './actions/editEvent';
-import { lockEmploynment } from './actions/lockEmploynment';
-import { massMonthAddEvent } from './actions/massMonthAddEvent';
-import { multipleAddEventsToBase } from './actions/multiAddEvents';
-import * as GDD from './api/getDropDownData';
-import { getSelectedUserData } from './api/getSlectedUserData';
-import { getUserID } from './api/getUserID';
-import { fullCalendarInit } from './utils/fullcalendar';
+import { Modal } from 'bootstrap';
+import { addEventToCal } from './actions/addEvent.js';
+import { approveEmploynment } from './actions/approveEmploynment.js';
+import { delEvent } from './actions/delEvent.js';
+import { editEvent } from './actions/editEvent.js';
+import { lockEmploynment } from './actions/lockEmploynment.js';
+import { massMonthAddEvent } from './actions/massMonthAddEvent.js';
+import { multipleAddEventsToBase } from './actions/multiAddEvents.js';
+import * as GDD from './api/getDropDownData.js';
+import { getSelectedUserData } from './api/getSlectedUserData.js';
+import { getUserID } from './api/getUserID.js';
 import {
   addValueObjTrue,
   createNodeUrl,
@@ -19,13 +18,13 @@ import {
   getReports,
   ParentGroupID,
   srvv,
-} from './config';
-import addWooContainer from './methods/addWooContainer';
-import getEmplReport from './report/getEmplReport';
-import repModalTemplate from './report/repModalTemplate';
-import { usersForManagersSelector } from './ui/calendarHeader';
-import { changeUserData } from './ui/changeUserData';
-import { Modal } from 'bootstrap';
+} from './config.js';
+import addWooContainer from './methods/addWooContainer.js';
+import getEmplReport from './report/getEmplReport.js';
+import repModalTemplate from './report/repModalTemplate.js';
+import { buttonLoader } from './ui/buttonLoader.js';
+import { usersForManagersSelector } from './ui/calendarHeader.js';
+import { changeUserData } from './ui/changeUserData.js';
 import {
   addBlockOverlays,
   removeOverlays,
@@ -36,7 +35,6 @@ import { eventContent } from './ui/eventContent.js';
 import { eventDrop } from './ui/eventDrop.js';
 import { parseResievedDataToCal } from './ui/parseResievedDataToCal.js';
 import { saveHighlightedReg } from './ui/saveHighlightedReg.js';
-import { setViewAndDateToLS } from './ui/setViewAndDateToLS.js';
 import { stretchViewDepEvents } from './ui/stretchViewDepEvents.js';
 import {
   getTemplate,
@@ -45,28 +43,28 @@ import {
 } from './ui/templates.js';
 import { tempLoader } from './ui/tempLoader.js';
 import { docReady, utils } from './utils/docReady.js';
+import { fullCalendarInit } from './utils/fullcalendar.js';
 import { renderCalendar } from './utils/fullcalendar.js';
 import {
+  addTotalTimeToMonthCells,
   addZeroBefore,
+  blockBtnAddTitle,
+  calculateTotalHours,
   changeDirectZero,
   checkAndForbiddenOutOfDay,
   checkEmploymentStatus,
+  clearMonthCells,
   convertDateTime,
   getMonthRange,
   isOutOfRange,
   noEditPartOfInput,
   removeAlarmFromSelectorsInModals,
   selValidation,
+  sendNewEndDateTimeToBase,
   timeInputsValidation,
   transformDateTime,
-  blockBtnAddTitle,
-  sendNewEndDateTimeToBase,
-  addTotalTimeToMonthCells,
-  calculateTotalHours,
-  clearMonthCells,
 } from './utils/mainGlobFunctions.js';
 import { toggleElem } from './utils/toggleElem.js';
-import { buttonLoader } from './ui/buttonLoader';
 
 export const api = {
   srvv,
@@ -84,7 +82,7 @@ const employmentCalendar = async () => {
   /*                                    Utils                                   */
   /* -------------------------------------------------------------------------- */
 
-  docReady();
+  docReady(()=>{});
 
   /* -------------------------------------------------------------------------- */
   /*                                FullCalendar                                */
@@ -183,7 +181,7 @@ const employmentCalendar = async () => {
     }, []);
 
     var updateTitle = function updateTitle(title) {
-      document.querySelector(Selectors.CALENDAR_TITLE).textContent = title;
+      document.querySelector(Selectors.CALENDAR_TITLE)!.textContent = title;
     };
 
     var appCalendar = document.querySelector(Selectors.CALENDAR);
@@ -273,7 +271,7 @@ const employmentCalendar = async () => {
 
               document.querySelector(
                 Selectors.EVENT_DETAILS_MODAL_CONTENT,
-              ).innerHTML = template;
+              )!.innerHTML = template;
               var modal = new Modal(eventDetailsModal);
             } else {
               if (selectedUserLevel && currentUserLevel >= selectedUserLevel) {
@@ -284,7 +282,7 @@ const employmentCalendar = async () => {
 
               document.querySelector(
                 Selectors.EVENT_DETAILS_MODAL_CONTENT,
-              ).innerHTML = template;
+              )!.innerHTML = template;
               var modal = new Modal(eventDetailsModal);
             }
             modal.show();
@@ -292,8 +290,8 @@ const employmentCalendar = async () => {
             const delEventBtn = document.querySelector('#delEventBtn');
             let delID = info.event._def.extendedProps.delID;
             const editEventBtn = document.querySelector('#editEventBtn');
-            let typeID;
-            let idx;
+            let typeID: string | null | undefined;
+            let idx: string | null;
 
             typeID = delEventBtn?.getAttribute('data-typeID');
             idx = editEventBtn && editEventBtn.getAttribute('data-idx');
@@ -309,14 +307,19 @@ const employmentCalendar = async () => {
             let dataTaskListValues = [];
             let dataTasksID = {};
 
-            const dataObj = JSON.parse(sessionStorage.getItem('dataObj'));
+            const dataObj = JSON.parse(sessionStorage.getItem('dataObj')!);
             const dataCreator = JSON.parse(
-              sessionStorage.getItem('dataCreator'),
+              sessionStorage.getItem('dataCreator')!,
             );
+
+            type ObjStrType = { 
+              Name: string; 
+              ID: string; 
+            };
 
             // Объекты
 
-            dataObj.forEach((objectStr) => {
+            dataObj.forEach((objectStr: ObjStrType) => {
               dataObjectKeys.push(objectStr.Name.replaceAll('&quot;', '"'));
               dataObjectValues.push(objectStr.ID);
             });
@@ -598,16 +601,16 @@ const employmentCalendar = async () => {
             localStorage.getItem('lockedDatesArray'),
           );
 
-          const isWeekLocked = (date) => {
+          const isWeekLocked = (date: Date) => {
             const day = date.getDate().toString().padStart(2, '0');
             const month = (date.getMonth() + 1).toString().padStart(2, '0');
             const year = date.getFullYear().toString();
             const formattedDate = `${day}.${month}.${year}`;
             if (lockedDatesArr?.includes(formattedDate)) {
-              localStorage.setItem('isWeekLocked', true);
+              localStorage.setItem('isWeekLocked', 'true');
               return true;
             }
-            localStorage.setItem('isWeekLocked', false);
+            localStorage.setItem('isWeekLocked', 'false');
             return false;
           };
 
@@ -1014,10 +1017,10 @@ const employmentCalendar = async () => {
         '#multiAddTaskToCalBtn',
       );
       const multiEmployment = document.querySelector('#multiEmployment');
-      const dataObj = JSON.parse(sessionStorage.getItem('dataObj'));
-      const dataCreator = JSON.parse(sessionStorage.getItem('dataCreator'));
-      const locObj = JSON.parse(sessionStorage.getItem('locObj'));
-      const emplObj = JSON.parse(sessionStorage.getItem('emplObj'));
+      const dataObj = JSON.parse(sessionStorage.getItem('dataObj')!);
+      const dataCreator = JSON.parse(sessionStorage.getItem('dataCreator')!);
+      const locObj = JSON.parse(sessionStorage.getItem('locObj')!);
+      const emplObj = JSON.parse(sessionStorage.getItem('emplObj')!);
 
       const isMethodsAvailableMode =
         multiKindOfTasks.value === 'Техническое диагностирование';

@@ -4,7 +4,6 @@
 
 /* -------------------------------------------------------------------------- */
 import { getTableData, srvv } from '../config';
-import { tempLoader } from '../ui/tempLoader';
 
 /**
  * Подгрузка данных выбранного пользователя
@@ -99,7 +98,7 @@ export const getSelectedUserData = async (userID, start, end) => {
     formData1.append('order[columnIndex]', '7416');
     formData1.append('order[Order]', '0');
     formData1.append('start', startFD_New);
-    formData1.append('length', lengthFD);
+    formData1.append('length', lengthFD.toString());
     formData1.append('search[value]', '');
     formData1.append('isFirst', '1');
     formData1.append('isLoadTotal', '0');
@@ -129,7 +128,7 @@ export const getSelectedUserData = async (userID, start, end) => {
         break;
       } else {
         data = [...data, ...dataFD];
-        startFD_New = lengthFD;
+        startFD_New = lengthFD.toString();
       }
     } else {
       data = [];
