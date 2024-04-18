@@ -1,52 +1,5 @@
 export const eventContent = function (info) {
-  // Создаем элементы для отображения
-  const eventTimeNameWrapper = document.createElement('div');
-  const eventMethodsWrapper = document.createElement('div');
-  const eventTaskType = document.createElement('div');
-  const eventTaskSubType = document.createElement('div');
-  const eventObject = document.createElement('div');
-  const fullDescription = document.createElement('div');
-  const contentLayoutHeader = document.createElement('div');
-  const location = document.createElement('div');
 
-  // Отображение методов
-  const addMethodsToEventUI = (methodsArr) => {
-    const methNamesArr = [];
-    if (methodsArr) {
-      methodsArr.forEach((meth, index) => {
-        const objQuant = Object.values(meth)[0].objQuant;
-        const zones = Object.values(meth)[0].zones;
-        const time = Object.values(meth)[0]['duration'];
-        const objZones = (objQuant, zones) => {
-          if (objQuant && zones) {
-            return `(об-${objQuant},зон-${zones})`;
-          } else if (objQuant && !zones) {
-            return `(об-${objQuant})`;
-          } else if (!objQuant && zones) {
-            return `(зон-${zones})`;
-          } else {
-            return '(-)';
-          }
-        };
-        const methodText = `${Object.keys(meth)[0]}-${time}ч`;
-        const zonesText = objZones(objQuant, zones);
-
-        const isUnselected = methodText === 'Не выбрано';
-        const noZones = zonesText === '(-)';
-
-        const formattedMethod = `<span>${isUnselected ? methodText: ''} <span style="font-size: 10px;">${noZones ? '' : zonesText}</span></span>`;
-        methNamesArr.push(formattedMethod);
-      });
-    }
-
-    return methNamesArr.join('<br>');
-  };
-
-  // Добавляем классы к элементам для отображения
-  eventTimeNameWrapper.classList.add('eventTimeNameWrapper');
-  eventTaskType.classList.add('eventTaskType');
-  eventTaskSubType.classList.add('eventTaskSubType');
-  eventMethodsWrapper.classList.add('eventMethodsWrapper');
   const {
     methods, 
     object, 
@@ -59,59 +12,65 @@ export const eventContent = function (info) {
     factTime,
     isApproved
   } = info.event._def.extendedProps;
+  const { title } = info.event._def;
 
-  const {title} = info.event._def
+  const elements = {
+    contentLayoutHeader: document.createElement('div'),
+    location: document.createElement('div'),
+    eventObject: document.createElement('div'),
+    eventTimeNameWrapper: document.createElement('div'),
+    eventTaskType: document.createElement('div'),
+    eventTaskSubType: document.createElement('div'),
+    eventMethodsWrapper: document.createElement('div'),
+    fullDescription: document.createElement('div'),
+    
+  };
+  const formatEventMethods = (methodsArr) => {
+    if (!methodsArr) return '';
+  
+    return methodsArr.map((meth) => {
+      const { objQuant, zones, duration } = Object.values(meth)[0];
+      const methodText = `${Object.keys(meth)[0]}-${duration}ч`;
+      const zonesText = objQuant && zones ? `(об-${objQuant},зон-${zones})` :
+                        objQuant ? `(об-${objQuant})` :
+                        zones ? `(зон-${zones})` : '(-)';
+      const isUnselected = methodText === 'Не выбрано-ч';
+      const noZones = zonesText === '(-)';
+      return `<span>${isUnselected ? '' : methodText} <span style="font-size: 10px;">${noZones ? '' : zonesText}</span></span>`;
+    }).join('<br>');
+  };
 
-  if (
-    object &&
-    object !== 'Не выбрано'
-  ) {
-    eventObject.classList.add('eventObject');
+  // Добавляем классы к элементам для отображения
+  elements.eventTimeNameWrapper.classList.add('eventTimeNameWrapper');
+  elements.eventTaskType.classList.add('eventTaskType');
+  elements.eventTaskSubType.classList.add('eventTaskSubType');
+  elements.eventMethodsWrapper.classList.add('eventMethodsWrapper');
+
+
+  const addObjectClass = object && object !== 'Не выбрано';
+
+  if (addObjectClass) {
+    elements.eventObject.classList.add('eventObject');
   }
-  fullDescription.classList.add('fullDescription');
+  elements.fullDescription.classList.add('fullDescription');
 
   // Помещаем данные для отображения
 
-  eventMethodsWrapper.innerHTML = `<div>${addMethodsToEventUI(
+  elements.eventMethodsWrapper.innerHTML = `<div>${formatEventMethods(
     methods,
   )}</div>`;
 
-  if (object !== 'Не выбрано') {
-    eventObject.innerHTML = `${object}`;
-  }
-  eventTaskType.innerHTML = `${
-    taskType ||
-    taskTypeNew
-  }`;
-  eventTaskSubType.innerHTML = `${
-    subTaskType ||
-    subTaskTypeNew
-  }`;
-  fullDescription.innerHTML = `${fullDesc}`;
-  if (loc !== 'Не выбрано') {
-    location.innerHTML = `${loc}`;
-  }
+  elements.eventObject.innerHTML = addObjectClass ? object : '';
+  elements.eventTaskType.innerHTML = taskType || taskTypeNew;
+  elements.eventTaskSubType.innerHTML = subTaskType || subTaskTypeNew;
+  elements.fullDescription.innerHTML = fullDesc;
+  elements.location.innerHTML = loc !== 'Не выбрано' ? loc : '';
 
-  contentLayoutHeader.innerHTML = `<div class="contentLayoutHeader">
-  <div class="factTime"><b>${
-    factTime
-  }</b>ч</div><div class="title mb-1">${title}</div>
-   <div class="approvedMark">${
-     isApproved
-       ? `<i class="bi bi-check2-square text-success text-xl" title="${isApproved}"></i>`
-       : ''
-   }</div>
+  elements.contentLayoutHeader.innerHTML = `<div class="contentLayoutHeader">
+  <div class="factTime"><b>${factTime}</b>ч</div><div class="title mb-1">${title}</div>
+  <div class="approvedMark">${isApproved ? `<i class="bi bi-check2-square text-success text-xl" title="${isApproved}"></i>` : ''}</div>
   </div>`;
 
-  let arrayOfDomNodes = [
-    contentLayoutHeader,
-    location,
-    eventObject,
-    eventTaskType,
-    eventTaskSubType,
-    eventMethodsWrapper,
-    fullDescription,
-  ];
 
-  return { domNodes: arrayOfDomNodes };
+  return { domNodes: Object.values(elements) };
 };
