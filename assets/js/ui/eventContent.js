@@ -31,7 +31,10 @@ export const eventContent = function (info) {
         const methodText = `${Object.keys(meth)[0]}-${time}ч`;
         const zonesText = objZones(objQuant, zones);
 
-        const formattedMethod = `<span>${methodText} <span style="font-size: 10px;">${zonesText}</span></span>`;
+        const isUnselected = methodText === 'Не выбрано';
+        const noZones = zonesText === '(-)';
+
+        const formattedMethod = `<span>${isUnselected ? methodText: ''} <span style="font-size: 10px;">${noZones ? '' : zonesText}</span></span>`;
         methNamesArr.push(formattedMethod);
       });
     }
@@ -44,10 +47,24 @@ export const eventContent = function (info) {
   eventTaskType.classList.add('eventTaskType');
   eventTaskSubType.classList.add('eventTaskSubType');
   eventMethodsWrapper.classList.add('eventMethodsWrapper');
+  const {
+    methods, 
+    object, 
+    taskType, 
+    taskTypeNew, 
+    subTaskType, 
+    subTaskTypeNew,
+    fullDescription: fullDesc,
+    location: loc,
+    factTime,
+    isApproved
+  } = info.event._def.extendedProps;
+
+  const {title} = info.event._def
 
   if (
-    info.event._def.extendedProps.object &&
-    info.event._def.extendedProps.object !== 'Не выбрано'
+    object &&
+    object !== 'Не выбрано'
   ) {
     eventObject.classList.add('eventObject');
   }
@@ -56,32 +73,32 @@ export const eventContent = function (info) {
   // Помещаем данные для отображения
 
   eventMethodsWrapper.innerHTML = `<div>${addMethodsToEventUI(
-    info.event._def.extendedProps.methods,
+    methods,
   )}</div>`;
 
-  if (info.event._def.extendedProps.object !== 'Не выбрано') {
-    eventObject.innerHTML = `${info.event._def.extendedProps.object}`;
+  if (object !== 'Не выбрано') {
+    eventObject.innerHTML = `${object}`;
   }
   eventTaskType.innerHTML = `${
-    info.event._def.extendedProps.taskType ||
-    info.event._def.extendedProps.taskTypeNew
+    taskType ||
+    taskTypeNew
   }`;
   eventTaskSubType.innerHTML = `${
-    info.event._def.extendedProps.subTaskType ||
-    info.event._def.extendedProps.subTaskTypeNew
+    subTaskType ||
+    subTaskTypeNew
   }`;
-  fullDescription.innerHTML = `${info.event._def.extendedProps.fullDescription}`;
-  if (info.event._def.extendedProps.location !== 'Не выбрано') {
-    location.innerHTML = `${info.event._def.extendedProps.location}`;
+  fullDescription.innerHTML = `${fullDesc}`;
+  if (loc !== 'Не выбрано') {
+    location.innerHTML = `${loc}`;
   }
 
   contentLayoutHeader.innerHTML = `<div class="contentLayoutHeader">
   <div class="factTime"><b>${
-    info.event._def.extendedProps.factTime
-  }</b>ч</div><div class="title mb-1">${info.event._def.title}</div>
+    factTime
+  }</b>ч</div><div class="title mb-1">${title}</div>
    <div class="approvedMark">${
-     info.event._def.extendedProps.isApproved
-       ? `<i class="bi bi-check2-square text-success text-xl" title="${info.event._def.extendedProps.isApproved}"></i>`
+     isApproved
+       ? `<i class="bi bi-check2-square text-success text-xl" title="${isApproved}"></i>`
        : ''
    }</div>
   </div>`;
