@@ -56,6 +56,7 @@ export const isManager = async (userID) => {
   if (isUserManager === 'Да') {
     localStorage.setItem('managerLevel', managerLevel);
     sessionStorage.setItem('isMan', JSON.stringify(true));
+  
     return { isMan: true, managerName, managerLevel };
   } else {
     return false;

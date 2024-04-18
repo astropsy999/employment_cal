@@ -5,7 +5,7 @@
   "main": "theme.js",
   "scripts": {
     "test": "jest",
-    "build": "vite build",
+    "build": "vite build && node postbuild.js",
     "start": "vite"
   },
   "author": "Yevhen Stuzhuk",

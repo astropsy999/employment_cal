@@ -27654,24 +27654,42 @@ div[data-collapse] + .kanban-item {
   line-height: 1.24;
   margin-top: 3px;
 }
+.depWrapper select {
+  width: fit-content;
+  max-width: 160px;
+  line-height: 1.24;
+  margin-top: 3px;
+  margin-right: 5px;
+}
+
+#otherUsersDepths option {
+  white-space: nowrap; /* Запрещаем перенос текста */
+  overflow: hidden; /* Скрываем содержимое, которое не помещается */
+  text-overflow: ellipsis; /* Добавляем троеточие в конце текста */
+}
 .approveBtn {
   margin-right: 10px !important;
   padding: 0 6px;
+  pointer-events: auto !important;
 }
+
 .lockBtn {
   margin-right: 7px !important;
   padding: 0 6px;
+  pointer-events: auto !important;
 }
 .spreedsheet {
   padding: 0 6px;
 }
-
+.todayBtn {
+  margin-right: 5px;
+}
+.refreshBtn {
+  padding: 0 6px;
+}
 .refreshBtn .bi {
   padding-right: 0;
   font-size: 18px;
-}
-.todayBtn {
-  margin-right: 5px;
 }
 .approveBtn .bi {
   padding-right: 0;
@@ -27690,7 +27708,7 @@ div[data-collapse] + .kanban-item {
   border-radius: 6px;
   position: fixed;
   width: fit-content;
-  height: 1.9rem;
+  height: 2rem;
   margin-top: 3px;
   display: block;
   background: linear-gradient(
@@ -27718,8 +27736,8 @@ div[data-collapse] + .kanban-item {
   display: none;
   position: absolute;
   background: rgba(0, 0, 0, 0.5);
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   z-index: 10;
 }
 .lds-facebook {
@@ -27769,11 +27787,7 @@ div[data-collapse] + .kanban-item {
   z-index: 10000;
   opacity: 0.8 !important;
 }
-/* .locked-day-overlay:hover .overlay-label {
-  display: block;
-} */
 .overlay-label {
-  /* display: none; */
   position: absolute;
   opacity: 0.8;
   transform: rotate(-85deg);
@@ -27784,4 +27798,97 @@ div[data-collapse] + .kanban-item {
   font-weight: 700;
   font-size: 50px;
   white-space: nowrap;
+}
+.fc-timegrid-col-misc {
+  display: none;
+}
+
+.fc-daygrid-day-events {
+  margin-bottom: -30px !important;
+}
+
+.fc-dayGridMonth-view .fc-daygrid-day-frame {
+  margin-bottom: 30px !important;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  cursor: not-allowed;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.skeleton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.loadingBtn::before {
+  content: '';
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 3px;
+  padding-left: 0 !important;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.fc-daygrid-day-frame .hours {
+  position: absolute;
+  left: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  background-color: var(--falcon-blue);
+  opacity: 0.9;
+  border-radius: 50%;
+  padding: 5px 6px;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  /* top:  */
+}
+
+.fc .fc-day-today:not(.fc-popover) .fc-daygrid-day-frame {
+  border: none;
+}
+
+.description-container {
+  max-height: 200px; 
+  overflow-y: auto; 
 }
