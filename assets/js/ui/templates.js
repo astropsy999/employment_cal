@@ -84,9 +84,9 @@ export function getTemplate(event) {
   }</span></div>
 </div><div class="d-flex mt-3">${
     getStackIcon('fas fa-align-left') +
-      '<div class="flex-1"><b>Описание:</b><p class="mb-0">' +
+      '<div class="flex-1 description-container"><b>Описание:</b><div class="mb-0">' +
       event.extendedProps.fullDescription || ''
-  }</p></div>
+  }</div></div>
 </div><div class="d-flex mt-3">${
     getStackIcon('fas fa-clock') +
     '<div class="flex-1"><b>Затраченное время: </b><span class="mb-1">' +
@@ -163,9 +163,9 @@ export function getTemplateNoFooter(event) {
   }</span></div>
 </div><div class="d-flex mt-3">${
     getStackIcon('fas fa-align-left') +
-      '<div class="flex-1"><b>Описание:</b><p class="mb-0">' +
+      '<div class="flex-1 description-container"><b>Описание:</b><div class="mb-0">' +
       event.extendedProps.fullDescription || ''
-  }</p></div>
+  }</div></div>
 </div><div class="d-flex mt-3">${
     getStackIcon('fas fa-clock') +
     '<div class="flex-1"><b>Затраченное время: </b><span class="mb-1">' +
@@ -234,9 +234,9 @@ export function getTemplateNoFooterNoDelete(event) {
   }</span></div>
 </div><div class="d-flex mt-3">${
     getStackIcon('fas fa-align-left') +
-      '<div class="flex-1"><b>Описание:</b><p class="mb-0">' +
+      '<div class="flex-1 description-container"><b>Описание:</b><div class="mb-0">' +
       event.extendedProps.fullDescription || ''
-  }</p></div>
+  }</div></div>
 </div><div class="d-flex mt-3">${
     getStackIcon('fas fa-clock') +
     '<div class="flex-1"><b>Затраченное время: </b><span class="mb-1">' +

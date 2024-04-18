@@ -27887,3 +27887,8 @@ div[data-collapse] + .kanban-item {
 .fc .fc-day-today:not(.fc-popover) .fc-daygrid-day-frame {
   border: none;
 }
+
+.description-container {
+  max-height: 200px; 
+  overflow-y: auto; 
+}
