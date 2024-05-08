@@ -141,7 +141,7 @@ export const addEventToUser = (calendar) => {
           }
         };
 
-        // buttonLoader(eventTaskModalBtn, true);
+        
 
         // Вычисляем дату на которую кликнул пользователь и ParentID
 

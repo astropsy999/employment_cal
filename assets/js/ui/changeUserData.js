@@ -102,7 +102,7 @@ export const changeUserData = (calendar, userID) => {
       const selectedUserLevel = Number(isSelectedMan.managerLevel);
 
       if (isSelectedMan && selectedUserLevel <= currentUserLevel) {
-        // calendar.setOption('selectable', false);
+        calendar.setOption('selectable', false);
       } else {
         calendar.setOption('selectable', true);
       }
@@ -113,6 +113,9 @@ export const changeUserData = (calendar, userID) => {
         calendar.setOption('editable', false);
         calendar.setOption('eventResizableFromStart', false);
         calendar.setOption('eventDurationEditable', false);
+        console.log('currentUserLevel: ', currentUserLevel);
+        console.log('selectedUserLevel: ', selectedUserLevel);
+
       } else {
         addEventBtn.style.display = 'flex';
         calendar.setOption('selectable', true);
