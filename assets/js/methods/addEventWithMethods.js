@@ -163,7 +163,7 @@ const addEventWithMethods = (
     })
     .then((data) => {
       const { object, parent } = data.results[0];
-
+      buttonLoader(eventTaskModalBtn);
       Modal.getInstance(addEventModal).hide();
 
       // Добавляем Методы
