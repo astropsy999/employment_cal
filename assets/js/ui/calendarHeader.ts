@@ -15,11 +15,7 @@ export const usersForManagersSelector = async (userID: string) => {
    * Проверка на Руководителя
    */
 
-  let { isMan, managerName, managerLevel } = {
-    isMan: localStorage.getItem('isMan'), 
-    managerName: localStorage.getItem('managerName'), 
-    managerLevel: localStorage.getItem('managerLevel')
-  } || await isManager(userID);
+  let { isMan, managerName, managerLevel } =  await isManager(userID);
 
   sessionStorage.setItem('isMan', JSON.stringify(isMan));
   sessionStorage.setItem('managerName', JSON.stringify(managerName));

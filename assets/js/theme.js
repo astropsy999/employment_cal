@@ -99,7 +99,7 @@ const employmentCalendar = async () => {
   /* -------------------------------------------------------------------------- */
 
   
-  const idDB = localStorage.getItem('iddb') || await getUserID();
+  const idDB = await getUserID();
   console.log('idDB: ', idDB);
 
   localStorage.setItem('iddb', idDB);

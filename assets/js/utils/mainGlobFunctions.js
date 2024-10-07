@@ -24,6 +24,16 @@ export function formatDate(date) {
   return `${day}.${month}.${year}`;
 }
 
+export function formatDayNameDate(date) {
+  // Получаем сокращенное название дня недели на русском
+  const dayName = date.toLocaleDateString('ru-RU', { weekday: 'short' });
+
+  // Получаем номер дня месяца с ведущим нулем
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${dayName} ${day}`;
+}
+
 // Функция перевода времени на 3 часа назад
 
 export const minusThreeHours = (date) => {

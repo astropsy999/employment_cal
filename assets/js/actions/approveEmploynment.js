@@ -1,6 +1,6 @@
 import * as C from '../config';
 import { fullCalendar } from '../utils/fullcalendar';
-import { formatDate, blockBtnAddTitle } from '../utils/mainGlobFunctions';
+import { formatDate, blockBtnAddTitle, formatDayNameDate } from '../utils/mainGlobFunctions';
 import { Modal } from 'bootstrap';
 
 export const approveEmploynment = (calendar) => {
@@ -30,6 +30,7 @@ export const approveEmploynment = (calendar) => {
     const startApproveDate = document.querySelector('.startApproveDate');
     const endApproveDate = document.querySelector('.endApproveDate');
     const approveActionBtn = document.querySelector('.approve-action');
+    const dailyApproveContainer = document.querySelector('.dailyApprove');
 
     // Получаем все события на странице
 
@@ -63,11 +64,70 @@ export const approveEmploynment = (calendar) => {
     endApproveDate.textContent = formatDate(lastEventDate);
     startApproveDate.textContent = formatDate(firstEventDate);
 
+     // Генерация списка дат с чекбоксами
+     const generateDateList = () => {
+      dailyApproveContainer.innerHTML = ''; // Очищаем контейнер
+
+      // Создаем объект для хранения уникальных дат
+      const uniqueDates = {};
+
+      eventsInCurrentWeek.forEach((event) => {
+        const dateStr = formatDate(event.start, 'YYYY-MM-DD');
+        if (!uniqueDates[dateStr]) {
+          uniqueDates[dateStr] = {
+            date: new Date(event.start),
+            events: [],
+          };
+        }
+        uniqueDates[dateStr].events.push(event);
+      });
+
+      // Создаем чекбоксы для каждой уникальной даты
+      Object.keys(uniqueDates).forEach((dateStr) => {
+        const dateObj = uniqueDates[dateStr].date;
+        const formattedDate = formatDayNameDate(dateObj);
+
+        const div = document.createElement('div');
+        div.classList.add('form-check');
+
+        const checkbox = document.createElement('input');
+        checkbox.classList.add('form-check-input');
+        checkbox.type = 'checkbox';
+        checkbox.value = dateStr;
+        checkbox.id = `checkbox-${dateStr}`;
+        checkbox.checked = true; // По умолчанию все даты выбраны
+
+        const label = document.createElement('label');
+        label.classList.add('form-check-label');
+        label.htmlFor = `checkbox-${dateStr}`;
+        label.textContent = formattedDate;
+
+        div.appendChild(checkbox);
+        div.appendChild(label);
+
+        dailyApproveContainer.appendChild(div);
+      });
+    };
+
+    generateDateList();
+
     // Подтверждение согласования события
 
     const approveAction = () => {
       approveActionBtn.removeEventListener('click', approveAction);
-      eventsInCurrentWeek.forEach((e) => {
+
+      // Собираем выбранные даты
+      const selectedCheckboxes = dailyApproveContainer.querySelectorAll('input[type="checkbox"]:checked');
+      const selectedDates = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+       // Фильтруем события по выбранным датам
+       const eventsToApprove = eventsInCurrentWeek.filter(event => {
+        const eventDateStr = formatDate(event.start, 'YYYY-MM-DD');
+        return selectedDates.includes(eventDateStr);
+      });
+
+
+      eventsToApprove.forEach((e) => {
         const delID = e._def.extendedProps.delID;
 
         const managerName = localStorage.getItem('managerName');
