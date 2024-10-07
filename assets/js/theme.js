@@ -98,10 +98,8 @@ const employmentCalendar = async () => {
 
   /* -------------------------------------------------------------------------- */
 
-  const iddbName = await getUserID();
-  let idDB;
-  let userName;
-  idDB = iddbName[0].ObjID.toString();
+  
+  const idDB = localStorage.getItem('iddb') || await getUserID();
   console.log('idDB: ', idDB);
 
   localStorage.setItem('iddb', idDB);

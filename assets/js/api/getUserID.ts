@@ -2,10 +2,10 @@ import { srvv, getTableData } from '../config';
 
 /**
  * Получение ID пользователя
- * @returns
+ * @returns 
  */
 export const getUserID = async () => {
-  if (!sessionStorage.getItem('data0')) {
+  
     let formData = new FormData();
 
     formData.append('columns[0][name]', '№');
@@ -21,22 +21,10 @@ export const getUserID = async () => {
       credentials: 'include',
       method: 'post',
       body: formData,
-    })
-      .then((response) => {
-        let r = response.json();
-        return r;
-      })
-      .catch(function (error) {
-        console.log('Не удалось получить ID пользователя с сервера', error);
-      });
+    }).then((response) => response.json());
 
-    const data0 = res !== undefined ? res.data : [{ objID: '235986' }];
-    sessionStorage.setItem('data0', JSON.stringify(data0));
+    const data0 = res.data
 
-    return data0[0];
-  } else {
-    const data0 = await JSON.parse(sessionStorage.getItem('data0'));
+    return data0[0][0].ObjID.toString();
 
-    return data0[0];
-  }
 };
