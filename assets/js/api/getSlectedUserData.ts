@@ -4,17 +4,16 @@
 
 /* -------------------------------------------------------------------------- */
 import { getTableData, srvv } from '../config';
-import { tempLoader } from '../ui/tempLoader';
 
 /**
  * Подгрузка данных выбранного пользователя
  * @param {string} userID
  * @returns
  */
-export const getSelectedUserData = async (userID, start, end) => {
-  let data = [];
+export const getSelectedUserData = async (userID: string, start: string, end: string): Promise<any[]> => {
+  let data: any[] = [];
   let startFD_New = '1';
-  let lengthFD = 10000;
+  let lengthFD = '10000';
 
   for (let i = 1; ; i++) {
     let formData1 = new FormData();

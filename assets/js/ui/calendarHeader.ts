@@ -26,7 +26,7 @@ export const usersForManagersSelector = async (userID: string) => {
     localStorage.setItem('currentManagerLevel', managerLevel!);
     localStorage.setItem('managerName', managerName!);
     localStorage.setItem('selectedUserName', managerName!);
-    localStorage.setItem('isMan', isMan);
+    localStorage.setItem('isMan', JSON.stringify(isMan));
     /**
      * Получения элемента , куда будет помещен новый селектор сотрудников и добавление в него селектора
      */

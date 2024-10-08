@@ -61,6 +61,6 @@ export const isManager = async (userID: string) => {
   
     return { isMan: true, managerName, managerLevel };
   } else {
-    return false;
+    return { isMan: false, managerName, managerLevel };
   }
 };

@@ -30,11 +30,11 @@ import {
   addBlockOverlays,
   removeOverlays,
   toggleIcon,
-} from './ui/checkBlockedDays.js';
-import { checkCurrentEventsAndBlockApproveBtn } from './ui/checkCurrentEvents.js';
+} from './ui/checkBlockedDays';
+import { checkCurrentEventsAndBlockApproveBtn } from './ui/checkCurrentEvents';
 import { eventContent } from './ui/eventContent.js';
 import { eventDrop } from './ui/eventDrop.js';
-import { parseResievedDataToCal } from './ui/parseResievedDataToCal.js';
+import { parseResievedDataToCal } from './ui/parseResievedDataToCal';
 import { saveHighlightedReg } from './ui/saveHighlightedReg.js';
 import { setViewAndDateToLS } from './ui/setViewAndDateToLS.js';
 import { stretchViewDepEvents } from './ui/stretchViewDepEvents.js';
@@ -43,7 +43,7 @@ import {
   getTemplateNoFooter,
   getTemplateNoFooterNoDelete,
 } from './ui/templates.js';
-import { tempLoader } from './ui/tempLoader.js';
+import { tempLoader } from './ui/tempLoader';
 import { docReady, utils } from './utils/docReady.js';
 import { renderCalendar } from './utils/fullcalendar.js';
 import {
@@ -64,7 +64,7 @@ import {
   addTotalTimeToMonthCells,
   calculateTotalHours,
   clearMonthCells,
-} from './utils/mainGlobFunctions.js';
+} from './utils/mainGlobFunctions';
 import { toggleElem } from './utils/toggleElem.js';
 import { buttonLoader } from './ui/buttonLoader';
 

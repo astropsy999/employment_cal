@@ -3,11 +3,11 @@
  * @param {*} status
  * @returns
  */
-export const tempLoader = (status) => {
-  const temploaderWrapper = document.querySelector('.temploaderWrapper');
+export const tempLoader = (status: boolean) => {
+  const temploaderWrapper = document.querySelector('.temploaderWrapper') as HTMLElement;
 
   if (status) {
-    temploaderWrapper.style.display = 'flex';
+    temploaderWrapper!.style.display = 'flex';
     return;
   }
 

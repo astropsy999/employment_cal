@@ -29,7 +29,7 @@ export const addBlockOverlays = () => {
 
         overlay.appendChild(label);
 
-        el.insertAdjacentElement('afterBegin', overlay);
+        el.insertAdjacentElement('afterbegin', overlay);
       }
 
       lockBtn?.removeAttribute('title');
@@ -56,7 +56,7 @@ export const removeOverlays = () => {
   lockBtn?.setAttribute('title', 'Заблокировать неделю');
 };
 
-export function toggleIcon(action) {
+export function toggleIcon(action: 'lock' | 'unlock') {
   const button = document.getElementById('lockBtn');
   const addTaskBtn = document.querySelector('#addTaskBtn');
   if (button) {
@@ -71,11 +71,11 @@ export function toggleIcon(action) {
       // Определяем нужную иконку и цвет в зависимости от значения параметра "action"
       if (action === 'unlock') {
         newIcon.classList.add('bi', 'bi-lock-fill', 'text-danger');
-        addTaskBtn.setAttribute('disabled', 'disabled');
+        addTaskBtn!.setAttribute('disabled', 'disabled');
       } else {
         newIcon.classList.add('bi', 'bi-unlock-fill', 'text-success');
         // Добавляем красный цвет для состояния "lock"
-        addTaskBtn.removeAttribute('disabled');
+        addTaskBtn!.removeAttribute('disabled');
       }
 
       // Добавляем новую иконку на кнопку
