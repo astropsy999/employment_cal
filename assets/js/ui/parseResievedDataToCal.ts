@@ -268,9 +268,6 @@ export const parseResievedDataToCal = (data: any[]) => {
     return results;
   }, {});
 
-  console.log('groupedData: ', groupedData);
-
-
   const uniEventsArray = _.uniqBy(eventMethodsArr, 'extendedProps.delID');
 
   for (let key in groupedData) {

@@ -9,7 +9,7 @@ import { multipleAddEventsToBase } from './actions/multiAddEvents';
 import * as GDD from './api/getDropDownData';
 import { getSelectedUserData } from './api/getSlectedUserData';
 import { getUserID } from './api/getUserID';
-import { fullCalendarInit } from './utils/fullcalendar';
+// import { fullCalendarInit } from './utils/fullcalendar';
 import {
   addValueObjTrue,
   createNodeUrl,
@@ -45,7 +45,7 @@ import {
 } from './ui/templates.js';
 import { tempLoader } from './ui/tempLoader';
 import { docReady, utils } from './utils/docReady.js';
-import { renderCalendar } from './utils/fullcalendar.js';
+import { renderCalendar } from './utils/fullcalendar';
 import {
   addZeroBefore,
   changeDirectZero,
@@ -65,7 +65,7 @@ import {
   calculateTotalHours,
   clearMonthCells,
 } from './utils/mainGlobFunctions';
-import { toggleElem } from './utils/toggleElem.js';
+import { toggleElem } from './utils/toggleElem';
 import { buttonLoader } from './ui/buttonLoader';
 
 export const api = {
@@ -1695,7 +1695,7 @@ const employmentCalendar = async () => {
 
   // Инициализация календарей
 
-  docReady(fullCalendarInit);
+  // docReady(fullCalendarInit);
   docReady(appCalendarInit);
 };
 
