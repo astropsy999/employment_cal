@@ -30,8 +30,8 @@ export const approveEmploynment = (calendar: { view: { currentStart: string | nu
 
     const startApproveDate = document.querySelector('.startApproveDate');
     const endApproveDate = document.querySelector('.endApproveDate');
-    const approveActionBtn = document.querySelector('.approve-action');
-    const dailyApproveContainer = document.querySelector('.dailyApprove');
+    const approveActionBtn = document.querySelector('.approve-action') as HTMLElement;
+    const dailyApproveContainer = document.querySelector('.dailyApprove') as HTMLElement;
 
     // Получаем все события на странице
 
@@ -71,6 +71,7 @@ export const approveEmploynment = (calendar: { view: { currentStart: string | nu
 
       // Создаем объект для хранения уникальных дат
       const uniqueDates = {};
+      console.log('uniqueDates: ', uniqueDates);
 
       eventsInCurrentWeek.forEach((event: { start: string | number | Date; }) => {
         const dateStr = formatDate(event.start as Date);
@@ -118,12 +119,12 @@ export const approveEmploynment = (calendar: { view: { currentStart: string | nu
       approveActionBtn.removeEventListener('click', approveAction);
 
       // Собираем выбранные даты
-      const selectedCheckboxes = dailyApproveContainer.querySelectorAll('input[type="checkbox"]:checked');
+      const selectedCheckboxes = dailyApproveContainer.querySelectorAll('input[type="checkbox"]:checked') as NodeListOf<HTMLInputElement>;
       const selectedDates = Array.from(selectedCheckboxes).map(cb => cb.value);
 
        // Фильтруем события по выбранным датам
-       const eventsToApprove = eventsInCurrentWeek.filter(event => {
-        const eventDateStr = formatDate(event.start, 'YYYY-MM-DD');
+       const eventsToApprove = eventsInCurrentWeek.filter((event: { start: Date; }) => {
+        const eventDateStr = formatDate(event.start as Date);
         return selectedDates.includes(eventDateStr);
       });
 
@@ -142,7 +143,7 @@ export const approveEmploynment = (calendar: { view: { currentStart: string | nu
         formDataApproved.append('Data[0][isName]', 'false');
         formDataApproved.append('Data[0][maninp]', 'false');
         formDataApproved.append('Data[0][GroupID]', '2443');
-        formDataApproved.append('ParentObjID', localStorage.getItem('iddb'));
+        formDataApproved.append('ParentObjID', getLocalStorageItem('iddb'));
         formDataApproved.append('CalcParamID', '-1');
         formDataApproved.append('InterfaceID', '1593');
         formDataApproved.append('ImportantInterfaceID', '');
@@ -159,7 +160,7 @@ export const approveEmploynment = (calendar: { view: { currentStart: string | nu
             if (event._def.defId === e._def.defId) {
               event.setExtendedProp('isApproved', managerName);
               event.dropable = false;
-              fullCalendar.fullCalendarInit();
+              // fullCalendar.fullCalendarInit();
             }
           });
         });
