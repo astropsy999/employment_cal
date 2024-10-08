@@ -142,7 +142,7 @@ export function getTemplateNoFooter(event) {
     : '';
 
   const deleteAvailable =
-    event.extendedProps.isApproved === ''
+    event.extendedProps.isApproved === '' || process.env.NODE_ENV === 'development'
       ? `<div class="modal-footer d-flex justify-content-end bg-light px-card border-top-0">
 <button class="btn btn-falcon-primary btn-sm" id="delEventBtn" data-delID="${event.extendedProps.delID}" data-typeID="${event.extendedProps.typeID}"><i class="bi bi-trash-fill align-content-center"></i>Удалить <span class="fas fa-angle-right fs--2 ml-1">
   </span>
@@ -274,6 +274,6 @@ export function getTemplateNoFooterNoDelete(event) {
     getStackIcon('fas fa-sticky-note') +
       '<div class="flex-1"><b>Примечания: </b><p class="mb-1">' +
       event.extendedProps.notes || ''
-  }</p></div></div></div>
+  }</p></div></div></div>${deleteAvailable}
 `;
 }

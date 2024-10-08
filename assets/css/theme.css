@@ -3615,6 +3615,15 @@ textarea.form-control-lg {
   padding-left: 1.5em;
   margin-bottom: 0.34375rem;
 }
+.dailyApprove .form-check {
+  margin-right: 10px;
+  margin-left: 5px;
+}
+
+.dailyApprove .form-check-label {
+  cursor: pointer;
+  margin-left: -3px;
+}
 .form-check .form-check-input {
   float: left;
   margin-left: -1.5em;
