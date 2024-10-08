@@ -62,7 +62,7 @@ export function getTemplate(event) {
     : '';
 
   const editDeleteAvilable =
-    event.extendedProps.isApproved === ''
+    event.extendedProps.isApproved === '' || process.env.NODE_ENV === 'development'
       ? `<div class="modal-footer d-flex justify-content-end bg-light px-card border-top-0">
       <button class="btn btn-falcon-default btn-sm" id="editEventBtn" data-idx="${event.extendedProps.idx}">
       <span class="fas fa-pencil-alt fs--2 mr-2"></span> Редактировать</button>

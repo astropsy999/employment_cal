@@ -12,11 +12,9 @@ import {
 import { getSelectedUserData } from '../api/getSlectedUserData';
 import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
 import { tempLoader } from '../ui/tempLoader';
-import { isInvalidElem, isValidElem } from './toggleElem';
-import { buttonLoader } from '../ui/buttonLoader';
 
 //  Функция форматирования даты из объекта даты в привычный вид дд.мм.гггг
-export function formatDate(date) {
+export function formatDate(date: Date) {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = String(date.getFullYear());
@@ -24,7 +22,7 @@ export function formatDate(date) {
   return `${day}.${month}.${year}`;
 }
 
-export function formatDayNameDate(date) {
+export function formatDayNameDate(date: { toLocaleDateString: (arg0: string, arg1: { weekday: string; }) => any; getDate: () => any; }) {
   // Получаем сокращенное название дня недели на русском
   const dayName = date.toLocaleDateString('ru-RU', { weekday: 'short' });
 
@@ -34,9 +32,18 @@ export function formatDayNameDate(date) {
   return `${dayName} ${day}`;
 }
 
+export function convertToISODate(dateString: string) {
+  const parts = dateString.split('.');
+  const day = parts[0].padStart(2, '0');
+  const month = parts[1].padStart(2, '0');
+  const year = parts[2];
+
+  return `${year}-${month}-${day}`;
+}
+
 // Функция перевода времени на 3 часа назад
 
-export const minusThreeHours = (date) => {
+export const minusThreeHours = (date: string | number | Date) => {
   const d = new Date(date);
   const newD = new Date(d.setHours(d.getHours() - 3));
 
@@ -45,7 +52,7 @@ export const minusThreeHours = (date) => {
 
 // Добавляем 0 перед числом день, месяц, время
 
-export const addZeroBefore = (datePart) => {
+export const addZeroBefore = (datePart: number) => {
   const datePartStr = datePart.toString();
 
   if (datePartStr.length == 1) {
@@ -55,7 +62,7 @@ export const addZeroBefore = (datePart) => {
 
 // Изменяем формат даты-времени c объекта Data на подходящий для базы данных => dd.mm.yyyy hh:mm
 
-export const transformDateTime = (clickedDateAndTime) => {
+export const transformDateTime = (clickedDateAndTime: Date) => {
   // Достаем нужные параметры из ячейки на которую кликнули
 
   const day = addZeroBefore(clickedDateAndTime.getDate());
@@ -69,7 +76,7 @@ export const transformDateTime = (clickedDateAndTime) => {
 
 // Функция, которая меняет даты и время начала и окончания события
 
-export const changeEventStartEndDateTime = (id, start, end, iddb) => {
+export const changeEventStartEndDateTime = (id: string | Blob, start: string | Blob, end: string | Blob, iddb: string | Blob) => {
   const formDataEventStartEndDateTime = new FormData();
 
   formDataEventStartEndDateTime.append('ID', id);
@@ -107,7 +114,7 @@ export const changeEventStartEndDateTime = (id, start, end, iddb) => {
 
 // Функция, которая отправляет вместо значения "Не выбрано" - пустую строку
 
-export const notChoosenCleaning = (value) => {
+export const notChoosenCleaning = (value: string | undefined) => {
   if (value === 'Не выбрано' || value === undefined) {
     return '';
   } else return value;
@@ -115,9 +122,9 @@ export const notChoosenCleaning = (value) => {
 
 // Определяем открыто или закрыто окно массового добавления события
 
-export const isAddEventModalOpen = (eventModalID) => {
+export const isAddEventModalOpen = (eventModalID: any) => {
   const openedModal = document.querySelector(`#${eventModalID}`);
-  if (openedModal.classList.contains('show')) {
+  if (openedModal!.classList.contains('show')) {
     return true;
   } else return false;
 };
@@ -125,11 +132,11 @@ export const isAddEventModalOpen = (eventModalID) => {
 // Функция изменения времени начала, окончания и общего времени события в базе
 
 export const sendNewEndDateTimeToBase = (
-  changeId,
-  newFacttime,
-  newStartDatetime,
-  newEndDatetime,
-  iddb,
+  changeId: string | Blob,
+  newFacttime: string | Blob,
+  newStartDatetime: string | number | Date,
+  newEndDatetime: string | number | Date,
+  iddb: string | Blob,
 ) => {
   let newEndDateTimeFormData = new FormData();
 
@@ -179,7 +186,7 @@ export const sendNewEndDateTimeToBase = (
 
 // Функция отметки обязательности заполнения поля для валидации
 
-export const selValidation = (elem) => {
+export const selValidation = (elem: { previousElementSibling: any; }) => {
   // Находим название элемента
   const selLabel = elem?.previousElementSibling;
   selLabel?.classList.add('val-selector');
@@ -187,7 +194,7 @@ export const selValidation = (elem) => {
 
 // Функция снятия отметки обязательности заполнения поля для валидации
 
-export const selRemoveValidation = (elem) => {
+export const selRemoveValidation = (elem: { previousElementSibling: any; }) => {
   // Находим название элемента
   const selLabel = elem?.previousElementSibling;
   selLabel.classList.remove('val-selector');
@@ -204,7 +211,7 @@ export const changeTextToIconForMobile = () => {
 
 // Преобразование дд.мм.гггг чч:мм в гггг-мм-дд чч:мм:сс
 
-export const convertDateTime = (olddatetime) => {
+export const convertDateTime = (olddatetime: string) => {
   const nessDate = olddatetime.slice(0, 10);
   const nessTime = olddatetime.slice(11, 16);
 
@@ -213,8 +220,8 @@ export const convertDateTime = (olddatetime) => {
 };
 
 // Функция проверки правильности ввода данных при добавлении\редактирования события и запрета выхода за пределы суток
-let isOutOfRange;
-export const checkAndForbiddenOutOfDay = (startElem, endElem, timeElem) => {
+let isOutOfRange: boolean;
+export const checkAndForbiddenOutOfDay = (startElem: { value: string; }, endElem: { value: string; classList: { add: (arg0: string) => void; remove: (arg0: string) => void; }; style: { color: string; }; }, timeElem: { value: string | number; classList: { add: (arg0: string) => void; remove: (arg0: string) => void; }; style: { color: string; }; }) => {
   const convStrt = convertDateTime(startElem.value);
   const convEnd = convertDateTime(endElem.value);
   const startDay = new Date(convStrt).getDate();
@@ -240,7 +247,7 @@ export const checkAndForbiddenOutOfDay = (startElem, endElem, timeElem) => {
 
 // Валидация временных инпутов
 
-export const timeInputsValidation = (endTimeEl, TimeEl) => {
+export const timeInputsValidation = (endTimeEl: { classList: { add: (arg0: string) => void; remove: (arg0: string) => void; }; style: { color: string; }; }, TimeEl: { classList: { add: (arg0: string) => void; remove: (arg0: string) => void; }; style: { color: string; }; }) => {
   if (isOutOfRange) {
     endTimeEl.classList.add('is-invalid');
     endTimeEl.style.color = 'red';
@@ -256,7 +263,7 @@ export const timeInputsValidation = (endTimeEl, TimeEl) => {
 
 // Заменяем ровные 0000 на 2359
 
-export const changeDirectZero = (elemEnd, elemTime) => {
+export const changeDirectZero = (elemEnd: { value: string; classList: { remove: (arg0: string) => void; }; style: { color: string; }; }, elemTime: { classList: { remove: (arg0: string) => void; }; style: { color: string; }; }) => {
   // const date = elemEnd.value.slice(0, 10)
   const changeTime = elemEnd.value.slice(11, 16);
 
@@ -295,7 +302,7 @@ export const removeAlarmFromSelectorsInModals = () => {
   });
 };
 
-export const cleanAndDefaultKindOfSubTaskSelector = (subtaskEl) => {
+export const cleanAndDefaultKindOfSubTaskSelector = (subtaskEl: { options: string | any[]; append: (arg0: HTMLOptionElement) => void; value: string; }) => {
   if (subtaskEl) {
     subtaskEl.options.length = 0;
     const subTaskOption = document.createElement('option');
@@ -308,28 +315,28 @@ export const cleanAndDefaultKindOfSubTaskSelector = (subtaskEl) => {
 
 // Разница между датами начала и окончания
 
-export const rangeHoursBetweenDates = () => {
-  const start = eventStartDate.value;
-  const end = eventEndDate.value;
+// export const rangeHoursBetweenDates = () => {
+//   const start = eventStartDate.value;
+//   const end = eventEndDate.value;
 
-  const convStrt = convertDateTime(start);
-  const convEnd = convertDateTime(end);
+//   const convStrt = convertDateTime(start);
+//   const convEnd = convertDateTime(end);
 
-  const parsedStart = new Date(convStrt);
-  const parsedEnd = new Date(convEnd);
+//   const parsedStart = new Date(convStrt);
+//   const parsedEnd = new Date(convEnd);
 
-  const diffDates = parsedEnd - parsedStart;
-  const diffHours = diffDates / (1000 * 60 * 60);
+//   const diffDates = parsedEnd - parsedStart;
+//   const diffHours = diffDates / (1000 * 60 * 60);
 
-  eventSpentTime.value = diffHours;
+//   eventSpentTime.value = diffHours;
 
-  checkAndForbiddenOutOfDay(eventStartDate, eventEndDate, eventSpentTime);
-  timeInputsValidation(eventEndDate, eventSpentTime);
-};
+//   checkAndForbiddenOutOfDay(eventStartDate, eventEndDate, eventSpentTime);
+//   timeInputsValidation(eventEndDate, eventSpentTime);
+// };
 
 // Если Отпуск или Больничный => Затраченное время равно 0 + блокировка возможности изменения поля
 
-export const checkEmploymentStatus = (etarget) => {
+export const checkEmploymentStatus = (etarget: { querySelector: (arg0: string) => any; querySelectorAll: (arg0: string) => any; removeEventListener: (arg0: string, arg1: () => void) => void; addEventListener: (arg0: string, arg1: () => void) => void; }) => {
   const modalContentForm = etarget.querySelector('.modal-content form');
   const eventName = etarget.querySelector('.eventName');
 
@@ -413,7 +420,7 @@ export const checkEmploymentStatus = (etarget) => {
       spentTime ? spentTime.removeAttribute('disabled') : null;
       selValidation(location);
       selValidation(typeoftasks);
-      rangeHoursBetweenDates();
+      // rangeHoursBetweenDates();
     }
 
     if (location?.value === 'В дороге') {
