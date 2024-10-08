@@ -1,9 +1,10 @@
 import * as C from '../config';
 import { fullCalendar } from '../utils/fullcalendar';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { formatDate, blockBtnAddTitle, formatDayNameDate } from '../utils/mainGlobFunctions';
 import { Modal } from 'bootstrap';
 
-export const approveEmploynment = (calendar) => {
+export const approveEmploynment = (calendar: { view: { currentStart: string | number | Date; currentEnd: string | number | Date; }; getEvents: () => any; }) => {
   const approveBtn = document.querySelector('.approveBtn');
 
   const approveAction = () => {
@@ -11,15 +12,15 @@ export const approveEmploynment = (calendar) => {
     const currentView = calendar.view;
 
     // Получаем фамилию выбранного пользователя
-    const otherUsersSelector = document.querySelector('#otherUsers');
-    const selectedUser = otherUsers?.selectedOptions[0].textContent;
-    const selectedUserId = otherUsers?.value;
+    const otherUsersSelector = document.querySelector('#otherUsers') as HTMLSelectElement;
+    const selectedUser = otherUsersSelector?.selectedOptions[0].textContent;
+    const selectedUserId = otherUsersSelector?.value;
 
-    const userSurname = document.querySelector('.userSurname');
+    const userSurname = document.querySelector('.userSurname') as HTMLElement;
     userSurname.textContent = selectedUser;
 
     const approveEmplmodal = document.querySelector('#approveEmplModal');
-    const modal = new Modal(approveEmplmodal);
+    const modal = new Modal(approveEmplmodal!);
 
     // Использование функции для преобразования дат
     const startDate = new Date(calendar.view.currentStart);
@@ -36,14 +37,14 @@ export const approveEmploynment = (calendar) => {
 
     const currentEvents = calendar.getEvents();
 
-    const eventsInCurrentWeek = currentEvents.filter((event) => {
+    const eventsInCurrentWeek = currentEvents.filter((event: { start: any; }) => {
       const eventStart = event.start;
       return eventStart >= startDate && eventStart <= endDate;
     });
 
     // После фильтрации событий в текущей неделе
     const lastEvent = eventsInCurrentWeek.reduce(
-      (latestEvent, currentEvent) => {
+      (latestEvent: { start: any; }, currentEvent: { start: any; }) => {
         const latestEventDate = latestEvent ? latestEvent.start : null;
         const currentEventDate = currentEvent.start;
 
@@ -57,22 +58,22 @@ export const approveEmploynment = (calendar) => {
     );
 
     // Если есть последнее событие, получаем его дату
-    eventsInCurrentWeek.sort((a, b) => a.start - b.start);
+    eventsInCurrentWeek.sort((a: { start: number; }, b: { start: number; }) => a.start - b.start);
     const firstEventDate = eventsInCurrentWeek[0].start;
     const lastEventDate = lastEvent.start;
 
-    endApproveDate.textContent = formatDate(lastEventDate);
-    startApproveDate.textContent = formatDate(firstEventDate);
+    endApproveDate!.textContent = formatDate(lastEventDate);
+    startApproveDate!.textContent = formatDate(firstEventDate);
 
      // Генерация списка дат с чекбоксами
      const generateDateList = () => {
-      dailyApproveContainer.innerHTML = ''; // Очищаем контейнер
+      dailyApproveContainer!.innerHTML = ''; // Очищаем контейнер
 
       // Создаем объект для хранения уникальных дат
       const uniqueDates = {};
 
-      eventsInCurrentWeek.forEach((event) => {
-        const dateStr = formatDate(event.start, 'YYYY-MM-DD');
+      eventsInCurrentWeek.forEach((event: { start: string | number | Date; }) => {
+        const dateStr = formatDate(event.start as Date);
         if (!uniqueDates[dateStr]) {
           uniqueDates[dateStr] = {
             date: new Date(event.start),
@@ -130,7 +131,7 @@ export const approveEmploynment = (calendar) => {
       eventsToApprove.forEach((e) => {
         const delID = e._def.extendedProps.delID;
 
-        const managerName = localStorage.getItem('managerName');
+        const managerName = getLocalStorageItem('managerName');
 
         let formDataApproved = new FormData();
 

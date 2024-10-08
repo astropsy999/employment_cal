@@ -20,6 +20,7 @@ import { Modal } from 'bootstrap';
 import { tempLoader } from '../ui/tempLoader';
 import { buttonLoader } from '../ui/buttonLoader';
 import { forceCalendarRecalculate } from '../utils/fullcalendar';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 
 const api = {
   srvv: C.srvv,
@@ -73,7 +74,7 @@ export const massMonthAddEvent = (calendar, info) => {
   const emplObj = JSON.parse(sessionStorage.getItem('emplObj'));
 
   const isRootUser =
-    localStorage.getItem('managerName') ===
+    getLocalStorageItem('managerName') ===
     localStorage.getItem('selectedUserName');
 
   // Выпадающие списки

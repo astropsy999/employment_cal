@@ -1,3 +1,4 @@
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 import {
   blockBtnAddTitle,
   unblockBtnAddTitle,
@@ -9,7 +10,7 @@ import {
  * @param {*} calendar
  */
 
-export const checkCurrentEventsAndBlockApproveBtn = (calendar) => {
+export const checkCurrentEventsAndBlockApproveBtn = (calendar: { on: (arg0: string, arg1: (info: any) => void) => void; getEvents: () => any[]; }) => {
   const approveBtn = document.querySelector('.approveBtn');
   const lockBtn = document.querySelector('.lockBtn');
   // Проверяем наличие событий при переключении дат и блокируем кнопку если не
@@ -19,7 +20,7 @@ export const checkCurrentEventsAndBlockApproveBtn = (calendar) => {
       const endDate = info.end;
 
       const selectedUserName = localStorage.getItem('selectedUserName');
-      const managerName = localStorage.getItem('managerName');
+      const managerName = getLocalStorageItem('managerName');
       const selectedUserLevel = Number(localStorage.getItem('managerLevel'));
       const currentUserLevel = Number(
         localStorage.getItem('currentManagerLevel'),

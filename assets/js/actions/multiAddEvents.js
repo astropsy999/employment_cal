@@ -9,6 +9,7 @@ import addMethodToBase from '../methods/addMethodToBase';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
 import { buttonLoader } from '../ui/buttonLoader';
 import { tempLoader } from '../ui/tempLoader';
+import { get } from 'lodash';
 
 const api = {
   srvv: C.srvv,
@@ -43,7 +44,7 @@ export const multipleAddEventsToBase = (multipleEventsArray, calendar) => {
   const multiAddTaskToCalBtn = document.querySelector('#multiAddTaskToCalBtn');
 
   const isRootUser =
-    localStorage.getItem('managerName') ===
+    getLocalStorageItem('managerName') ===
     localStorage.getItem('selectedUserName');
 
   const isMethodsAvailableMode =

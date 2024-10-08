@@ -5,6 +5,7 @@ import { isManager } from '../api/isManager';
 import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
 import { tempLoader } from '../ui/tempLoader';
 import { forceCalendarRecalculate } from '../utils/fullcalendar';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 import {
   formatDate,
   getMonthRange,
@@ -72,7 +73,7 @@ export const changeUserData = (calendar, userID) => {
       const selectedUser = e.target.value.toString();
       const selectedUserName = e.target.selectedOptions[0].textContent;
       localStorage.setItem('selectedUserName', selectedUserName);
-      const managerName = localStorage.getItem('managerName');
+      const managerName = getLocalStorageItem('managerName');
       localStorage.setItem('iddb', selectedUser);
 
       // Если на стыке месяцев, то интервал расширяем до 2х месяцев

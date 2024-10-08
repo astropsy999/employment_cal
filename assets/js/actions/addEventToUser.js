@@ -43,9 +43,9 @@ export const addEventToUser = (calendar) => {
       kindOfTasks.value === 'Техническое диагностирование' ||
       kindOfSubTask.value === 'Проведение контроля в лаборатории';
 
-    const isRootUser =
-      localStorage.getItem('managerName') ===
-      localStorage.getItem('selectedUserName');
+    // const isRootUser =
+    //   localStorage.getItem('managerName') ===
+    //   localStorage.getItem('selectedUserName');
 
     let justAddedDelID = '';
     const iddb = localStorage.getItem('iddb');

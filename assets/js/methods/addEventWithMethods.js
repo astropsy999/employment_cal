@@ -9,6 +9,7 @@ import {
 import { tempLoader } from '../ui/tempLoader';
 import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
 import { buttonLoader } from '../ui/buttonLoader';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 /**
  * Функция для добавлиния события при наличии в задаче метода или таблицы методов
  * @param {*} firstEventObj
@@ -224,7 +225,7 @@ const addEventWithMethods = (
       });
 
       const isRootUser =
-        localStorage.getItem('managerName') ===
+        getLocalStorageItem('managerName') ===
         localStorage.getItem('selectedUserName');
 
       // Добавляем событие без перезагрузки
