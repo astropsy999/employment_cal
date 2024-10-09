@@ -9,14 +9,10 @@ import {
   getLocalStorageItem,
   setLocalStorageItem,
 } from '../utils/localStorageUtils';
-import {
-  convertToISODate,
-  formatDate,
-  formatDayNameDate,
-} from '../utils/mainGlobFunctions';
+
 import { Calendar, EventApi } from '@fullcalendar/core';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
-import { getDatesInRange } from '../utils/datesUtils';
+import { convertToISODate, formatDate, getDatesInRange } from '../utils/datesUtils';
 import { approveAndLockAction } from './approveAndLockAction';
 
 /**

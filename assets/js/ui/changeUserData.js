@@ -7,7 +7,6 @@ import { tempLoader } from '../ui/tempLoader';
 import { forceCalendarRecalculate } from '../utils/fullcalendar';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import {
-  formatDate,
   getMonthRange,
   blockBtnAddTitle,
   unblockBtnAddTitle,

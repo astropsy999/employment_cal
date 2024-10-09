@@ -1,26 +1,23 @@
-import {
-  selValidation,
-  transformDateTime,
-  addZeroBefore,
-  getParentIDfromDate,
-  notChoosenCleaning,
-  convertDateTime,
-  refreshBtnAction,
-  validateTotalTimeOnObject,
-  handleWooTime,
-  calculateTotalHours,
-  transformToMethods,
-} from '../utils/mainGlobFunctions';
+import { Modal } from 'bootstrap';
 import * as GDD from '../api/getDropDownData';
 import * as C from '../config';
-import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
 import addMethodToBase from '../methods/addMethodToBase';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
-import { Modal } from 'bootstrap';
-import { tempLoader } from '../ui/tempLoader';
 import { buttonLoader } from '../ui/buttonLoader';
+import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
+import { tempLoader } from '../ui/tempLoader';
 import { forceCalendarRecalculate } from '../utils/fullcalendar';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
+import {
+  convertDateTime,
+  getParentIDfromDate,
+  handleWooTime,
+  notChoosenCleaning,
+  refreshBtnAction,
+  selValidation,
+  transformToMethods,
+  validateTotalTimeOnObject
+} from '../utils/mainGlobFunctions';
 
 const api = {
   srvv: C.srvv,

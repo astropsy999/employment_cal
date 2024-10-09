@@ -3,8 +3,9 @@ import { EventImpl } from '@fullcalendar/core/internal';
 import { Modal } from 'bootstrap';
 import * as C from '../config';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
-import { blockBtnAddTitle, formatDate } from '../utils/mainGlobFunctions';
+import { blockBtnAddTitle } from '../utils/mainGlobFunctions';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
+import { formatDate } from '../utils/datesUtils';
 
 
 export const approveEmploynment = (calendar: Calendar) => {

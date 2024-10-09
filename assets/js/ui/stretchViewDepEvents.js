@@ -1,4 +1,5 @@
-import { minusThreeHours } from '../utils/mainGlobFunctions';
+
+
 /**
  * Расширение и сужение границ календаря в соответствии с длительностью отображаемых событий
  * @param {*} calendar

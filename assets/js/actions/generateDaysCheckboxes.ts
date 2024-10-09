@@ -1,5 +1,5 @@
 import { EventApi } from '@fullcalendar/core';
-import { formatDate, formatDayNameDate } from '../utils/mainGlobFunctions';
+import { formatDate } from '../utils/datesUtils';
 
 interface UniqueDate {
   date: Date;
@@ -82,7 +82,7 @@ export const generateDaysCheckboxes = (
     const label = document.createElement('label');
     label.classList.add('form-check-label');
     label.htmlFor = `checkbox-${dateStr}`;
-    label.textContent = formattedDate;
+    label.textContent = `${formattedDate}`;
 
     // Дополнительно: отображение количества событий, если они есть
     // if (uniqueDate.events && uniqueDate.events.length > 0) {
@@ -98,3 +98,7 @@ export const generateDaysCheckboxes = (
     element.appendChild(div);
   });
 };
+function formatDayNameDate(date: Date) {
+  throw new Error('Function not implemented.');
+}
+

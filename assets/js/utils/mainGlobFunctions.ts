@@ -13,66 +13,66 @@ import { getSelectedUserData } from '../api/getSlectedUserData';
 import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
 import { tempLoader } from '../ui/tempLoader';
 
-//  Функция форматирования даты из объекта даты в привычный вид дд.мм.гггг
-export function formatDate(date: Date) {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear());
+// //  Функция форматирования даты из объекта даты в привычный вид дд.мм.гггг
+// export function formatDate(date: Date) {
+//   const day = String(date.getDate()).padStart(2, '0');
+//   const month = String(date.getMonth() + 1).padStart(2, '0');
+//   const year = String(date.getFullYear());
 
-  return `${day}.${month}.${year}`;
-}
+//   return `${day}.${month}.${year}`;
+// }
 
-export function formatDayNameDate(date: { toLocaleDateString: (arg0: string, arg1: { weekday: string; }) => any; getDate: () => any; }) {
-  // Получаем сокращенное название дня недели на русском
-  const dayName = date.toLocaleDateString('ru-RU', { weekday: 'short' });
+// export function formatDayNameDate(date: { toLocaleDateString: (arg0: string, arg1: { weekday: string; }) => any; getDate: () => any; }) {
+//   // Получаем сокращенное название дня недели на русском
+//   const dayName = date.toLocaleDateString('ru-RU', { weekday: 'short' });
 
-  // Получаем номер дня месяца с ведущим нулем
-  const day = String(date.getDate()).padStart(2, '0');
+//   // Получаем номер дня месяца с ведущим нулем
+//   const day = String(date.getDate()).padStart(2, '0');
 
-  return `${dayName} ${day}`;
-}
+//   return `${dayName} ${day}`;
+// }
 
-export function convertToISODate(dateString: string) {
-  const parts = dateString.split('.');
-  const day = parts[0].padStart(2, '0');
-  const month = parts[1].padStart(2, '0');
-  const year = parts[2];
+// export function convertToISODate(dateString: string) {
+//   const parts = dateString.split('.');
+//   const day = parts[0].padStart(2, '0');
+//   const month = parts[1].padStart(2, '0');
+//   const year = parts[2];
 
-  return `${year}-${month}-${day}`;
-}
+//   return `${year}-${month}-${day}`;
+// }
 
-// Функция перевода времени на 3 часа назад
+// // Функция перевода времени на 3 часа назад
 
-export const minusThreeHours = (date: string | number | Date) => {
-  const d = new Date(date);
-  const newD = new Date(d.setHours(d.getHours() - 3));
+// export const minusThreeHours = (date: string | number | Date) => {
+//   const d = new Date(date);
+//   const newD = new Date(d.setHours(d.getHours() - 3));
 
-  return newD;
-};
+//   return newD;
+// };
 
-// Добавляем 0 перед числом день, месяц, время
+// // Добавляем 0 перед числом день, месяц, время
 
-export const addZeroBefore = (datePart: number) => {
-  const datePartStr = datePart.toString();
+// export const addZeroBefore = (datePart: number) => {
+//   const datePartStr = datePart.toString();
 
-  if (datePartStr.length == 1) {
-    return `0${datePartStr}`;
-  } else return datePartStr;
-};
+//   if (datePartStr.length == 1) {
+//     return `0${datePartStr}`;
+//   } else return datePartStr;
+// };
 
-// Изменяем формат даты-времени c объекта Data на подходящий для базы данных => dd.mm.yyyy hh:mm
+// // Изменяем формат даты-времени c объекта Data на подходящий для базы данных => dd.mm.yyyy hh:mm
 
-export const transformDateTime = (clickedDateAndTime: Date) => {
-  // Достаем нужные параметры из ячейки на которую кликнули
+// export const transformDateTime = (clickedDateAndTime: Date) => {
+//   // Достаем нужные параметры из ячейки на которую кликнули
 
-  const day = addZeroBefore(clickedDateAndTime.getDate());
-  const month = addZeroBefore(clickedDateAndTime.getMonth() + 1);
-  const year = addZeroBefore(clickedDateAndTime.getFullYear());
-  const hours = addZeroBefore(clickedDateAndTime.getHours());
-  const mins = addZeroBefore(clickedDateAndTime.getMinutes());
+//   const day = addZeroBefore(clickedDateAndTime.getDate());
+//   const month = addZeroBefore(clickedDateAndTime.getMonth() + 1);
+//   const year = addZeroBefore(clickedDateAndTime.getFullYear());
+//   const hours = addZeroBefore(clickedDateAndTime.getHours());
+//   const mins = addZeroBefore(clickedDateAndTime.getMinutes());
 
-  return `${day}.${month}.${year} ${hours}:${mins}`;
-};
+//   return `${day}.${month}.${year} ${hours}:${mins}`;
+// };
 
 // Функция, которая меняет даты и время начала и окончания события
 

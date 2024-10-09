@@ -1,9 +1,7 @@
 import * as C from '../config';
-import { stretchViewDepEvents } from '../ui/stretchViewDepEvents';
 import {
-  addZeroBefore,
   refreshBtnAction,
-  transformToMethods,
+  transformToMethods
 } from '../utils/mainGlobFunctions';
 /**
  * Сохранение отредактированных данных в таблице методов
