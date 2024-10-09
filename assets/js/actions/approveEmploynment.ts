@@ -1,10 +1,13 @@
-import * as C from '../config';
-import { fullCalendar } from '../utils/fullcalendar';
-import { getLocalStorageItem } from '../utils/localStorageUtils';
-import { formatDate, blockBtnAddTitle, formatDayNameDate } from '../utils/mainGlobFunctions';
+import { Calendar } from '@fullcalendar/core';
+import { EventImpl } from '@fullcalendar/core/internal';
 import { Modal } from 'bootstrap';
+import * as C from '../config';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
+import { blockBtnAddTitle, formatDate } from '../utils/mainGlobFunctions';
+import { generateDaysCheckboxes } from './generateDaysCheckboxes';
 
-export const approveEmploynment = (calendar: { view: { currentStart: string | number | Date; currentEnd: string | number | Date; }; getEvents: () => any; }) => {
+
+export const approveEmploynment = (calendar: Calendar) => {
   const approveBtn = document.querySelector('.approveBtn');
 
   const approveAction = () => {
@@ -37,81 +40,40 @@ export const approveEmploynment = (calendar: { view: { currentStart: string | nu
 
     const currentEvents = calendar.getEvents();
 
-    const eventsInCurrentWeek = currentEvents.filter((event: { start: any; }) => {
+    const eventsInCurrentWeek = currentEvents.filter((event: EventImpl) => {
       const eventStart = event.start;
-      return eventStart >= startDate && eventStart <= endDate;
+      return eventStart! >= startDate && eventStart! <= endDate;
     });
 
     // После фильтрации событий в текущей неделе
     const lastEvent = eventsInCurrentWeek.reduce(
-      (latestEvent: { start: any; }, currentEvent: { start: any; }) => {
+      (latestEvent: EventImpl, currentEvent: EventImpl) => {
         const latestEventDate = latestEvent ? latestEvent.start : null;
         const currentEventDate = currentEvent.start;
 
-        if (!latestEventDate || currentEventDate > latestEventDate) {
+        if (!latestEventDate || currentEventDate! > latestEventDate) {
           return currentEvent;
         } else {
           return latestEvent;
         }
       },
-      null,
+      eventsInCurrentWeek[0] as EventImpl,
     );
 
     // Если есть последнее событие, получаем его дату
-    eventsInCurrentWeek.sort((a: { start: number; }, b: { start: number; }) => a.start - b.start);
+    eventsInCurrentWeek.sort(
+      (a: EventImpl, b: EventImpl) =>
+        (a.start as Date).getTime() - (b.start as Date).getTime(),
+    );
+
     const firstEventDate = eventsInCurrentWeek[0].start;
     const lastEventDate = lastEvent.start;
 
-    endApproveDate!.textContent = formatDate(lastEventDate);
-    startApproveDate!.textContent = formatDate(firstEventDate);
+    endApproveDate!.textContent = formatDate(lastEventDate!);
+    startApproveDate!.textContent = formatDate(firstEventDate!);
 
      // Генерация списка дат с чекбоксами
-     const generateDateList = () => {
-      dailyApproveContainer!.innerHTML = ''; // Очищаем контейнер
-
-      // Создаем объект для хранения уникальных дат
-      const uniqueDates = {};
-      console.log('uniqueDates: ', uniqueDates);
-
-      eventsInCurrentWeek.forEach((event: { start: string | number | Date; }) => {
-        const dateStr = formatDate(event.start as Date);
-        if (!uniqueDates[dateStr]) {
-          uniqueDates[dateStr] = {
-            date: new Date(event.start),
-            events: [],
-          };
-        }
-        uniqueDates[dateStr].events.push(event);
-      });
-
-      // Создаем чекбоксы для каждой уникальной даты
-      Object.keys(uniqueDates).forEach((dateStr) => {
-        const dateObj = uniqueDates[dateStr].date;
-        const formattedDate = formatDayNameDate(dateObj);
-
-        const div = document.createElement('div');
-        div.classList.add('form-check');
-
-        const checkbox = document.createElement('input');
-        checkbox.classList.add('form-check-input');
-        checkbox.type = 'checkbox';
-        checkbox.value = dateStr;
-        checkbox.id = `checkbox-${dateStr}`;
-        checkbox.checked = true; // По умолчанию все даты выбраны
-
-        const label = document.createElement('label');
-        label.classList.add('form-check-label');
-        label.htmlFor = `checkbox-${dateStr}`;
-        label.textContent = formattedDate;
-
-        div.appendChild(checkbox);
-        div.appendChild(label);
-
-        dailyApproveContainer.appendChild(div);
-      });
-    };
-
-    generateDateList();
+    generateDaysCheckboxes(dailyApproveContainer, eventsInCurrentWeek);
 
     // Подтверждение согласования события
 
@@ -123,13 +85,14 @@ export const approveEmploynment = (calendar: { view: { currentStart: string | nu
       const selectedDates = Array.from(selectedCheckboxes).map(cb => cb.value);
 
        // Фильтруем события по выбранным датам
-       const eventsToApprove = eventsInCurrentWeek.filter((event: { start: Date; }) => {
+       const eventsToApprove = eventsInCurrentWeek.filter((event: EventImpl) => {
         const eventDateStr = formatDate(event.start as Date);
         return selectedDates.includes(eventDateStr);
       });
 
 
-      eventsToApprove.forEach((e) => {
+      eventsToApprove.forEach((e: EventImpl) => {
+
         const delID = e._def.extendedProps.delID;
 
         const managerName = getLocalStorageItem('managerName');
@@ -156,10 +119,11 @@ export const approveEmploynment = (calendar: { view: { currentStart: string | nu
           body: formDataApproved,
         }).then((response) => {
           const changedCalendarEvents = calendar.getEvents();
-          changedCalendarEvents.forEach((event) => {
+          changedCalendarEvents.forEach((event: EventImpl) => {
+
             if (event._def.defId === e._def.defId) {
               event.setExtendedProp('isApproved', managerName);
-              event.dropable = false;
+              // event.dropable = false;
               // fullCalendar.fullCalendarInit();
             }
           });

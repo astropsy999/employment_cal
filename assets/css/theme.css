@@ -3620,7 +3620,17 @@ textarea.form-control-lg {
   margin-left: 5px;
 }
 
+.dailyBlockContainer .form-check {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
 .dailyApprove .form-check-label {
+  cursor: pointer;
+  margin-left: -3px;
+}
+
+.dailyBlockContainer .form-check-label {
   cursor: pointer;
   margin-left: -3px;
 }
@@ -27898,6 +27908,6 @@ div[data-collapse] + .kanban-item {
 }
 
 .description-container {
-  max-height: 200px; 
-  overflow-y: auto; 
+  max-height: 200px;
+  overflow-y: auto;
 }
