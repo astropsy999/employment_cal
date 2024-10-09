@@ -64,23 +64,29 @@ const getSelectedDates = (): string[] => {
     '.dailyBlockContainer input[type="checkbox"]:checked',
   );
   const selectedDates: string[] = [];
+  console.log("🚀 ~ getSelectedDates ~ selectedDates:", selectedDates)
   checkboxes.forEach((checkbox) => {
     selectedDates.push(checkbox.value);
   });
+    console.log("🚀 ~ checkboxes.forEach ~ selectedDates:", selectedDates)
   return selectedDates;
 };
+
 
 /**
  * Получает массив ObjID для выбранных дат.
  * @param selectedDates - Массив строковых представлений выбранных дат (формат YYYY-MM-DD).
+ console.log("🚀 ~ selectedDates:", selectedDates)
  * @returns Массив ObjID.
  */
 const getSelectedObjIDs = (selectedDates: string[]): string[] => {
+  console.log("🚀 ~ getSelectedObjIDs ~ selectedDates:", selectedDates)
   const parentIdDataArr =
     getLocalStorageItem('parentIdDataArr') || [];
   const selectedObjIDs: string[] = [];
 
   selectedDates.forEach((dateStr) => {
+    console.log("🚀 ~ selectedDates.forEach ~ selectedDates:", selectedDates)
     const obj = parentIdDataArr.find(
       (obj: { [key: string]: string }) => obj[Object.keys(obj)[0]] === dateStr,
     );
@@ -195,6 +201,7 @@ const lockingAction = async (
   selectedObjIDs: string[],
   isLocked: boolean,
   modal: Modal,
+  calendar: Calendar
 ) => {
   const managerName =
     getLocalStorageItem('managerName') || 'Unknown Manager';
@@ -300,7 +307,10 @@ const lockingAction = async (
     alert(
       'Произошла ошибка при блокировке/разблокировке. Пожалуйста, попробуйте снова.',
     );
+  } finally {
+
   }
+  
 };
 
 
@@ -364,11 +374,13 @@ const setupApprovalPopover = (
       // Получаем выбранные даты и ObjID
       const selectedDates = getSelectedDates();
       const selectedObjIDs = getSelectedObjIDs(selectedDates);
+      console.log("🚀 ~ noOnPopover.addEventListener ~ selectedDates:", selectedDates)
       // Выполняем блокировку без согласования
       await lockingAction(
         selectedObjIDs,
         getLocalStorageItem('isWeekLocked') ?? false,
         modal,
+        calendar
       );
     });
 
@@ -390,7 +402,7 @@ const setupApprovalPopover = (
 export const lockEmploynment = async (calendar: Calendar) => {
   const lockBtn = document.querySelector('.lockBtn');
 
-  const lockAction = async () => {
+  const lockAction = async () => {  
     const isLocked = getLocalStorageItem('isWeekLocked') ?? false;
 
     // Получаем фамилию выбранного пользователя
@@ -467,7 +479,8 @@ export const lockEmploynment = async (calendar: Calendar) => {
       const selectedDates = getSelectedDates();
       const selectedObjIDs = getSelectedObjIDs(selectedDates);
       // Выполняем блокировку
-      await lockingAction(selectedObjIDs, isLocked, modal);
+      await lockingAction(selectedObjIDs, isLocked, modal, calendar);
+     
     };
 
     // Добавляем обработчики событий на кнопки блокировки/разблокировки
@@ -478,11 +491,17 @@ export const lockEmploynment = async (calendar: Calendar) => {
       '.unlock-action',
     ) as HTMLButtonElement;
 
+      // Remove existing event listeners
+    lockActionBtn?.removeEventListener('click', lockingActionHandler);
+    unlockActionBtn?.removeEventListener('click', lockingActionHandler);
+
+    // Add event listeners
     if (!hasUnsubmittedEvents) {
       lockActionBtn?.addEventListener('click', lockingActionHandler);
     }
     unlockActionBtn?.addEventListener('click', lockingActionHandler);
   };
 
+  lockBtn?.removeEventListener('click', lockAction);
   lockBtn?.addEventListener('click', lockAction);
 };

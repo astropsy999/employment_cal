@@ -3,7 +3,7 @@ import { addEventToCal } from './actions/addEvent';
 import { approveEmploynment } from './actions/approveEmploynment';
 import { delEvent } from './actions/delEvent';
 import { editEvent } from './actions/editEvent';
-import { lockEmploynment } from './actions/lockEmploynment';
+import { lockEmploynment } from './actions/lockEmployment';
 import { massMonthAddEvent } from './actions/massMonthAddEvent';
 import { multipleAddEventsToBase } from './actions/multiAddEvents';
 import * as GDD from './api/getDropDownData';
@@ -234,7 +234,7 @@ const employmentCalendar = async () => {
         eventRemove: function () {
           calendar.render();
         },
-
+        
         eventContent,
         contentHeight: 'auto',
         stickyHeaderDates: true,
