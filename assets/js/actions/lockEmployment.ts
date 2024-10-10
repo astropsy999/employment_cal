@@ -256,7 +256,9 @@ const lockingAction = async (
         throw new Error(`Failed to save cache for ObjID: ${ObjID}`);
       }
     }
-
+      location.reload();
+      // calendar.render();
+    // debugger
     // Обновление локального хранилища
     let currentLockedDatesArr =
       getLocalStorageItem('lockedDatesArray') || [];
@@ -277,6 +279,7 @@ const lockingAction = async (
     if (!isLocked) {
       toggleIcon('unlock');
       addBlockOverlays();
+
     } else {
       toggleIcon('lock');
       removeOverlays();
@@ -297,6 +300,8 @@ const lockingAction = async (
       unlockActionBtn.textContent = 'Разблокировано';
       lockActionBtn.textContent = 'Да';
     }
+
+
 
     // Закрытие модального окна после задержки
     setTimeout(() => {

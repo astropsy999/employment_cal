@@ -98,7 +98,7 @@ const employmentCalendar = async () => {
 
   /* -------------------------------------------------------------------------- */
 
-  
+
   const idDB = await getUserID();
   console.log('idDB: ', idDB);
 
@@ -134,6 +134,12 @@ const employmentCalendar = async () => {
   /* -------------------------------------------------------------------------- */
   let { events, parentIdDataArr, lockedDatesArray } =
     parseResievedDataToCal(data);
+
+    console.log(
+      '🚀 ~ employmentCalendar ~ lockedDatesArray:',
+      lockedDatesArray,
+    );
+
 
   sessionStorage.setItem('events', JSON.stringify(events));
   localStorage.setItem('lockedDatesArray', JSON.stringify(lockedDatesArray));
@@ -234,7 +240,7 @@ const employmentCalendar = async () => {
         eventRemove: function () {
           calendar.render();
         },
-        
+
         eventContent,
         contentHeight: 'auto',
         stickyHeaderDates: true,
