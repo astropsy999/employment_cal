@@ -1,3 +1,5 @@
+import { Calendar, Duration, DurationInput } from "@fullcalendar/core";
+import { minusThreeHours } from "../utils/datesUtils";
 
 
 /**
@@ -10,20 +12,20 @@
  * @returns
  */
 export const stretchViewDepEvents = (
-  calendar,
-  viewStart,
-  viewEnd,
-  slotmintime,
-  slotmaxtime,
+  calendar: Calendar,
+  viewStart: string | number | Date,
+  viewEnd: string | number | Date,
+  slotmintime: DurationInput | Duration | null | undefined,
+  slotmaxtime: DurationInput | Duration | null | undefined,
 ) => {
   // Все эвенты
 
   const allEvents = calendar.getEventSources()[0].internalEventSource.meta;
 
   // Получаем только эвенты между видимыми датами
-  const viewEvents = [];
+  const viewEvents: any[] = [];
 
-  allEvents.forEach((ev) => {
+  allEvents.forEach((ev: { start: string | number | Date; }) => {
     if (
       new Date(ev.start) > minusThreeHours(viewStart) &&
       new Date(ev.start) < minusThreeHours(viewEnd)
@@ -32,8 +34,8 @@ export const stretchViewDepEvents = (
     }
   });
 
-  let minViewTimeArr = [];
-  let maxViewTimeArr = [];
+  let minViewTimeArr: number[] = [];
+  let maxViewTimeArr: number[] = [];
   let minViewTime;
   let maxViewTime;
 
@@ -42,10 +44,10 @@ export const stretchViewDepEvents = (
     maxViewTimeArr.push(new Date(el.end).getHours());
   });
 
-  minViewTime = Math.min(Math.min(...minViewTimeArr), +slotmintime.slice(0, 2));
+  minViewTime = Math.min(Math.min(...minViewTimeArr), +(slotmintime as string)?.slice(0, 2));
   maxViewTime = Math.max(
     Math.max(...maxViewTimeArr),
-    +slotmaxtime.slice(0, 2) - 1,
+    +(slotmaxtime as string)?.slice(0, 2) - 1,
   );
 
   return [minViewTime, maxViewTime];

@@ -2,8 +2,8 @@ import { addEventToUser } from '../actions/addEventToUser';
 import { getTypesOfWorkOptions } from '../api/getDropDownData';
 import { getSelectedUserData } from '../api/getSlectedUserData';
 import { isManager } from '../api/isManager';
-import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
-import { tempLoader } from '../ui/tempLoader';
+import { parseResievedDataToCal } from './parseResievedDataToCal';
+import { tempLoader } from './tempLoader';
 import { forceCalendarRecalculate } from '../utils/fullcalendar';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import {

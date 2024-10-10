@@ -1,4 +1,3 @@
-import { wooTimeIsOver } from '../utils/mainGlobFunctions';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
 /**
@@ -7,7 +6,7 @@ import { isInvalidElem, isValidElem } from '../utils/toggleElem';
  * @param {*} wooElem
  * @param {*} api
  */
-const showMethodsTable = (eventInfo, wooElem, api) => {
+const showMethodsTable = (eventInfo: { extendedProps: { methods: any; taskTypeNew: any; subTaskTypeNew: any; }; }, wooElem: { after: (arg0: HTMLDivElement) => void; }, api: { srvv: any; addValueObjTrue: any; deleteNodeURL: any; }) => {
   const { srvv, addValueObjTrue, deleteNodeURL } = api;
   let isEditMode = false;
   const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn');
@@ -43,7 +42,7 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
   let tBody = document.querySelector('.methods-tbody');
   if (tBody) {
     if (methodsArray) {
-      methodsArray.forEach((tablelem) => {
+      methodsArray.forEach((tablelem: HTMLTableRowElement) => {
         const method = Object.keys(tablelem)[0];
         const methodParams = Object.values(tablelem)[0];
 
@@ -76,19 +75,19 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * Отправка отредактированных методов в базу данных
    * @param {*} methData
    */
-  const sendEditedMethodToBase = (methData) => {
+  const sendEditedMethodToBase = (methData: { methVal: any; durVal: any; objqVal: any; zonesVal: any; editID: any; }) => {
     const { methVal, durVal, objqVal, zonesVal, editID } = methData;
 
     const editEventModal = document.querySelector('#editEventModal');
-    const delID = editEventModal.getAttribute('delID');
+    const delID = editEventModal?.getAttribute('delID') as string;
 
-    const methodsTbody = editEventModal.querySelector('.methods-tbody');
+    const methodsTbody = editEventModal?.querySelector('.methods-tbody');
 
     function sumUneditedMethodsTime() {
-      let tableRows = methodsTbody.querySelectorAll('tr.hover-actions-trigger');
+      let tableRows = methodsTbody?.querySelectorAll('tr.hover-actions-trigger');
       let sum = 0;
-      tableRows.forEach((row) => {
-        let secondColumnValue = parseInt(row.children[1].textContent);
+      tableRows?.forEach((row) => {
+        let secondColumnValue = parseInt(row.children[1].textContent!);
         if (!isNaN(secondColumnValue)) {
           sum += secondColumnValue;
         }
@@ -96,12 +95,12 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
       return sum;
     }
 
-    const allMethodsTimeSum = sumUneditedMethodsTime();
-    const editedSpentTime = document.querySelector('#eventEditSpentTime');
+    const allMethodsTimeSum = sumUneditedMethodsTime().toString();
+    const editedSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
 
-    const editedSpentTimeValue = document.querySelector(
+    const editedSpentTimeValue = (document.querySelector(
       '#eventEditSpentTime',
-    ).value;
+    ) as HTMLInputElement)?.value;
 
     if (allMethodsTimeSum > editedSpentTimeValue) {
       isInvalidElem(editedSpentTime);
@@ -110,11 +109,11 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
 
       const timeHeader = document.querySelector(
         'th[scope="col"]:nth-of-type(2)',
-      );
-      timeHeader.textContent = `Время методов не может быть > ${editedSpentTimeValue}ч`;
-      timeHeader.style.border = '2px solid red';
-      timeHeader.style.color = 'red';
-      editSaveTaskBtn.setAttribute('disabled', 'disabled');
+      ) as HTMLTableHeaderCellElement;
+      timeHeader!.textContent = `Время методов не может быть > ${editedSpentTimeValue}ч`;
+      timeHeader!.style.border = '2px solid red';
+      timeHeader!.style.color = 'red';
+      editSaveTaskBtn!.setAttribute('disabled', 'disabled');
 
       return;
     }
@@ -170,13 +169,13 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * Отправка отредактированной строки в таблице методов в базу данных
    * @param {*} ev
    */
-  const switchOffEditModeBase = (ev) => {
-    let edMetDataObj = {};
+  const switchOffEditModeBase = (ev: Event) => {
+    let edMetDataObj: any = {};
 
-    const editedString = ev.target.closest('tr');
-    const editID = editedString.getAttribute('editid');
+    const editedString = (ev.target as HTMLElement)?.closest('tr');
+    const editID = editedString!.getAttribute('editid');
     edMetDataObj['editID'] = editID;
-    let tdArray = [];
+    let tdArray: any[] = [];
 
     if (editedString) {
       tdArray = [...editedString.querySelectorAll('td')];
@@ -222,11 +221,11 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * Редактирование строки методов в таблице методов
    * @param {*} ev
    */
-  const editStringOfTableBase = (ev) => {
+  const editStringOfTableBase = (ev: Event) => {
     if (!isEditMode) {
       isEditMode = true;
-      const edString = ev.target.closest('tr');
-      let tdArr = [];
+      const edString = (ev.target as HTMLElement)?.closest('tr');
+      let tdArr: HTMLTableCellElement[] = [];
       if (edString) {
         tdArr = [...edString.querySelectorAll('td')];
       }
@@ -238,9 +237,9 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
             td.innerHTML = `<input class="form-control" type="number" min="1" value =${td.innerText} onkeyup="if(this.value<0){this.value = this.value * -1}"></input>`;
           } else {
             const newVal = td.innerText;
-            const selectElem = wooMetod.innerHTML;
-            td.innerHTML = `<select class="form-select" id="wooMetodEdit">${selectElem}</select>`;
-            const editSelMeth = document.querySelector('#wooMetodEdit');
+            // const selectElem = wooMetod.innerHTML;
+            // td.innerHTML = `<select class="form-select" id="wooMetodEdit">${selectElem}</select>`;
+            const editSelMeth = document.querySelector('#wooMetodEdit') as HTMLSelectElement;
             editSelMeth.value = newVal;
           }
         } else {
@@ -251,27 +250,27 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
       });
 
       const saveEditedBtn = document.querySelector('.save-edited');
-      saveEditedBtn.addEventListener('click', (e) => {
-        const editedSpentTime = document.querySelector('#eventEditSpentTime');
-        const editedString = e.target.closest('tr');
+      saveEditedBtn?.addEventListener('click', (e) => {
+        const editedSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
+        const editedString =( e.target as HTMLElement)?.closest('tr');
 
-        const metSelTd = editedString.querySelector('.methods-select');
-        const selMetSel = metSelTd.querySelector('select');
+        const metSelTd = editedString?.querySelector('.methods-select');
+        const selMetSel = metSelTd?.querySelector('select');
 
-        if (selMetSel.value !== 'Не выбрано') {
+        if (selMetSel?.value !== 'Не выбрано') {
           const wooTimes = document.querySelectorAll('.wootime');
           let totalWooTime = 0;
 
           wooTimes.forEach((time) => {
             let content = time.innerHTML;
             if (content.includes('<input')) {
-              let value = time.querySelector('input').value;
-              totalWooTime += +value;
+              let value = time.querySelector('input')?.value;
+              totalWooTime += +value!;
             } else {
               totalWooTime += +content;
             }
           });
-          if (totalWooTime <= editedSpentTime.value) {
+          if (totalWooTime <= parseInt(editedSpentTime?.value)) {
             switchOffEditModeBase(e);
             isValidElem(editedSpentTime);
           } else {
@@ -294,10 +293,10 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
    * Удаление строки из таблицы методов
    * @param {*} ev
    */
-  const deleteStringOfTableBase = (ev) => {
-    const delStr = ev.target.closest('tr');
-    const methDelID = delStr.getAttribute('editid');
-    delStr.remove();
+  const deleteStringOfTableBase = (ev: Event) => {
+    const delStr = (ev.target as HTMLElement)?.closest('tr');
+    const methDelID = delStr?.getAttribute('editid');
+    delStr?.remove();
 
     fetch(srvv + deleteNodeURL + `?ID=${methDelID}&TypeID=1149&TabID=1685`, {
       credentials: 'include',

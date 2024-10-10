@@ -1,17 +1,14 @@
-import { srvv, delObjMassUrl, delTabID } from '../config';
-import {
-  calculateTotalHours,
-  clearMonthCells,
-} from '../utils/mainGlobFunctions';
+import { Calendar } from '@fullcalendar/core';
+import { delObjMassUrl, delTabID, srvv } from '../config';
 
 export const delEvent = (
-  info,
-  delID,
-  isMultiMode,
-  modal,
-  typeID,
-  shiftKeyUp,
-  calendar,
+  info: { view: { calendar: { prev: () => void; next: () => void; }; }; event: { remove: () => void; }; },
+  delID: any,
+  isMultiMode: boolean,
+  modal: { hide: () => void; },
+  typeID: any,
+  shiftKeyUp: (this: Document, ev: KeyboardEvent) => any,
+  calendar: Calendar,
 ) => {
   const delEventBtn = document.querySelector('#delEventBtn');
 
@@ -21,7 +18,7 @@ export const delEvent = (
     const formDataDel = new FormData();
     formDataDel.append(
       'IDDelObj',
-      `[{"ObjID":"${delID}","TypeID":"${'1040' || typeID}"}]`,
+      `[{"ObjID":"${delID}","TypeID":"${typeID || '1040'}"}]`,
     );
     formDataDel.append('TypeID', '');
     formDataDel.append('TabID', delTabID);

@@ -1,25 +1,62 @@
-import { Modal } from 'bootstrap';
-import { getSelectedUserData } from '../api/getSlectedUserData';
-import { changeUserData } from '../ui/changeUserData';
+import { buttonLoader } from '../ui/buttonLoader';
+import { tempLoader } from '../ui/tempLoader';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 import {
   convertDateTime,
   refreshBtnAction,
   transformToMethods,
 } from '../utils/mainGlobFunctions';
-import { tempLoader } from '../ui/tempLoader';
-import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
-import { buttonLoader } from '../ui/buttonLoader';
-import { getLocalStorageItem } from '../utils/localStorageUtils';
 /**
  * Функция для добавлиния события при наличии в задаче метода или таблицы методов
  * @param {*} firstEventObj
  * @param {*} methodsArray
  * @param {*} setViewAndDateToLS
  */
+
+interface EventObject { 
+  OBJTYPEID: any; 
+  addCalcParamID: any; 
+  addZeroName: any; 
+  cleanTodayDate: any; 
+  dataGroupID: any; 
+  dataInterfaceID: any; 
+  eleventhCol: any; 
+  endDate: any; 
+  eventNotesVal: any; 
+  eventSourceVal: any; 
+  fifteenthCol: any; 
+  fifthCol: any; 
+  fourteenthCol: any; 
+  fourthCol: any; 
+  idDB: any; 
+  kindOfSubTaskID: any; 
+  kindOfTasksID: any; 
+  locationVal: any; 
+  longDeskVal: any; 
+  ninthCol: any; 
+  parentID: any; 
+  spentTimeVal: any; 
+  startDate: any; 
+  taskCreatorID: any; 
+  taskObjAttr: any; 
+  tenthCol: any; 
+  thirteenthCol: any; 
+  titleVal: any; 
+  userCol: any; 
+  srvv: any; 
+  createNodeUrl: any; 
+  employmentVal: any; 
+  calendar: any; 
+  krBase: any; 
+  taskCreatorVal: any; 
+  taskObjVal: any; 
+  kindOfTasksVal: any; 
+  kindOfSubTaskVal: any; 
+}
 const addEventWithMethods = (
-  firstEventObj,
-  methodsArray,
-  setViewAndDateToLS,
+  firstEventObj: EventObject ,
+  methodsArray: any[],
+  setViewAndDateToLS: any,
 ) => {
   const {
     OBJTYPEID,
@@ -60,10 +97,11 @@ const addEventWithMethods = (
     taskObjVal,
     kindOfTasksVal,
     kindOfSubTaskVal,
+    
   } = firstEventObj;
 
   let formDataMet = new FormData();
-  const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
+  const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn') as HTMLButtonElement;
 
   formDataMet.append('ObjTypeID', OBJTYPEID);
   formDataMet.append('ParentID', parentID);
@@ -165,7 +203,7 @@ const addEventWithMethods = (
     .then((data) => {
       const { object, parent } = data.results[0];
       buttonLoader(eventTaskModalBtn);
-      Modal.getInstance(addEventModal).hide();
+      // Modal.getInstance(addEventModal)!.hide();
 
       // Добавляем Методы
 
@@ -242,7 +280,7 @@ const addEventWithMethods = (
           delID: object,
           director: taskCreatorVal,
           factTime: spentTimeVal,
-          fullDescription: longDesc.value,
+          fullDescription: longDeskVal,
           notes: eventNotesVal,
           object: taskObjVal,
           source: eventSourceVal,

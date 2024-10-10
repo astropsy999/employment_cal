@@ -23,50 +23,50 @@ import {
 import addWooContainer from './methods/addWooContainer';
 import getEmplReport from './report/getEmplReport';
 import repModalTemplate from './report/repModalTemplate';
+
 import { usersForManagersSelector } from './ui/calendarHeader';
 import { changeUserData } from './ui/changeUserData';
+
 import { Modal } from 'bootstrap';
+import { buttonLoader } from './ui/buttonLoader';
 import {
   addBlockOverlays,
   removeOverlays,
   toggleIcon,
 } from './ui/checkBlockedDays';
 import { checkCurrentEventsAndBlockApproveBtn } from './ui/checkCurrentEvents';
-import { eventContent } from './ui/eventContent.js';
-import { eventDrop } from './ui/eventDrop.js';
+import { eventContent } from './ui/eventContent';
+import { eventDrop } from './ui/eventDrop';
 import { parseResievedDataToCal } from './ui/parseResievedDataToCal';
-import { saveHighlightedReg } from './ui/saveHighlightedReg.js';
-import { setViewAndDateToLS } from './ui/setViewAndDateToLS.js';
-import { stretchViewDepEvents } from './ui/stretchViewDepEvents.js';
+import { saveHighlightedReg } from './ui/saveHighlightedReg';
+import { stretchViewDepEvents } from './ui/stretchViewDepEvents';
 import {
   getTemplate,
   getTemplateNoFooter,
   getTemplateNoFooterNoDelete,
-} from './ui/templates.js';
+} from './ui/templates';
 import { tempLoader } from './ui/tempLoader';
-import { docReady, utils } from './utils/docReady.js';
+import { docReady, utils } from './utils/docReady';
 import { renderCalendar } from './utils/fullcalendar';
 import {
-  addZeroBefore,
+  addTotalTimeToMonthCells,
+  blockBtnAddTitle,
+  calculateTotalHours,
   changeDirectZero,
   checkAndForbiddenOutOfDay,
   checkEmploymentStatus,
+  clearMonthCells,
   convertDateTime,
   getMonthRange,
   isOutOfRange,
   noEditPartOfInput,
   removeAlarmFromSelectorsInModals,
   selValidation,
-  timeInputsValidation,
-  transformDateTime,
-  blockBtnAddTitle,
   sendNewEndDateTimeToBase,
-  addTotalTimeToMonthCells,
-  calculateTotalHours,
-  clearMonthCells,
+  timeInputsValidation,
 } from './utils/mainGlobFunctions';
 import { toggleElem } from './utils/toggleElem';
-import { buttonLoader } from './ui/buttonLoader';
+import { getLocalStorageItem } from './utils/localStorageUtils';
 
 export const api = {
   srvv,
@@ -84,7 +84,7 @@ const employmentCalendar = async () => {
   /*                                    Utils                                   */
   /* -------------------------------------------------------------------------- */
 
-  docReady();
+  docReady(() => {});
 
   /* -------------------------------------------------------------------------- */
   /*                                FullCalendar                                */
@@ -110,7 +110,7 @@ const employmentCalendar = async () => {
   GDD.getLocationOptions();
   GDD.getEmplOptions();
   localStorage.getItem('iddb') &&
-    GDD.getGlobalTasksTypes(localStorage.getItem('iddb'));
+    GDD.getGlobalTasksTypes(getLocalStorageItem('iddb'));
   /* -------------------------------------------------------------------------- */
 
   /*                 ПОЛУЧЕНИЕ ДАННЫХ ДЛЯ КАЛЕНДАРЯ                             */

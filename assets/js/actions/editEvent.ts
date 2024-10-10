@@ -20,6 +20,11 @@ import {
 } from '../utils/mainGlobFunctions';
 import { isInvalidElem } from '../utils/toggleElem';
 import { findParentID } from './eventsActions';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
+import { minusThreeHours, transformDateTime } from '../utils/datesUtils';
+import flatpickr from 'flatpickr';
+import { Instance } from 'flatpickr/dist/types/instance';
+import { get } from 'lodash';
 
 /**
  * Редактирование задачи
@@ -37,29 +42,29 @@ const api = {
   GetExcelforCalc: C.GetExcelforCalc,
 };
 
-export const editEvent = (info, calendar, modal, editedEvent) => {
-  const eventEditTitle = document.querySelector('#eventEditTitle');
-  const taskEditCreator = document.querySelector('#taskEditCreator');
-  const taskEditObj = document.querySelector('#taskEditObj');
-  const longEditDesc = document.querySelector('#longEditDesc');
-  const kindOfEditTasks = document.querySelector('#kindOfEditTasks');
-  const kindOfSubEditTask = document.querySelector('#kindOfSubEditTask');
-  const eventEditStartDate = document.querySelector('#eventEditStartDate');
-  const eventEditEndDate = document.querySelector('#eventEditEndDate');
-  const eventEditSpentTime = document.querySelector('#eventEditSpentTime');
-  const eventEditSource = document.querySelector('#eventEditSource');
-  const eventEditNotes = document.querySelector('#eventEditNotes');
-  const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn');
-  const locEditObj = document.querySelector('#locEditObj');
-  const employmentEdit = document.querySelector('#employmentEdit');
-  const editEventBtn = document.querySelector('#editEventBtn');
-  const kindOfSubTask = document.querySelector('#kindOfSubTask');
+export const editEvent = (info: { event: { _def: { extendedProps: any; title?: any; }; _instance: { range: { start: any; end: any; }; }; }; }, calendar: any, modal: Modal, editedEvent: any) => {
+  const eventEditTitle = document.querySelector('#eventEditTitle') as HTMLInputElement;
+  const taskEditCreator = document.querySelector('#taskEditCreator') as HTMLSelectElement;
+  const taskEditObj = document.querySelector('#taskEditObj') as HTMLSelectElement;
+  const longEditDesc = document.querySelector('#longEditDesc') as HTMLTextAreaElement;
+  const kindOfEditTasks = document.querySelector('#kindOfEditTasks') as HTMLSelectElement;
+  const kindOfSubEditTask = document.querySelector('#kindOfSubEditTask') as HTMLSelectElement;
+  const eventEditStartDate = document.querySelector('#eventEditStartDate') as HTMLInputElement;
+  const eventEditEndDate = document.querySelector('#eventEditEndDate') as HTMLInputElement;
+  const eventEditSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
+  const eventEditSource = document.querySelector('#eventEditSource') as HTMLSelectElement;
+  const eventEditNotes = document.querySelector('#eventEditNotes') as HTMLTextAreaElement;
+  const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn') as HTMLButtonElement;
+  const locEditObj = document.querySelector('#locEditObj') as HTMLSelectElement;
+  const employmentEdit = document.querySelector('#employmentEdit') as HTMLSelectElement;
+  const editEventBtn = document.querySelector('#editEventBtn') as HTMLButtonElement;
+  const kindOfSubTask = document.querySelector('#kindOfSubTask') as HTMLSelectElement;
   let kindOfSubTaskList = [];
-  const dataObj = JSON.parse(sessionStorage.getItem('dataObj'));
-  const dataCreator = JSON.parse(sessionStorage.getItem('dataCreator'));
-  const locObj = JSON.parse(sessionStorage.getItem('locObj'));
-  const emplObj = JSON.parse(sessionStorage.getItem('emplObj'));
-  const globalTasksTypes = JSON.parse(localStorage.getItem('globalTasksTypes'));
+  const dataObj = JSON.parse(sessionStorage.getItem('dataObj')!);
+  const dataCreator = JSON.parse(sessionStorage.getItem('dataCreator')!);
+  const locObj = JSON.parse(sessionStorage.getItem('locObj')!);
+  const emplObj = JSON.parse(sessionStorage.getItem('emplObj')!);
+  const globalTasksTypes = JSON.parse(localStorage.getItem('globalTasksTypes')!);
   const methodsFromServer = info.event._def.extendedProps.methods;
   const savedTaskFromServer = info.event._def.extendedProps.taskTypeNew;
   const taskTypeNew = info.event._def.extendedProps.taskTypeNew;
@@ -76,7 +81,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
   GDD.getTypesOfWorkOptions(
     kindOfEditTasks,
     kindOfSubEditTask,
-    localStorage.getItem('iddb'),
+    getLocalStorageItem('iddb'),
   );
 
   /**
@@ -84,8 +89,8 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
    */
   const checkAndShowCheckMark = () => {
     if (locObject === 'Заказчик' && settings.isKRChekboxAvailable) {
-      const checkMarkRow = eventEditModal.querySelector('.check-mark');
-      const checkElem = checkMarkRow.querySelector('.check-elem');
+      const checkMarkRow = eventEditModal?.querySelector('.check-mark');
+      const checkElem = checkMarkRow?.querySelector('.check-elem');
 
       if (!checkElem) {
         // Add check mark
@@ -96,7 +101,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
         <input class="form-control form-check-input" type="checkbox" value="" id="flexCheckDefault">
         </div>`;
 
-        checkMarkRow.append(checkMarkElem);
+        checkMarkRow?.append(checkMarkElem);
       }
     }
   };
@@ -154,10 +159,10 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
     });
   }
 
-  flatpickrStart.setDate(minusThreeHours(info.event._instance.range.start));
-  flatpickrEnd.setDate(minusThreeHours(info.event._instance.range.end));
+  (flatpickrStart as Instance).setDate(minusThreeHours(info.event._instance.range.start));
+(flatpickrEnd as Instance).setDate(minusThreeHours(info.event._instance.range.end));
 
-  eventEditSpentTime.value = (endTime - startTime) / (1000 * 60 * 60);
+  eventEditSpentTime.value = ((endTime - startTime) / (1000 * 60 * 60)).toString();
   eventEditSource.value = info.event._def.extendedProps.source;
   eventEditNotes.value = info.event._def.extendedProps.notes;
   locEditObj.value = info.event._def.extendedProps.location || 'Не выбрано';
@@ -170,8 +175,8 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
    */
   const updateKindOfEditSubtaskListOnChange = () => {
     const kindOfEditTasks = document.querySelector('#kindOfEditTasks');
-    const kindOfSubEditTask = document.querySelector('#kindOfSubEditTask');
-    const dataTasksID = JSON.parse(localStorage.getItem('dataTasksID'));
+    const kindOfSubEditTask = document.querySelector('#kindOfSubEditTask') as HTMLSelectElement;
+    const dataTasksID = getLocalStorageItem('dataTasksID');
 
     if (
       kindOfEditTasks &&
@@ -210,7 +215,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
           if (kindOfSubTaskList.length > 0) {
             cleanAndDefaultKindOfSubTaskSelector(kindOfSubEditTask);
 
-            kindOfSubTaskList.forEach((subtask) => {
+            kindOfSubTaskList.forEach((subtask: { Name: string; ID: any; }) => {
               const subTaskOption = document.createElement('option');
               const noQuoteSubTaskName = subtask.Name.replaceAll('&quot;', '"');
               const subtaskid = subtask.ID;
@@ -220,7 +225,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
               kindOfSubEditTask.append(subTaskOption);
             });
             kindOfSubEditTask.value =
-              'Не выбрано' || info.event._def.extendedProps.subTaskTypeNew;
+              info.event._def.extendedProps.subTaskTypeNew || 'Не выбрано';
             kindOfSubEditTask.value = 'Не выбрано';
           }
         })
@@ -248,24 +253,24 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
       modal.hide();
       updateKindOfEditSubtaskListOnChange();
-      let jAmethodsTable;
-      let justRemovedMethods = [];
+      let jAmethodsTable: Element | null;
+      let justRemovedMethods: any[] = [];
 
       document.addEventListener('shown.bs.modal', (e) => {
         const openedModal = e.target;
 
-        const woo = openedModal.querySelector('.woo');
+        const woo = (openedModal as HTMLElement)?.querySelector('.woo');
 
         woo?.addEventListener('click', (e) => {
           const isDeleteBtnClicked =
-            e.target.classList.contains('delete-string');
+            (e.target as HTMLElement)?.classList.contains('delete-string');
 
           if (isDeleteBtnClicked) {
-            const deletedString = e.target.closest('tr');
-            const methName = deletedString.querySelector('.bg-info').innerText;
-            const duration = deletedString.children[1].innerText;
-            const objects = deletedString.children[2].innerText.trim();
-            const zones = deletedString.children[3].innerText;
+            const deletedString = (e.target as HTMLElement)?.closest('tr');
+            const methName = (deletedString?.querySelector('.bg-info') as HTMLElement)?.innerText;
+            const duration = (deletedString?.children[1] as HTMLElement)?.innerText;
+            const objects = (deletedString?.children[2] as HTMLElement)?.innerText.trim();
+            const zones = (deletedString?.children[3] as HTMLElement)?.innerText;
             const deletedMethodObj = {
               method: methName,
               params: { duration, objects, zones },
@@ -290,17 +295,17 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
       // let selectedTaskID;
 
-      modal = new Modal(editEventModal);
-      editEventModal.setAttribute('delID', delID);
+      // modal = new Modal(editEventModal);
+      // editEventModal.setAttribute('delID', delID);
 
-      const dataTasksID = JSON.parse(localStorage.getItem('dataTasksID'));
+      const dataTasksID = getLocalStorageItem('dataTasksID');
 
-      const handleKindOfEditTasksChange = (selectedTaskID) => {
+      const handleKindOfEditTasksChange = (selectedTaskID: string | Blob) => {
         kindOfEditTasks.value =
           info.event._def.extendedProps.taskTypeNew || 'Не выбрано';
 
         const foundString = globalTasksTypes.find(
-          (str) => str.Name === info.event._def.extendedProps.taskTypeNew,
+          (str: { Name: any; }) => str.Name === info.event._def.extendedProps.taskTypeNew,
         );
         if (taskTypeNew !== '') {
           selectedTaskID = foundString.ID;
@@ -339,7 +344,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
             kindOfEditSubTaskList = response.data;
             tempLoader(false);
             cleanAndDefaultKindOfSubTaskSelector(kindOfSubEditTask);
-            kindOfEditSubTaskList.forEach((subtask) => {
+            kindOfEditSubTaskList.forEach((subtask: { Name: string; ID: any; }) => {
               const subTaskOption = document.createElement('option');
               const noQuoteSubTaskName = subtask.Name.replaceAll('&quot;', '"');
               const subtaskid = subtask.ID;
@@ -380,7 +385,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       }
 
       const showTableOnModal = () => {
-        const wooElem = document.querySelector('.woo-title');
+        const wooElem = document.querySelector('.woo-title') as HTMLElement;
         const wooTableElem = document.querySelector('.woo');
 
         showMethodsTable(info.event._def, wooElem, api);
@@ -399,7 +404,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       document.removeEventListener('hidden.bs.modal', showTableOnModal);
 
       document.addEventListener('shown.bs.modal', (e) => {
-        let krCheck = document.querySelector('#flexCheckDefault');
+        let krCheck = document.querySelector('#flexCheckDefault') as HTMLInputElement;
         if (krCheck) {
           krCheck.checked = false;
         }
@@ -428,14 +433,14 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
         const parsedStart = new Date(convStrt);
         const parsedEnd = new Date(convEnd);
 
-        const diffDates = parsedEnd - parsedStart;
+        const diffDates = parsedEnd.getTime() - parsedStart.getTime();
         const diffDays = Math.ceil(diffDates / (1000 * 60 * 60 * 24));
         const diffHours = diffDates / (1000 * 60 * 60);
 
         if (diffHours.toString().length > 4) {
-          eventEditSpentTime.value = Math.ceil(diffHours);
+          eventEditSpentTime.value = Math.ceil(diffHours).toString();
         } else {
-          eventEditSpentTime.value = diffHours;
+          eventEditSpentTime.value = diffHours.toString();
         }
 
         checkAndForbiddenOutOfDay(
@@ -476,7 +481,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
         // Переводим часы из инпута Время в миллисекунды
 
-        const milliSpentTime = eventEditSpentTime.value * (60000 * 60);
+        const milliSpentTime = Number(eventEditSpentTime.value) * (60000 * 60);
 
         // Складываем время начала в миллисек и фактическое время в миллисек, получаем время окончания в миллисек
 
@@ -484,7 +489,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
         // Преобразовываем миллисекунды в дату окончания в нужном формате
 
-        const convertMillisecToEndDateValue = (endMilliSecondsDate) => {
+        const convertMillisecToEndDateValue = (endMilliSecondsDate: string | number | Date) => {
           const endDate = new Date(endMilliSecondsDate);
           return endDate;
         };
@@ -507,7 +512,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       });
 
       editSaveTaskBtn.addEventListener('click', (e) => {
-        if (!validateTotalTimeOnObject()) {
+        if (!validateTotalTimeOnObject('')) {
           e.preventDefault();
           isInvalidElem(eventEditSpentTime);
           return;
@@ -532,21 +537,15 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
           // Формируем объект для передачи данных на сервер
 
           const parentID = findParentID(
-            JSON.parse(localStorage.getItem('parentIdDataArr')),
+            getLocalStorageItem('parentIdDataArr'),
             eventEditStartDate.value,
           );
           const cleanTodayDate = eventEditStartDate.value.slice(0, 10);
 
-          const dataObjectsID = JSON.parse(
-            localStorage.getItem('dataObjectsID'),
-          );
-          const dataCreatorsID = JSON.parse(
-            localStorage.getItem('dataCreatorsID'),
-          );
-          const dataTasksID = JSON.parse(localStorage.getItem('dataTasksID'));
-          const dataSubTasksID = JSON.parse(
-            localStorage.getItem('dataSubTasksID'),
-          );
+          const dataObjectsID = getLocalStorageItem('dataObjectsID');
+          const dataCreatorsID = getLocalStorageItem('dataCreatorsID');
+          const dataTasksID = getLocalStorageItem('dataTasksID');
+          const dataSubTasksID = getLocalStorageItem('dataSubTasksID');
 
           const neededIDsObj = {
             ...dataObjectsID,
@@ -555,9 +554,9 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
             ...dataSubTasksID,
           };
 
-          const kr = document.querySelector('#flexCheckDefault');
+          const kr = document.querySelector('#flexCheckDefault') as HTMLInputElement;
           const krCheckBase = info.event._def.extendedProps.kr;
-          const krState = (krelem) => {
+          const krState = (krelem: HTMLInputElement) => {
             if (krelem && krelem.checked) {
               return 'Да';
             } else if (krCheckBase !== 'Нет') {
@@ -593,7 +592,6 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
               ].getAttribute('subtaskid') ||
               '',
             kindOfSubEditTaskVal: kindOfSubEditTask.value,
-            fourthCol: C.fourthCol,
             titleEditVal: eventEditTitle.value,
             longEditDeskVal: longEditDesc.value,
             ninthCol: C.ninthCol,
@@ -644,11 +642,11 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
         modal.hide();
       });
-      editEventModal.addEventListener('hide.bs.modal', () => {
-        delID = '';
-        editedEvent = '';
-        editSaveTaskBtn.removeAttribute('disabled');
-      });
+      // editEventModal.addEventListener('hide.bs.modal', () => {
+      //   delID = '';
+      //   editedEvent = '';
+      //   editSaveTaskBtn.removeAttribute('disabled');
+      // });
     });
   }
 };

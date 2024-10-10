@@ -302,7 +302,7 @@ export const removeAlarmFromSelectorsInModals = () => {
   });
 };
 
-export const cleanAndDefaultKindOfSubTaskSelector = (subtaskEl: { options: string | any[]; append: (arg0: HTMLOptionElement) => void; value: string; }) => {
+export const cleanAndDefaultKindOfSubTaskSelector = (subtaskEl: HTMLSelectElement) => {
   if (subtaskEl) {
     subtaskEl.options.length = 0;
     const subTaskOption = document.createElement('option');
@@ -746,7 +746,7 @@ const spentTimeMode = (mode) => {
 
 // Валидация общего времени за день vs общего времени затраченного на методы
 
-export const validateTotalTimeOnObject = (mode) => {
+export const validateTotalTimeOnObject = (mode: string | undefined) => {
   let eventSpentTime;
 
   if (mode) {

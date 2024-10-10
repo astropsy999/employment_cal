@@ -4,7 +4,7 @@
  * @param {*} delID
  * @param {*} api
  */
-export const addMethodToBase = (methodsArr, delID, api) => {
+export const addMethodToBase = (methodsArr: any[], delID: string | Blob, api: { srvv: any; createNodeUrl: any; }) => {
   const { srvv, createNodeUrl } = api;
 
   methodsArr.forEach((element, idx) => {

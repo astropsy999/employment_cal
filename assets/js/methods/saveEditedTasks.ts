@@ -1,4 +1,5 @@
 import * as C from '../config';
+import { convertDate } from '../utils/datesUtils';
 import {
   refreshBtnAction,
   transformToMethods
@@ -7,11 +8,58 @@ import {
  * Сохранение отредактированных данных в таблице методов
  * @param {*} eventEditObj
  */
+
+interface EventEditObject { 
+  delID: any; 
+  dataObjID: any; 
+  dataObjVal: any; 
+  fourthCol: any; 
+  fifthCol: any; 
+  dataGroupID: any; 
+  kindOfEditTasksID: any; 
+  kindOfSubEditTaskID: any; 
+  kindOfSubEditTaskVal: any; 
+  titleEditVal: any; 
+  longEditDeskVal: any; 
+  ninthCol: any; 
+  spentEditTimeVal: any; 
+  tenthCol: any; 
+  taskEditCreatorID: any; 
+  taskEditCreatorVal: any; 
+  eleventhCol: any; 
+  eventEditSourceVal: any; 
+  eventEditNotesVal: any; 
+  thirteenthCol: any; 
+  startEditDate: any; 
+  endEditDate: any; 
+  fourteenthCol: any; 
+  locationVal: any; 
+  fifteenthCol: any; 
+  idDB: any; 
+  dataInterfaceID: any; 
+  addValueObjTrue: any; 
+  srvv: any; 
+  calendar: any; 
+  krBase: any; 
+  emplEditVal: any; 
+  methodsFromServer: any; 
+  savedTaskFromServer: any; 
+  kindOfEditTasksVal: any; 
+}
+
+interface EditedEvent { 
+  setProp: (arg0: string, arg1: string) => void; 
+  setExtendedProp: (arg0: string, arg1: any[]) => void; 
+  _def: { extendedProps: { methods: any; }; }; 
+  setStart: (arg0: Date) => void; 
+  setEnd: (arg0: Date) => void; 
+} 
+
 const saveEditedTasks = (
-  eventEditObj,
-  editedEvent,
-  updatedMethods,
-  justRemovedMethods,
+  eventEditObj: EventEditObject,
+  editedEvent: EditedEvent,
+  updatedMethods: any,
+  justRemovedMethods: any[],
 ) => {
   const {
     delID,
@@ -63,9 +111,9 @@ const saveEditedTasks = (
    * @param {*} methodsFromServer
    */
 
-  const deleteAllMethodsIfChangedType = (methodsFromServer) => {
-    const methDelIDArr = [];
-    methodsFromServer.forEach((delId) => {
+  const deleteAllMethodsIfChangedType = (methodsFromServer: any[]) => {
+    const methDelIDArr: any[] = [];
+    methodsFromServer.forEach((delId: any[]) => {
       methDelIDArr.push(Object.values(delId)[0]['editID']);
     });
 
@@ -217,7 +265,7 @@ const saveEditedTasks = (
 
       if (justRemovedMethods && isMethodsAvailable) {
         const currentMethods = editedEvent._def.extendedProps.methods;
-        const updateCurrentMethods = currentMethods?.filter((meth) => {
+        const updateCurrentMethods = currentMethods?.filter((meth: {}) => {
           const methName = Object.keys(meth)[0];
           return !justRemovedMethods.some(
             (removedMeth) => removedMeth.method === methName,
@@ -239,19 +287,7 @@ const saveEditedTasks = (
         refreshBtnAction(calendar);
       }
 
-      // Функция для преобразования даты в формат, подходящий для создания объекта Date
-      function convertDate(dateString) {
-        let parts = dateString.split(' ');
-        let dateParts = parts[0].split('.');
-        let timeParts = parts[1].split(':');
-        return new Date(
-          dateParts[2],
-          dateParts[1] - 1,
-          dateParts[0],
-          timeParts[0],
-          timeParts[1],
-        );
-      }
+      
       let newStartDate = convertDate(startEditDate);
       let newStartDateHours = newStartDate.getHours();
       if (newStartDateHours < parseInt(minViewTime)) {

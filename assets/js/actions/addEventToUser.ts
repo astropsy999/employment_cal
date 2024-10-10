@@ -1,12 +1,16 @@
+import { Calendar } from '@fullcalendar/core';
+import { Modal } from 'bootstrap';
 import * as c from '../config';
-import { findParentID } from './eventsActions';
-import * as mainFunc from '../utils/mainGlobFunctions';
-import { oftenSelectedCollectInLS } from '../ui/oftenSelectedCollectInLS';
 import addEventWithMethods from '../methods/addEventWithMethods';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
-import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
-import { Modal } from 'bootstrap';
 import { buttonLoader } from '../ui/buttonLoader';
+import { oftenSelectedCollectInLS } from '../ui/oftenSelectedCollectInLS';
+import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
+import * as mainFunc from '../utils/mainGlobFunctions';
+import { findParentID } from './eventsActions';
+import {addZeroBefore} from "../utils/datesUtils";
+
 
 /**
  * Добавление задачи в календарь другого пользователя(сотрудника)
@@ -14,49 +18,49 @@ import { buttonLoader } from '../ui/buttonLoader';
  * @returns
  */
 
-export const addEventToUser = (calendar) => {
-  return function (e) {
-    const kindOfTasks = document.querySelector('#kindOfTasks');
-    const kindOfSubTask = document.querySelector('#kindOfSubTask');
-    const eventTitle = document.querySelector('#eventTitle');
-    const longDesc = document.querySelector('#longDesc');
-    const taskObj = document.querySelector('#taskObj');
-    const taskCreator = document.querySelector('#taskCreator');
-    const eventStartDate = document.querySelector('#eventStartDate');
-    const eventEndDate = document.querySelector('#eventEndDate');
-    const eventSpentTime = document.querySelector('#eventSpentTime');
-    const eventSource = document.querySelector('#eventSource');
-    const eventNotes = document.querySelector('#eventNotes');
-    const locations = document.querySelector('#locObj');
-    const employment = document.querySelector('#employment');
+export const addEventToUser = (calendar: Calendar) => {
+  return function (e: any) {
+    const kindOfTasks = document.querySelector('#kindOfTasks') as HTMLSelectElement;
+    const kindOfSubTask = document.querySelector('#kindOfSubTask') as HTMLSelectElement;
+    const eventTitle = document.querySelector('#eventTitle') as HTMLInputElement;
+    const longDesc = document.querySelector('#longDesc') as HTMLInputElement;
+    const taskObj = document.querySelector('#taskObj') as HTMLSelectElement;
+    const taskCreator = document.querySelector('#taskCreator') as HTMLSelectElement;
+    const eventStartDate = document.querySelector('#eventStartDate') as HTMLInputElement;
+    const eventEndDate = document.querySelector('#eventEndDate') as HTMLInputElement;
+    const eventSpentTime = document.querySelector('#eventSpentTime') as HTMLInputElement;
+    const eventSource = document.querySelector('#eventSource') as HTMLSelectElement;
+    const eventNotes = document.querySelector('#eventNotes') as HTMLInputElement;
+    const locations = document.querySelector('#locObj') as HTMLSelectElement;
+    const employment = document.querySelector('#employment') as HTMLSelectElement;
 
-    const addEventModal = document.querySelector('#addEventModal');
-    const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
+    const addEventModal = document.querySelector('#addEventModal') as HTMLFormElement;
+    const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn') as HTMLButtonElement;
 
-    eventTaskModalBtn.addEventListener('hidden.bs.modal', function (event) {
+    eventTaskModalBtn?.addEventListener('hidden.bs.modal', function (event) {
       buttonLoader(eventTaskModalBtn);
     });
 
-    buttonLoader(eventTaskModalBtn, 'true');
+    buttonLoader(eventTaskModalBtn, true);
 
     const isMethodsAvailableMode =
-      kindOfTasks.value === 'Техническое диагностирование' ||
-      kindOfSubTask.value === 'Проведение контроля в лаборатории';
+      kindOfTasks?.value === 'Техническое диагностирование' ||
+      kindOfSubTask?.value === 'Проведение контроля в лаборатории';
 
     // const isRootUser =
     //   localStorage.getItem('managerName') ===
     //   localStorage.getItem('selectedUserName');
 
     let justAddedDelID = '';
-    const iddb = localStorage.getItem('iddb');
+    const iddb = getLocalStorageItem('iddb');
 
     /**
      * Проверка рабочего режима при добавлении задачи
      * @returns boolean
      */
     const checkEmploymentMode = () => {
-      const emplMode = document.querySelector('#employment');
-      if (emplMode.value === 'Работа' && locations.value !== 'В дороге') {
+      const emplMode = document.querySelector('#employment') as HTMLSelectElement;
+      if (emplMode?.value === 'Работа' && locations?.value !== 'В дороге') {
         return true;
       } else if (
         emplMode.value === 'Работа' &&
@@ -74,7 +78,7 @@ export const addEventToUser = (calendar) => {
      * @returns
      */
 
-    const validateCondition = (valC) => {
+    const validateCondition = (valC: string | boolean) => {
       switch (valC) {
         case false:
           return null === undefined;
@@ -82,10 +86,10 @@ export const addEventToUser = (calendar) => {
           return (
             locations.value === 'Не выбрано' ||
             kindOfTasks.value === 'Не выбрано' ||
-            eventEndDate.classList.contains('is-invalid')
+            eventEndDate?.classList.contains('is-invalid')
           );
         case 'onRoad':
-          return eventEndDate.classList.contains('is-invalid');
+          return eventEndDate?.classList.contains('is-invalid');
       }
     };
 
@@ -111,11 +115,11 @@ export const addEventToUser = (calendar) => {
 
         // Корректировка затраченного времени
 
-        if (eventEndDate.value === '') {
-          if (eventSpentTime.value === '') {
-            eventEndDate.value = `${eventStartDate.value.slice(0, 10)} 19:00`;
+        if (eventEndDate?.value === '') {
+          if (eventSpentTime?.value === '') {
+            eventEndDate.value = `${eventStartDate?.value.slice(0, 10)} 19:00`;
           } else {
-            const newTime = eventStartDate.value.slice(11, 16);
+            const newTime = eventStartDate?.value.slice(11, 16);
             const newTimeHours = +newTime.slice(0, 2);
 
             eventEndDate.value = `${eventStartDate.value.slice(0, 10)} ${
@@ -128,12 +132,10 @@ export const addEventToUser = (calendar) => {
 
         const cleanTodayDate = eventStartDate.value.slice(0, 10);
 
-        const parentIdDataArr = JSON.parse(
-          localStorage.getItem('parentIdDataArr'),
-        );
-
-        const kr = document.querySelector('#flexCheckDefault');
-        const krState = (krelem) => {
+        const parentIdDataArr = getLocalStorageItem('parentIdDataArr');
+          
+        const kr = document.querySelector('#flexCheckDefault') as HTMLInputElement;
+        const krState = (krelem: HTMLInputElement) => {
           if (krelem && krelem.checked) {
             return 'Да';
           } else {
@@ -163,19 +165,19 @@ export const addEventToUser = (calendar) => {
         formDataEv2.append('Data[1][name]', c.fifthCol);
         formDataEv2.append(
           'Data[1][value]',
-          taskObj[taskObj.options.selectedIndex].getAttribute('objidattr') ||
+          taskObj[taskObj?.options?.selectedIndex]?.getAttribute('objidattr') ||
             '',
         );
         formDataEv2.append('Data[1][isName]', 'false');
         formDataEv2.append('Data[1][maninp]', 'false');
         formDataEv2.append('Data[1][GroupID]', c.dataGroupID);
         formDataEv2.append('Data[4][name]', c.fourthCol);
-        formDataEv2.append('Data[4][value]', eventTitle.value);
+        formDataEv2.append('Data[4][value]', eventTitle?.value);
         formDataEv2.append('Data[4][isName]', 'false');
         formDataEv2.append('Data[4][maninp]', 'false');
         formDataEv2.append('Data[4][GroupID]', c.dataGroupID);
         formDataEv2.append('Data[5][name]', 't8106');
-        formDataEv2.append('Data[5][value]', longDesc.value);
+        formDataEv2.append('Data[5][value]', longDesc?.value);
         formDataEv2.append('Data[5][isName]', 'false');
         formDataEv2.append('Data[5][maninp]', 'false');
         formDataEv2.append('Data[5][GroupID]', c.dataGroupID);
@@ -187,7 +189,7 @@ export const addEventToUser = (calendar) => {
         formDataEv2.append('Data[7][name]', c.tenthCol);
         formDataEv2.append(
           'Data[7][value]',
-          taskCreator[taskCreator.options.selectedIndex].getAttribute(
+          taskCreator[taskCreator.options.selectedIndex]?.getAttribute(
             'objidattr',
           ) || '',
         );
@@ -195,12 +197,12 @@ export const addEventToUser = (calendar) => {
         formDataEv2.append('Data[7][maninp]', 'false');
         formDataEv2.append('Data[7][GroupID]', c.dataGroupID);
         formDataEv2.append('Data[8][name]', c.eleventhCol);
-        formDataEv2.append('Data[8][value]', eventSource.value);
+        formDataEv2.append('Data[8][value]', eventSource?.value);
         formDataEv2.append('Data[8][isName]', 'false');
         formDataEv2.append('Data[8][maninp]', 'false');
         formDataEv2.append('Data[8][GroupID]', c.dataGroupID);
         formDataEv2.append('Data[9][name]', 't8107');
-        formDataEv2.append('Data[9][value]', eventNotes.value);
+        formDataEv2.append('Data[9][value]', eventNotes?.value);
         formDataEv2.append('Data[9][isName]', 'false');
         formDataEv2.append('Data[9][maninp]', 'false');
         formDataEv2.append('Data[9][GroupID]', c.dataGroupID);
@@ -276,7 +278,7 @@ export const addEventToUser = (calendar) => {
             const objID = data.results[0].object;
             justAddedDelID = objID;
 
-            eventTaskModalBtn.addEventListener('click', null);
+            eventTaskModalBtn.addEventListener('click', ()=>{});
 
             // Добавление задачи на клиенте (без перезагрузки)
 
@@ -310,11 +312,11 @@ export const addEventToUser = (calendar) => {
 
             // Проверка и расширение границ времени при добавлении
 
-            const slotmintime = calendar.getOption('slotMinTime');
-            const slotmaxtime = calendar.getOption('slotMaxTime');
+            const slotmintime = calendar.getOption('slotMinTime') as string;
+            const slotmaxtime = calendar.getOption('slotMaxTime') as string;
 
-            const minTimeHours = +slotmintime.slice(0, 2);
-            const maxTimeHours = +slotmaxtime.slice(0, 2);
+            const minTimeHours = +slotmintime?.slice(0, 2);
+            const maxTimeHours = +slotmaxtime?.slice(0, 2);
 
             const startHours = new Date(
               mainFunc.convertDateTime(eventStartDate.value),
@@ -328,11 +330,11 @@ export const addEventToUser = (calendar) => {
 
             calendar.setOption(
               'slotMinTime',
-              `${mainFunc.addZeroBefore(setStartHours)}:00:00`,
+              `${addZeroBefore(setStartHours)}:00:00`,
             );
             calendar.setOption(
               'slotMaxTime',
-              `${mainFunc.addZeroBefore(setEndHours)}:59:59`,
+              `${addZeroBefore(setEndHours)}:59:59`,
             );
 
             if (!isMethodsAvailableMode) {
@@ -341,15 +343,15 @@ export const addEventToUser = (calendar) => {
           });
 
         localStorage.setItem('fcDefaultView', calendar.view.type);
-        Modal.getInstance(addEventModal).hide();
+        Modal?.getInstance(addEventModal)?.hide();
       } else {
         e.preventDefault();
 
         const validateTotalTime = mainFunc.validateTotalTimeOnObject('single');
 
         if (validateTotalTime === true) {
-          const kr = document.querySelector('#flexCheckDefault');
-          const krState = (krelem) => {
+          const kr = document.querySelector('#flexCheckDefault') as HTMLInputElement;
+          const krState = (krelem: HTMLInputElement) => {
             if (krelem && krelem.checked) {
               return 'Да';
             } else {
@@ -359,10 +361,7 @@ export const addEventToUser = (calendar) => {
 
           // Формируем объект для передачи данных на сервер
 
-          const parentID = findParentID(
-            JSON.parse(localStorage.getItem('parentIdDataArr')),
-            eventStartDate.value,
-          );
+          const parentID = findParentID(getLocalStorageItem('parentIdDataArr'), eventStartDate.value);
           const cleanTodayDate = eventStartDate.value.slice(0, 10);
 
           const mainEventObject = {
@@ -423,7 +422,7 @@ export const addEventToUser = (calendar) => {
 
           // Формируем объект методов, для передачи со вторым запросом
 
-          const methodsTable = document.querySelector('.methods-tbody');
+          const methodsTable = document.querySelector('.methods-tbody') as HTMLTableElement;
           addEventWithMethods(
             mainEventObject,
             grabMethodsDataTable(methodsTable),

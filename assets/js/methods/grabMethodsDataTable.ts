@@ -3,7 +3,7 @@
  * @param {*} tbody
  * @returns
  */
-const grabMethodsDataTable = (tbody) => {
+const grabMethodsDataTable = (tbody: { querySelectorAll: (arg0: string) => any; }) => {
   let grabMethodsArray = [];
   const methodsArr = [...tbody.querySelectorAll('tr')];
 
@@ -17,16 +17,16 @@ const grabMethodsDataTable = (tbody) => {
       grabMethodsArray.push({ method, params: { duration, objects, zones } });
     });
   } else {
-    const wooMetod = document.querySelector('#wooMetod');
-    const wooTime = document.querySelector('#wooTime');
-    const wooObjects = document.querySelector('#wooObjects');
-    const wooZones = document.querySelector('#wooZones');
+    const wooMetod = document.querySelector('#wooMetod') as HTMLSelectElement;
+    const wooTime = document.querySelector('#wooTime') as HTMLSelectElement;
+    const wooObjects = document.querySelector('#wooObjects') as HTMLSelectElement;
+    const wooZones = document.querySelector('#wooZones') as HTMLSelectElement;
     grabMethodsArray.push({
-      method: wooMetod.value,
+      method: wooMetod!.value,
       params: {
-        duration: wooTime.value,
-        objects: wooObjects.value,
-        zones: wooZones.value,
+        duration: wooTime!.value,
+        objects: wooObjects!.value,
+        zones: wooZones!.value,
       },
     });
   }
@@ -37,8 +37,8 @@ const grabMethodsDataTable = (tbody) => {
  * @param {*} tbody
  * @returns
  */
-const grabJustAddedArray = (tbody) => {
-  let grabJAMethodsArray = [];
+const grabJustAddedArray = (tbody: { querySelectorAll: (arg0: string) => any; }) => {
+  let grabJAMethodsArray: { method: string; params: { duration: string; objects: string; zones: string } }[] = [];
   const methodsArr = [...tbody.querySelectorAll('.justadded')];
   methodsArr.forEach((item) => {
     const metDataArr = [...item.cells];

@@ -4,7 +4,7 @@
  * @param {*} startDate
  * @returns
  */
-export const findParentID = (parIdArr, startDate) => {
+export const findParentID = (parIdArr: any[], startDate: string) => {
   const clickedStartDate = startDate.slice(0, 10);
 
   const nessDateParentID = parIdArr.find(

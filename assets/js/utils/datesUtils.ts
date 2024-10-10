@@ -94,3 +94,18 @@ export const transformDateTime = (dateTime: Date): string => {
   return `${day}.${month}.${year} ${hours}:${mins}`;
 };
 
+
+// Функция для преобразования даты в формат, подходящий для создания объекта Date
+export function convertDate(dateString: string) {
+  let parts = dateString.split(' ');
+  let dateParts = parts[0].split('.');
+  let timeParts = parts[1].split(':');
+  return new Date(
+    parseInt(dateParts[2]),
+    parseInt(dateParts[1]) - 1,
+    parseInt(dateParts[0]),
+    parseInt(timeParts[0]),
+    parseInt(timeParts[1]),
+  );
+}
+

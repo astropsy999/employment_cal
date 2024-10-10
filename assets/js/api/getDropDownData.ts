@@ -7,7 +7,7 @@ import _ from 'lodash';
  * @param {Node} elem - элемент селектора, в который нужно вставить данные
  * @param {Object} datObj - объект с данными которые нужно поместить в селектор
  */
-export const addDataToSelector = (elem, datObj) => {
+export const addDataToSelector = (elem: HTMLSelectElement, datObj: { Name: string; ID: number; }[]) => {
   if (elem.options.length <= 1) {
     datObj.forEach((obj) => {
       const taskObjOption = document.createElement('option');
@@ -58,7 +58,7 @@ const getObjectsOptions = async () => {
         console.log('Не удалось загрузить список объектов из базы', error);
       });
   } else {
-    const dataObj = JSON.parse(sessionStorage.getItem('dataObj'));
+    const dataObj = JSON.parse(sessionStorage.getItem('dataObj')!);
   }
 };
 
@@ -67,7 +67,7 @@ const getObjectsOptions = async () => {
  */
 
 const getDirectorOptions = async () => {
-  let dataCreator = [];
+  let dataCreator: any[]= [];
 
   if (!sessionStorage.getItem('dataCreator')) {
     for (let i = 1; ; i++) {
@@ -110,7 +110,7 @@ const getDirectorOptions = async () => {
       }
     }
   } else {
-    dataCreator = JSON.parse(sessionStorage.getItem('dataCreator'));
+    dataCreator = JSON.parse(sessionStorage.getItem('dataCreator')!);
   }
 };
 
@@ -149,7 +149,7 @@ const getLocationOptions = () => {
         console.log('Не получилось загрузить список локаций', error);
       });
   } else {
-    locObj = JSON.parse(sessionStorage.getItem('locObj'));
+    locObj = JSON.parse(sessionStorage.getItem('locObj')!);
   }
 };
 
@@ -188,14 +188,14 @@ const getEmplOptions = () => {
         console.log('Не получилось загрузить список занятости', error);
       });
   } else {
-    emplObj = JSON.parse(sessionStorage.getItem('emplObj'));
+    emplObj = JSON.parse(sessionStorage.getItem('emplObj')!);
   }
 };
 
 // Формируем общий массив ID для видов
 let globalTasksTypesArray = [];
 
-export const getGlobalTasksTypes = (iddb) => {
+export const getGlobalTasksTypes = (iddb: string) => {
   let formDataKindOfTask = new FormData();
 
   formDataKindOfTask.append('ParamID', '9043');
@@ -235,7 +235,7 @@ export const getGlobalTasksTypes = (iddb) => {
 
 // Генерация объекта видов-подвидов
 
-export const generateSubtasksObj = (tasksArr) => {
+export const generateSubtasksObj = (tasksArr: any[]) => {
   tasksArr.forEach((task, index) => {
     const taskID = task.ID;
 
@@ -283,7 +283,7 @@ export const generateSubtasksObj = (tasksArr) => {
 
 let methodsDropArray = [];
 
-const getMethodsDropDown = (element) => {
+const getMethodsDropDown = (element: { options: string | any[]; append: (arg0: HTMLOptionElement) => void; }) => {
   const parentID = '';
 
   let formDataMethods = new FormData();
@@ -310,7 +310,7 @@ const getMethodsDropDown = (element) => {
       methodsDropArray = response.data;
 
       if (element.options.length <= 1) {
-        methodsDropArray.forEach((dataline) => {
+        methodsDropArray.forEach((dataline: { ID: number; Name: string; }) => {
           const elemCreation = document.createElement('option');
           const datalineid = dataline.ID;
           elemCreation.setAttribute('value', `${dataline.Name}`);
@@ -330,7 +330,7 @@ const getMethodsDropDown = (element) => {
  */
 
 let usersIDsObj;
-export const getUsersForManagers = async (userID, manName) => {
+export const getUsersForManagers = async (userID: string) => {
   /**
    * Создание нового элемента (Селектора) куда будут помещены Сотрудники
    */
@@ -406,10 +406,14 @@ export const getUsersForManagers = async (userID, manName) => {
           error,
         );
       });
-    let usersIDsObj = {};
-    let usersIDsDepthsArr = [];
+    let usersIDsObj: {name: string; id: number; dep: string}  = {
+      name: '',
+      id: 0,
+      dep: ''
+    };
+    let usersIDsDepthsArr: {name: string; id: number; dep: string}[] = [];
 
-    res.data.forEach((item) => {
+    res.data.forEach((item: { Value: string; ObjID: number; }[]) => {
       for (let key in item) {
         usersIDsObj = {
           name: item[2].Value,
@@ -449,8 +453,8 @@ export const getUsersForManagers = async (userID, manName) => {
      * Перебор массива сотрудников и создание опций для селектора, добавление их в сам селектор
      */
 
-    const uniqueDepOptions = {};
-    const optionDepElements = [];
+    const uniqueDepOptions: { [key: string]: boolean } = {};
+    const optionDepElements: HTMLOptionElement[] = [];
 
     usersIDsDepthsArrUn.forEach((user) => {
       const option = document.createElement('option');
@@ -462,16 +466,16 @@ export const getUsersForManagers = async (userID, manName) => {
       option.innerText = `${user.name}`;
       optionDep.innerText = `${user.dep}`;
 
-      otherUsers.append(option);
+      otherUsers!.append(option);
 
       // Проверяем, было ли уже добавлено данное dep в селектор otherUsersDep
       if (!uniqueDepOptions[user.dep] && user.dep != '') {
-        otherUsersDep.append(optionDep);
+        otherUsersDep!.append(optionDep);
         optionDepElements.push(optionDep);
         uniqueDepOptions[user.dep] = true; // Отмечаем, что данное dep уже добавлено
       }
 
-      if (user.id == userID) {
+      if (user.id.toString() == userID) {
         option.setAttribute('selected', 'selected');
         // optionDep.setAttribute('selected', 'selected');
         option.style.background = '#f7fcff';
@@ -480,14 +484,14 @@ export const getUsersForManagers = async (userID, manName) => {
     });
 
     // Очищаем otherUsersDep перед добавлением отсортированных элементов
-    otherUsersDep.innerHTML = '';
+    otherUsersDep!.innerHTML = '';
 
     // Сортируем элементы optionDep по текстовому содержимому (значение)
     optionDepElements.sort((a, b) => a.innerText.localeCompare(b.innerText));
 
     // Добавляем отсортированные элементы в otherUsersDep
     optionDepElements.forEach((optionDep) => {
-      otherUsersDep.appendChild(optionDep);
+      otherUsersDep!.appendChild(optionDep);
     });
 
     const allDepsOption = document.createElement('option');
@@ -495,27 +499,27 @@ export const getUsersForManagers = async (userID, manName) => {
     allDepsOption.setAttribute('selected', 'selected');
     allDepsOption.innerText = 'Все отделы';
 
-    otherUsersDep.insertAdjacentElement('afterbegin', allDepsOption);
+    otherUsersDep!.insertAdjacentElement('afterbegin', allDepsOption);
 
-    document.querySelector('.skeleton-loader').remove();
+    document.querySelector('.skeleton-loader')!.remove();
   } else {
-    const optionDepElements = [];
+    const optionDepElements: HTMLOptionElement[] = [];
     /**
      * Перебор объекта сотрудников и создание опций для селектора, добавление их в сам селектор
      */
 
     const usersIDsDepthsArrUn = JSON.parse(
-      sessionStorage.getItem('usersIDsDepthsArrUn'),
+      sessionStorage.getItem('usersIDsDepthsArrUn')!,
     );
 
-    usersIDsDepthsArrUn.sort((a, b) => a.name.localeCompare(b.name));
+    usersIDsDepthsArrUn.sort((a: { name: string; }, b: { name: any; }) => a.name.localeCompare(b.name));
 
     /**
      * Сортировка объекта usersObj в алфавитном порядке
      */
-    const uniqueDepOptions = {};
+    const uniqueDepOptions: { [key: string]: boolean } = {};
 
-    usersIDsDepthsArrUn.forEach((user) => {
+    usersIDsDepthsArrUn.forEach((user: { id: string; dep: string; name: any; }) => {
       const option = document.createElement('option');
       const optionDep = document.createElement('option');
 
@@ -525,11 +529,11 @@ export const getUsersForManagers = async (userID, manName) => {
       option.innerText = `${user.name}`;
       optionDep.innerText = `${user.dep}`;
 
-      otherUsers.append(option);
+      otherUsers!.append(option);
 
       // Проверяем, было ли уже добавлено данное dep в селектор otherUsersDep
       if (!uniqueDepOptions[user.dep] && user.dep != '') {
-        otherUsersDep.append(optionDep);
+        otherUsersDep!.append(optionDep);
         optionDepElements.push(optionDep);
         uniqueDepOptions[user.dep] = true; // Отмечаем, что данное dep уже добавлено
       }
@@ -543,14 +547,14 @@ export const getUsersForManagers = async (userID, manName) => {
     });
 
     // Очищаем otherUsersDep перед добавлением отсортированных элементов
-    otherUsersDep.innerHTML = '';
+    otherUsersDep!.innerHTML = '';
 
     // Сортируем элементы optionDep по текстовому содержимому (значение)
     optionDepElements.sort((a, b) => a.innerText.localeCompare(b.innerText));
 
     // Добавляем отсортированные элементы в otherUsersDep
     optionDepElements.forEach((optionDep) => {
-      otherUsersDep.appendChild(optionDep);
+      otherUsersDep!.appendChild(optionDep);
     });
 
     const allDepsOption = document.createElement('option');
@@ -558,9 +562,9 @@ export const getUsersForManagers = async (userID, manName) => {
     allDepsOption.setAttribute('selected', 'selected');
     allDepsOption.innerText = 'Все отделы';
 
-    otherUsersDep.insertAdjacentElement('afterbegin', allDepsOption);
+    otherUsersDep!.insertAdjacentElement('afterbegin', allDepsOption);
 
-    document.querySelector('.skeleton-loader').remove();
+    document.querySelector('.skeleton-loader')!.remove();
   }
 };
 
@@ -571,7 +575,7 @@ let kindOfSubTaskList = [];
  * Функция  получает данные о Видах и Подвидах из базы
  */
 
-export const getTypesOfWorkOptions = (taskEl, subtaskEl, idDB) => {
+export const getTypesOfWorkOptions = (taskEl: HTMLSelectElement, subtaskEl: HTMLSelectElement, idDB: string) => {
   // Формирование запроса для вида работ
 
   let formDataKindOfTask = new FormData();
@@ -603,7 +607,7 @@ export const getTypesOfWorkOptions = (taskEl, subtaskEl, idDB) => {
       kindOfTasksList = response.data;
 
       if (taskEl.options.length <= 1) {
-        kindOfTasksList.forEach((task) => {
+        kindOfTasksList.forEach((task: { Name: string; ID: any; }) => {
           const taskOption = document.createElement('option');
           const noQuoteTaskName = task.Name.replaceAll('&quot;', '"');
           const taskid = task.ID;
@@ -629,7 +633,7 @@ export const getTypesOfWorkOptions = (taskEl, subtaskEl, idDB) => {
       cleanAndDefaultKindOfSubTaskSelector(subtaskEl);
 
       const taskID =
-        taskEl[taskEl.options.selectedIndex].getAttribute('taskid');
+        taskEl[taskEl.options.selectedIndex].getAttribute('taskid') as string;
 
       let formDataSubTask = new FormData();
 
@@ -660,7 +664,7 @@ export const getTypesOfWorkOptions = (taskEl, subtaskEl, idDB) => {
           kindOfSubTaskList = response.data;
 
           if (subtaskEl && subtaskEl.options.length <= 1) {
-            kindOfSubTaskList.forEach((subtask) => {
+            kindOfSubTaskList.forEach((subtask: { Name: string; ID: any; }) => {
               const subTaskOption = document.createElement('option');
               const noQuoteSubTaskName = subtask.Name.replaceAll('&quot;', '"');
               const subtaskid = subtask.ID;

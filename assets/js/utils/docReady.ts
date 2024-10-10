@@ -3,12 +3,12 @@
  функция добавляет обработчик события DOMContentLoaded и выполняет переданную функцию после его возникновения.
  * @param {*} fn
  */
-export let docReady = function docReady(fn) {
+export let docReady = function docReady(fn: { (): void; (this: Document, ev: Event): any; (): void; } | undefined) {
   // see if DOM is already available
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', fn);
+    document.addEventListener('DOMContentLoaded', fn!);
   } else {
-    setTimeout(fn, 1);
+    setTimeout(fn!, 1);
   }
 };
 
