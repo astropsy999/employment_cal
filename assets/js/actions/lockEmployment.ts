@@ -310,7 +310,7 @@ const lockingAction = async (
   } finally {
 
   }
-  
+
 };
 
 
@@ -328,6 +328,8 @@ const setupApprovalPopover = (
   currentDays: Date[],
   calendar: Calendar,
 ) => {
+  const element = document.querySelector(selector) as HTMLElement;
+
   const popover = new Popover(selector, {
     placement: 'bottom',
     title: 'Согласовать перед блокировкой?',
@@ -350,7 +352,11 @@ const setupApprovalPopover = (
     sanitize: false,
   });
 
-  const element = document.querySelector(selector) as HTMLElement;
+
+  if (!element) {
+    console.error(`Элемент с селектором "${selector}" не найден.`);
+    return;
+  }
 
   element.addEventListener('shown.bs.popover', () => {
     const cancelButton = document.querySelector(
@@ -365,12 +371,12 @@ const setupApprovalPopover = (
 
     cancelButton.addEventListener('click', () => {
       modal.hide();
-      popover.dispose();
+      popover.hide();
     });
 
     noOnPopover.addEventListener('click', async () => {
       modal.hide();
-      popover.dispose();
+      popover.hide();
       // Получаем выбранные даты и ObjID
       const selectedDates = getSelectedDates();
       const selectedObjIDs = getSelectedObjIDs(selectedDates);
@@ -390,7 +396,7 @@ const setupApprovalPopover = (
       const selectedObjIDs = getSelectedObjIDs(selectedDates);
       // Выполняем согласование и блокировку
       await approveAndLockAction(selectedObjIDs, calendar);
-      popover.dispose();
+      popover.hide();
     });
   });
 };
@@ -402,7 +408,7 @@ const setupApprovalPopover = (
 export const lockEmploynment = async (calendar: Calendar) => {
   const lockBtn = document.querySelector('.lockBtn');
 
-  const lockAction = async () => {  
+  const lockAction = async () => {
     const isLocked = getLocalStorageItem('isWeekLocked') ?? false;
 
     // Получаем фамилию выбранного пользователя
@@ -480,7 +486,7 @@ export const lockEmploynment = async (calendar: Calendar) => {
       const selectedObjIDs = getSelectedObjIDs(selectedDates);
       // Выполняем блокировку
       await lockingAction(selectedObjIDs, isLocked, modal, calendar);
-     
+
     };
 
     // Добавляем обработчики событий на кнопки блокировки/разблокировки
