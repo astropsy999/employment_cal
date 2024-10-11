@@ -3,7 +3,7 @@
 /*                                FullCalendar                                */
 
 /* -------------------------------------------------------------------------- */
-import { sendNewEndDateTimeToBase } from '..//utils/mainGlobFunctions';
+import { sendNewEndDateTimeToBase } from './mainGlobFunctions';
 import { toggleElem } from './toggleElem';
 import merge from 'lodash/merge';
 import { Calendar } from '@fullcalendar/core';

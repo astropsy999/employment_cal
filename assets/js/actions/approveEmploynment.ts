@@ -3,10 +3,9 @@ import { EventImpl } from '@fullcalendar/core/internal';
 import { Modal } from 'bootstrap';
 import { approveEventsApi } from '../api/approveEvents';
 import { formatDate } from '../utils/datesUtils';
+import { fullCalendar } from '../utils/fullcalendar';
 import { blockBtnAddTitle } from '../utils/mainGlobFunctions';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
-import {fullCalendar} from '../utils/fullcalendar'
-import { unblockBtnAddTitle } from '../utils/mainGlobFunctions';
 
 export const approveEmploynment = (calendar: Calendar) => {
   const approveBtn = document.querySelector('.approveBtn');

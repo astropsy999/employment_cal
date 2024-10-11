@@ -1,4 +1,5 @@
 //константы конфига
+import { Modal } from 'bootstrap';
 import { addEventToCal } from './actions/addEvent';
 import { approveEmploynment } from './actions/approveEmploynment';
 import { delEvent } from './actions/delEvent';
@@ -9,7 +10,6 @@ import { multipleAddEventsToBase } from './actions/multiAddEvents';
 import * as GDD from './api/getDropDownData';
 import { getSelectedUserData } from './api/getSlectedUserData';
 import { getUserID } from './api/getUserID';
-import { fullCalendarInit } from './utils/fullcalendar';
 import {
   addValueObjTrue,
   createNodeUrl,
@@ -23,9 +23,9 @@ import {
 import addWooContainer from './methods/addWooContainer';
 import getEmplReport from './report/getEmplReport';
 import repModalTemplate from './report/repModalTemplate';
+import { buttonLoader } from './ui/buttonLoader';
 import { usersForManagersSelector } from './ui/calendarHeader';
 import { changeUserData } from './ui/changeUserData';
-import { Modal } from 'bootstrap';
 import {
   addBlockOverlays,
   removeOverlays,
@@ -36,7 +36,6 @@ import { eventContent } from './ui/eventContent.js';
 import { eventDrop } from './ui/eventDrop.js';
 import { parseResievedDataToCal } from './ui/parseResievedDataToCal.js';
 import { saveHighlightedReg } from './ui/saveHighlightedReg.js';
-import { setViewAndDateToLS } from './ui/setViewAndDateToLS.js';
 import { stretchViewDepEvents } from './ui/stretchViewDepEvents.js';
 import {
   getTemplate,
@@ -45,28 +44,27 @@ import {
 } from './ui/templates.js';
 import { tempLoader } from './ui/tempLoader.js';
 import { docReady, utils } from './utils/docReady.js';
-import { renderCalendar } from './utils/fullcalendar.js';
+import { fullCalendarInit, renderCalendar } from './utils/fullcalendar';
 import {
+  addTotalTimeToMonthCells,
   addZeroBefore,
+  blockBtnAddTitle,
+  calculateTotalHours,
   changeDirectZero,
   checkAndForbiddenOutOfDay,
   checkEmploymentStatus,
+  clearMonthCells,
   convertDateTime,
   getMonthRange,
   isOutOfRange,
   noEditPartOfInput,
   removeAlarmFromSelectorsInModals,
   selValidation,
+  sendNewEndDateTimeToBase,
   timeInputsValidation,
   transformDateTime,
-  blockBtnAddTitle,
-  sendNewEndDateTimeToBase,
-  addTotalTimeToMonthCells,
-  calculateTotalHours,
-  clearMonthCells,
 } from './utils/mainGlobFunctions';
 import { toggleElem } from './utils/toggleElem.js';
-import { buttonLoader } from './ui/buttonLoader';
 
 export const api = {
   srvv,
