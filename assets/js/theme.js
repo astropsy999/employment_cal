@@ -31,7 +31,7 @@ import {
   removeOverlays,
   toggleIcon,
 } from './ui/checkBlockedDays.js';
-import { checkCurrentEventsAndBlockApproveBtn } from './ui/checkCurrentEvents.js';
+import { checkCurrentEventsAndBlockApproveBtn } from './ui/checkCurrentEvents';
 import { eventContent } from './ui/eventContent.js';
 import { eventDrop } from './ui/eventDrop.js';
 import { parseResievedDataToCal } from './ui/parseResievedDataToCal.js';
@@ -64,7 +64,7 @@ import {
   addTotalTimeToMonthCells,
   calculateTotalHours,
   clearMonthCells,
-} from './utils/mainGlobFunctions.js';
+} from './utils/mainGlobFunctions';
 import { toggleElem } from './utils/toggleElem.js';
 import { buttonLoader } from './ui/buttonLoader';
 
@@ -975,11 +975,13 @@ const employmentCalendar = async () => {
         },
       });
 
+      checkCurrentEventsAndBlockApproveBtn(calendar);
+
       // Блокировка дат
 
       // Добавление задачи в календарь
       addEventToCal(calendar);
-
+      
       // Изменение пользователя
       changeUserData(calendar, idDB);
       const checkUserIDBySelector = () => {
@@ -1506,7 +1508,6 @@ const employmentCalendar = async () => {
       // Блокировка добавления
       lockEmploynment(calendar);
 
-      checkCurrentEventsAndBlockApproveBtn(calendar);
       // checkBlockedDays(calendar);
 
       // Вешаем на все таймпикеры событие закрытия по нажатию Enter при ручном вводе
@@ -1692,6 +1693,8 @@ const employmentCalendar = async () => {
       checkEmploymentStatus(e.target);
     });
   };
+
+
 
   // Инициализация календарей
 

@@ -3,7 +3,7 @@ import { isManager } from '../api/isManager';
 import { getUsersForManagers } from '../api/getDropDownData';
 // @ts-ignore
 import { filterUsersFormanagers } from './filterUsersFormanagers';
-import { setLocalStorageItem } from '../utils/localStirageUtils';
+import { setLocalStorageItem } from '../utils/localStorageUtils';
 
 /**
  * Функция проверяет статус пользователя (Руководитель или Нет) и добавляет для руководителя

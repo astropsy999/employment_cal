@@ -1,12 +1,12 @@
 import { Calendar } from '@fullcalendar/core';
-import { fullCalendar } from '../utils/fullcalendar';
-import {  blockBtnAddTitle  } from '../utils/mainGlobFunctions';
-import { Modal } from 'bootstrap';
 import { EventImpl } from '@fullcalendar/core/internal';
-import { generateDaysCheckboxes } from './generateDaysCheckboxes';
-import { formatDate } from '../utils/datesUtils';
-import { getLocalStorageItem } from '../utils/localStirageUtils';
+import { Modal } from 'bootstrap';
 import { approveEventsApi } from '../api/approveEvents';
+import { formatDate } from '../utils/datesUtils';
+import { blockBtnAddTitle } from '../utils/mainGlobFunctions';
+import { generateDaysCheckboxes } from './generateDaysCheckboxes';
+import {fullCalendar} from '../utils/fullcalendar'
+import { unblockBtnAddTitle } from '../utils/mainGlobFunctions';
 
 export const approveEmploynment = (calendar: Calendar) => {
   const approveBtn = document.querySelector('.approveBtn');
@@ -103,16 +103,18 @@ export const approveEmploynment = (calendar: Calendar) => {
     
       approveEventsApi(eventsToApprove)
         .then(() => {
-          // Обновляем календарь после успешного согласования
-          calendar.render();
-    
+         
           approveActionBtn.textContent = 'Согласовано';
+
           setTimeout(() => {
             modal?.hide();
             blockBtnAddTitle(approveBtn);
             approveActionBtn.textContent = 'Да';
             approveActionBtn.disabled = false;
           }, 800);
+           fullCalendar.fullCalendarInit();
+           // Обновляем календарь после успешного согласования
+           calendar.render();
         })
         .catch((error) => {
           console.error('Ошибка при согласовании событий:', error);

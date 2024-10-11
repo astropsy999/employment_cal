@@ -577,6 +577,8 @@ export const blockBtnAddTitle = (...btns) => {
 };
 
 export const unblockBtnAddTitle = (...btns) => {
+console.log("🚀 ~ unblockBtnAddTitle ~ unblockBtnAddTitle:")
+
   if (btns.length !== 0) {
     btns.forEach((btn) => {
       if (btn) {

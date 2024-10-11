@@ -7,6 +7,7 @@ import grabMethodsDataTable from '../methods/grabMethodsDataTable';
 import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
 import { Modal } from 'bootstrap';
 import { buttonLoader } from '../ui/buttonLoader';
+import { unblockBtnAddTitle } from '../utils/mainGlobFunctions';
 
 /**
  * Добавление задачи в календарь другого пользователя(сотрудника)
@@ -32,6 +33,7 @@ export const addEventToUser = (calendar) => {
 
     const addEventModal = document.querySelector('#addEventModal');
     const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
+    const approveBtn = document.querySelector('#approveBtn');
 
     eventTaskModalBtn.addEventListener('hidden.bs.modal', function (event) {
       buttonLoader(eventTaskModalBtn);

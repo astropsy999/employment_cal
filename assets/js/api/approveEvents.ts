@@ -1,6 +1,6 @@
 import { EventApi } from '@fullcalendar/core';
 import * as C from '../config'; 
-import { getLocalStorageItem } from '../utils/localStirageUtils';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 
 /**
  * Согласовывает список событий, отправляя запросы к API.

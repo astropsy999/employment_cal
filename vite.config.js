@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import removeConsole from 'vite-plugin-remove-console';
 
 export default defineConfig({
   base: './',
@@ -23,7 +24,7 @@ export default defineConfig({
     },
     target: 'es2018',
   },
-  plugins: [],
+  plugins: [removeConsole()],
   // css: {
   //   postcss: './postcss.config.js',
   // },
