@@ -4,17 +4,21 @@
 
 /* -------------------------------------------------------------------------- */
 import { sendNewEndDateTimeToBase } from './mainGlobFunctions';
-import { toggleElem } from './toggleElem';
 import merge from 'lodash/merge';
-import { Calendar } from '@fullcalendar/core';
+import { Calendar, EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
+import { toggleElem } from './toggleElem';
+import { getLocalStorageItem } from './localStorageUtils';
+import { EventImpl } from '@fullcalendar/core/internal';
+import { Modal } from 'bootstrap';
+
 
 // let merge = window._.merge;
 
-export let renderCalendar = function renderCalendar(el, option) {
+export let renderCalendar = function renderCalendar(el: HTMLElement | Element, option: any) {
   let _document$querySelect;
 
   let options = merge(
@@ -26,286 +30,286 @@ export let renderCalendar = function renderCalendar(el, option) {
           : 'timeGridWeek',
       // editable: true,
       selectable: true,
-      select: function (info) {
-        // Проверяем, является ли выбранная дата или интервал дат заблокированным
-        const isDateLocked = (date) => {
-          const lockedDatesArr = JSON.parse(
-            localStorage.getItem('lockedDatesArray'),
-          );
-          const day = date.getDate().toString().padStart(2, '0');
-          const month = (date.getMonth() + 1).toString().padStart(2, '0');
-          const year = date.getFullYear().toString();
-          const formattedDate = `${day}.${month}.${year}`;
+      // select: function (info: EventImpl) {
 
-          return lockedDatesArr?.includes(formattedDate);
-        };
-        // Если выбранная дата или интервал дат заблокирован, отменяем добавление события
-        if (isDateLocked(info.start) || (info.end && isDateLocked(info.end))) {
-          const lockInfo = document.querySelector('#LockInfo');
-          const modal = new Modal(lockInfo);
-          const lockUser = document.querySelector('.lockUser');
-          // lockUser.textContent = info.event.extendedProps;
-          modal.show();
+      //   // Проверяем, является ли выбранная дата или интервал дат заблокированным
+      //   const isDateLocked = (date: Date) => {
+      //     const lockedDatesArr = getLocalStorageItem('lockedDatesArray');
 
-          setTimeout(() => {
-            modal.hide();
-          }, 5000);
+      //     const day = date.getDate().toString().padStart(2, '0');
+      //     const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      //     const year = date.getFullYear().toString();
+      //     const formattedDate = `${day}.${month}.${year}`;
 
-          calendar.unselect(); // Отменяем выделение даты или интервала
-        } else {
-          const employmentSelEl = document.querySelector('.employment select');
+      //     return lockedDatesArr?.includes(formattedDate);
+      //   };
+      //   // Если выбранная дата или интервал дат заблокирован, отменяем добавление события
+      //   if (isDateLocked(info.start!) || (info.end && isDateLocked(info.end))) {
+      //     const lockInfo = document.querySelector('#LockInfo');
+      //     const modal = new Modal(lockInfo!);
+      //     const lockUser = document.querySelector('.lockUser');
+      //     // lockUser.textContent = info.event.extendedProps;
+      //     modal.show();
 
-          // Разница между датами начала и окончания
+      //     setTimeout(() => {
+      //       modal.hide();
+      //     }, 5000);
 
-          const rangeHoursBetweenDates = () => {
-            const start = eventStartDate.value;
-            const end = eventEndDate.value;
+      //     calendar.unselect(); // Отменяем выделение даты или интервала
+      //   } else {
+      //     const employmentSelEl = document.querySelector('.employment select');
 
-            const convStrt = convertDateTime(start);
-            const convEnd = convertDateTime(end);
+      //     // Разница между датами начала и окончания
 
-            const parsedStart = new Date(convStrt);
-            const parsedEnd = new Date(convEnd);
+      //     const rangeHoursBetweenDates = () => {
+      //       const start = eventStartDate.value;
+      //       const end = eventEndDate.value;
 
-            const diffDates = Math.abs(parsedEnd - parsedStart);
-            const diffHours = diffDates / (1000 * 60 * 60);
+      //       const convStrt = convertDateTime(start);
+      //       const convEnd = convertDateTime(end);
 
-            eventSpentTime.value = diffHours;
-            checkAndForbiddenOutOfDay(
-              eventStartDate,
-              eventEndDate,
-              eventSpentTime,
-            );
-            timeInputsValidation(eventEndDate, eventSpentTime);
-          };
+      //       const parsedStart = new Date(convStrt);
+      //       const parsedEnd = new Date(convEnd);
 
-          // Убираем красные рамки с селекторов при начале внесения изменений
+      //       const diffDates = Math.abs(parsedEnd - parsedStart);
+      //       const diffHours = diffDates / (1000 * 60 * 60);
 
-          const formSel = document.querySelectorAll('.form-select');
+      //       eventSpentTime.value = diffHours;
+      //       checkAndForbiddenOutOfDay(
+      //         eventStartDate,
+      //         eventEndDate,
+      //         eventSpentTime,
+      //       );
+      //       timeInputsValidation(eventEndDate, eventSpentTime);
+      //     };
 
-          formSel.forEach((fs) => {
-            fs.addEventListener('change', () => {
-              fs.classList.remove('is-invalid');
-            });
-          });
+      //     // Убираем красные рамки с селекторов при начале внесения изменений
 
-          // Включение возможности выделения нескольких дней, при нажатой клавише Shift
+      //     const formSel = document.querySelectorAll('.form-select');
 
-          document.addEventListener(
-            'keydown',
-            (e) => {
-              if (e.key === 'Shift') {
-                isMultiMode = true;
-                e.preventDefault();
-                return isMultiMode;
-              }
-            },
-            { once: true },
-          );
+      //     formSel.forEach((fs) => {
+      //       fs.addEventListener('change', () => {
+      //         fs.classList.remove('is-invalid');
+      //       });
+      //     });
 
-          // Запрет выделения нескольких дней за один раз
+      //     // Включение возможности выделения нескольких дней, при нажатой клавише Shift
 
-          if (
-            info.start.getDate() !== info.end.getDate() &&
-            calendar.view.type !== 'dayGridMonth'
-          ) {
-            calendar.unselect();
-            return;
-          }
+      //     document.addEventListener(
+      //       'keydown',
+      //       (e) => {
+      //         if (e.key === 'Shift') {
+      //           isMultiMode = true;
+      //           e.preventDefault();
+      //           return isMultiMode;
+      //         }
+      //       },
+      //       { once: true },
+      //     );
 
-          // Массив всех дней, показанных на экране
+      //     // Запрет выделения нескольких дней за один раз
 
-          const fcTimegridCol = [
-            ...document.querySelectorAll('.fc-timegrid-col'),
-          ];
+      //     if (
+      //       info.start.getDate() !== info.end.getDate() &&
+      //       calendar.view.type !== 'dayGridMonth'
+      //     ) {
+      //       calendar.unselect();
+      //       return;
+      //     }
 
-          if (!isMultiMode && calendar.view.type !== 'dayGridMonth') {
-            var modal = new Modal(addEventModal);
-            modal.show();
+      //     // Массив всех дней, показанных на экране
 
-            let flatpickrStart;
-            let flatpickrEnd;
+      //     const fcTimegridCol = [
+      //       ...document.querySelectorAll('.fc-timegrid-col'),
+      //     ];
 
-            noEditPartOfInput('eventStartDate', 11);
-            noEditPartOfInput('eventEndDate', 11);
+      //     if (!isMultiMode && calendar.view.type !== 'dayGridMonth') {
+      //       var modal = new Modal(addEventModal);
+      //       modal.show();
 
-            if (window.innerWidth > 1024) {
-              flatpickrStart = flatpickr('#eventStartDate', {
-                noCalendar: false,
-                dateFormat: 'd.m.Y H:i',
-                enableTime: true,
-                position: 'above',
-                allowInput: true,
-                locale: 'ru',
-                minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
-                maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
-              });
+      //       let flatpickrStart;
+      //       let flatpickrEnd;
 
-              flatpickrEnd = flatpickr('#eventEndDate', {
-                dateFormat: 'd.m.Y H:i',
-                noCalendar: false,
-                enableTime: true,
-                position: 'above',
-                allowInput: true,
-                locale: 'ru',
-                minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
-                maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
-              });
-            } else {
-              flatpickrStart = flatpickr('#eventStartDate', {
-                static: true,
-                noCalendar: false,
-                dateFormat: 'd.m.Y H:i',
-                enableTime: true,
-                position: 'above',
-                allowInput: true,
-                locale: 'ru',
-                minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
-                maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
-              });
-              flatpickrEnd = flatpickr('#eventEndDate', {
-                static: true,
-                noCalendar: false,
-                dateFormat: 'd.m.Y H:i',
-                enableTime: true,
-                position: 'above',
-                allowInput: true,
-                locale: 'ru',
-                minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
-                maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
-              });
-            }
-            flatpickrStart.setDate(transformDateTime(info.start));
-            flatpickrEnd.setDate(transformDateTime(info.end));
+      //       noEditPartOfInput('eventStartDate', 11);
+      //       noEditPartOfInput('eventEndDate', 11);
 
-            if (employmentSelEl?.value === 'Работа') {
-              rangeHoursBetweenDates();
-            }
+      //       if (window.innerWidth > 1024) {
+      //         flatpickrStart = flatpickr('#eventStartDate', {
+      //           noCalendar: false,
+      //           dateFormat: 'd.m.Y H:i',
+      //           enableTime: true,
+      //           position: 'above',
+      //           allowInput: true,
+      //           locale: 'ru',
+      //           minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
+      //           maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
+      //         });
 
-            eventStartDate.addEventListener('change', () =>
-              rangeHoursBetweenDates(),
-            );
-            eventEndDate.addEventListener('change', () =>
-              rangeHoursBetweenDates(),
-            );
+      //         flatpickrEnd = flatpickr('#eventEndDate', {
+      //           dateFormat: 'd.m.Y H:i',
+      //           noCalendar: false,
+      //           enableTime: true,
+      //           position: 'above',
+      //           allowInput: true,
+      //           locale: 'ru',
+      //           minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
+      //           maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
+      //         });
+      //       } else {
+      //         flatpickrStart = flatpickr('#eventStartDate', {
+      //           static: true,
+      //           noCalendar: false,
+      //           dateFormat: 'd.m.Y H:i',
+      //           enableTime: true,
+      //           position: 'above',
+      //           allowInput: true,
+      //           locale: 'ru',
+      //           minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
+      //           maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
+      //         });
+      //         flatpickrEnd = flatpickr('#eventEndDate', {
+      //           static: true,
+      //           noCalendar: false,
+      //           dateFormat: 'd.m.Y H:i',
+      //           enableTime: true,
+      //           position: 'above',
+      //           allowInput: true,
+      //           locale: 'ru',
+      //           minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
+      //           maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
+      //         });
+      //       }
+      //       flatpickrStart.setDate(transformDateTime(info.start));
+      //       flatpickrEnd.setDate(transformDateTime(info.end));
 
-            // Синхронизация Времени начала и Окончания при изменении Затраченного времени
+      //       if (employmentSelEl?.value === 'Работа') {
+      //         rangeHoursBetweenDates();
+      //       }
 
-            eventSpentTime.addEventListener('change', () => {
-              if (calendar.view.type === 'dayGridMonth') {
-              } else {
-                // Значения Начала и Окончания
-                const start = eventStartDate.value;
-                const end = eventEndDate.value;
+      //       eventStartDate.addEventListener('change', () =>
+      //         rangeHoursBetweenDates(),
+      //       );
+      //       eventEndDate.addEventListener('change', () =>
+      //         rangeHoursBetweenDates(),
+      //       );
 
-                // Переводим в нужный формат
+      //       // Синхронизация Времени начала и Окончания при изменении Затраченного времени
 
-                const convStrt = convertDateTime(start);
-                const convEnd = convertDateTime(end);
+      //       eventSpentTime.addEventListener('change', () => {
+      //         if (calendar.view.type === 'dayGridMonth') {
+      //         } else {
+      //           // Значения Начала и Окончания
+      //           const start = eventStartDate.value;
+      //           const end = eventEndDate.value;
 
-                // Находим время старта и финиша в миллисекундах
+      //           // Переводим в нужный формат
 
-                const parsedStart = new Date(convStrt).getTime();
-                const parsedEnd = new Date(convEnd).getTime();
+      //           const convStrt = convertDateTime(start);
+      //           const convEnd = convertDateTime(end);
 
-                // Переводим часы из инпута Время в миллисекунды
+      //           // Находим время старта и финиша в миллисекундах
 
-                const milliSpentTime = eventSpentTime.value * (60000 * 60);
+      //           const parsedStart = new Date(convStrt).getTime();
+      //           const parsedEnd = new Date(convEnd).getTime();
 
-                // Складываем время начала в миллисек и фактическое время в миллисек, получаем время окончания в миллисек
+      //           // Переводим часы из инпута Время в миллисекунды
 
-                const msEndTime = parsedStart + milliSpentTime;
+      //           const milliSpentTime = eventSpentTime.value * (60000 * 60);
 
-                // Преобразовываем миллисекунды в дату окончания в нужном формате
+      //           // Складываем время начала в миллисек и фактическое время в миллисек, получаем время окончания в миллисек
 
-                const convertMillisecToEndDateValue = (endMilliSecondsDate) => {
-                  const endDate = new Date(endMilliSecondsDate);
-                  return endDate;
-                };
+      //           const msEndTime = parsedStart + milliSpentTime;
 
-                const endDate = convertMillisecToEndDateValue(msEndTime);
+      //           // Преобразовываем миллисекунды в дату окончания в нужном формате
 
-                // Преобразовываем объект Data в правильный вид для подстановки в окно Окончание
+      //           const convertMillisecToEndDateValue = (endMilliSecondsDate) => {
+      //             const endDate = new Date(endMilliSecondsDate);
+      //             return endDate;
+      //           };
 
-                const endDateValue = transformDateTime(endDate);
+      //           const endDate = convertMillisecToEndDateValue(msEndTime);
 
-                eventEndDate.value = endDateValue;
-              }
-              checkAndForbiddenOutOfDay(
-                eventStartDate,
-                eventEndDate,
-                eventSpentTime,
-              );
-              timeInputsValidation(eventEndDate, eventSpentTime);
-              changeDirectZero(eventEndDate, eventSpentTime);
-            });
-          } else {
-            // Дата начала и окончания при выделении
-            const startDate = info.start;
-            const endDate = info.end;
+      //           // Преобразовываем объект Data в правильный вид для подстановки в окно Окончание
 
-            // РАБОТА С ВЫДЕЛЕНИЕМ
+      //           const endDateValue = transformDateTime(endDate);
 
-            let hlElStyle, hlElAttrDate;
+      //           eventEndDate.value = endDateValue;
+      //         }
+      //         checkAndForbiddenOutOfDay(
+      //           eventStartDate,
+      //           eventEndDate,
+      //           eventSpentTime,
+      //         );
+      //         timeInputsValidation(eventEndDate, eventSpentTime);
+      //         changeDirectZero(eventEndDate, eventSpentTime);
+      //       });
+      //     } else {
+      //       // Дата начала и окончания при выделении
+      //       const startDate = info.start;
+      //       const endDate = info.end;
 
-            // Находим какой элемент выделен
+      //       // РАБОТА С ВЫДЕЛЕНИЕМ
 
-            fcTimegridCol.forEach((el) => {
-              // Получаем выделенный элемент
-              const hlEl = el.querySelector('.fc-timegrid-bg-harness');
+      //       let hlElStyle, hlElAttrDate;
 
-              // Работаем с элементом, который выделяем
+      //       // Находим какой элемент выделен
 
-              if (hlEl) {
-                // Получаем стили
-                hlElStyle = hlEl.getAttribute('style');
+      //       fcTimegridCol.forEach((el) => {
+      //         // Получаем выделенный элемент
+      //         const hlEl = el.querySelector('.fc-timegrid-bg-harness');
 
-                // Получаем дату
-                hlElAttrDate = el.getAttribute('data-date');
-              }
-            });
+      //         // Работаем с элементом, который выделяем
 
-            // При множественном выделении (при нажатом Shift) собираем даты время начала и окончания выделенного события, дату и стили в массив
+      //         if (hlEl) {
+      //           // Получаем стили
+      //           hlElStyle = hlEl.getAttribute('style');
 
-            multipleEventsArray.push({
-              start: startDate,
-              end: endDate,
-              hlElStyle,
-              hlElAttrDate,
-            });
-          }
+      //           // Получаем дату
+      //           hlElAttrDate = el.getAttribute('data-date');
+      //         }
+      //       });
 
-          // Массовое добавление в месячном виде
+      //       // При множественном выделении (при нажатом Shift) собираем даты время начала и окончания выделенного события, дату и стили в массив
 
-          massMonthAddEvent(calendar, info);
+      //       multipleEventsArray.push({
+      //         start: startDate,
+      //         end: endDate,
+      //         hlElStyle,
+      //         hlElAttrDate,
+      //       });
+      //     }
 
-          // После каждого выделения проверяем наличие выделенного участка и отмечаем его заново
+      //     // Массовое добавление в месячном виде
 
-          if (calendar.view.type === 'timeGridWeek') {
-            saveHighlightedReg(multipleEventsArray, fcTimegridCol);
+      //     massMonthAddEvent(calendar, info);
 
-            // Очищаем выделенное при закрытии окна (отмене)
-            document.addEventListener('hide.bs.modal', () => {
-              multipleEventsArray = [];
-              fcTimegridCol.forEach((el) => {
-                const fcTimegridBgHarness = el.querySelectorAll(
-                  '.fc-timegrid-bg-harness',
-                );
-                fcTimegridBgHarness.forEach((ell) => {
-                  if (ell !== null && ell.firstChild) {
-                    ell.style = '';
-                    calendar.render();
-                  }
-                });
-              });
-              calendar.destroy();
-              calendar.render();
-              isMultiMode = false;
-              document.addEventListener('keyup', shiftKeyUp);
-            });
-          }
-        }
-      },
+      //     // После каждого выделения проверяем наличие выделенного участка и отмечаем его заново
+
+      //     if (calendar.view.type === 'timeGridWeek') {
+      //       saveHighlightedReg(multipleEventsArray, fcTimegridCol);
+
+      //       // Очищаем выделенное при закрытии окна (отмене)
+      //       document.addEventListener('hide.bs.modal', () => {
+      //         multipleEventsArray = [];
+      //         fcTimegridCol.forEach((el) => {
+      //           const fcTimegridBgHarness = el.querySelectorAll(
+      //             '.fc-timegrid-bg-harness',
+      //           );
+      //           fcTimegridBgHarness.forEach((ell) => {
+      //             if (ell !== null && ell.firstChild) {
+      //               ell.style = '';
+      //               calendar.render();
+      //             }
+      //           });
+      //         });
+      //         calendar.destroy();
+      //         calendar.render();
+      //         isMultiMode = false;
+      //         document.addEventListener('keyup', shiftKeyUp);
+      //       });
+      //     }
+      //   }
+      // },
       viewDidMount: function (view) {
         const approveBtn = document.querySelector('.approveBtn');
         const lockBtn = document.querySelector('.lockBtn');
@@ -332,6 +336,7 @@ export let renderCalendar = function renderCalendar(el, option) {
         day: 'День',
       },
     },
+
     option,
   );
   let calendar = new Calendar(el, options);

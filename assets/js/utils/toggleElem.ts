@@ -3,7 +3,7 @@
  * @param {Element} elem - HTML элемент, который нужно скрыть/показать
  * @param {boolean} onOff - Флаг, указывающий, нужно ли показать (true) или скрыть (false) элемент
  */
-export const toggleElem = (elem, onOff) => {
+export const toggleElem = (elem: HTMLElement, onOff: boolean) => {
   // Проверяем, существует ли элемент
   if (elem) {
     if (onOff) {
@@ -18,11 +18,11 @@ export const toggleElem = (elem, onOff) => {
 
 // Включает отключает состояние при валидации
 
-export const isInvalidElem = (elem) => {
+export const isInvalidElem = (elem: HTMLElement) => {
   elem?.classList.add('is-invalid');
   elem.style.color = 'red';
 };
-export const isValidElem = (elem) => {
+export const isValidElem = (elem: HTMLElement) => {
   elem?.classList.remove('is-invalid');
   elem.style.color = 'unset';
 };

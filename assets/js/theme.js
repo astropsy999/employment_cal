@@ -64,7 +64,7 @@ import {
   timeInputsValidation,
   transformDateTime,
 } from './utils/mainGlobFunctions';
-import { toggleElem } from './utils/toggleElem.js';
+import { toggleElem } from './utils/toggleElem';
 
 export const api = {
   srvv,
@@ -96,7 +96,7 @@ const employmentCalendar = async () => {
 
   /* -------------------------------------------------------------------------- */
 
-  
+
   const idDB = await getUserID();
   console.log('idDB: ', idDB);
 
@@ -979,7 +979,7 @@ const employmentCalendar = async () => {
 
       // Добавление задачи в календарь
       addEventToCal(calendar);
-      
+
       // Изменение пользователя
       changeUserData(calendar, idDB);
       const checkUserIDBySelector = () => {
