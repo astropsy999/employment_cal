@@ -11,6 +11,7 @@ import { Calendar } from '@fullcalendar/core';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { convertToISODate } from '../utils/datesUtils';
 import { approveEventsApi } from '../api/approveEvents';
+import { lockingActionApi } from '../api/lockingActionApi';
 
 
 export const lockEmploynment = (calendar: Calendar) => {
@@ -187,56 +188,57 @@ export const lockEmploynment = (calendar: Calendar) => {
 
     // Подтверждение блокировки/разблокировки
 
-    function lockingAction() {
+    async function lockingAction() {
       lockActionBtn.removeEventListener('click', lockingAction);
       unlockActionBtn.removeEventListener('click', lockingAction);
-      weekToBlockIDs.forEach((ObjID) => {
-        const managerName = localStorage.getItem('managerName');
+      // weekToBlockIDs.forEach((ObjID) => {
+      //   const managerName = localStorage.getItem('managerName');
 
-        let formDataLocked = new FormData();
+      //   let formDataLocked = new FormData();
 
-        const requestBody = JSON.stringify({
-          Value: !isLocked ? managerName : '',
-          UserTabID: null,
-          UnitID: '',
-          UnitName: '',
-          isOnlyYear: false,
-          OrigValue: '',
-          ParamID: 9249,
-          ObjID,
-          InterfaceID: 1792,
-          GroupID: 2720,
-          ObjTypeID: 1040,
-          ParrentObjHighTab: -1,
-          ParamID_TH: null,
-          Name_TH: 'Блокировка для календаря',
-          Array: 0,
-        });
+      //   const requestBody = JSON.stringify({
+      //     Value: !isLocked ? managerName : '',
+      //     UserTabID: null,
+      //     UnitID: '',
+      //     UnitName: '',
+      //     isOnlyYear: false,
+      //     OrigValue: '',
+      //     ParamID: 9249,
+      //     ObjID,
+      //     InterfaceID: 1792,
+      //     GroupID: 2720,
+      //     ObjTypeID: 1040,
+      //     ParrentObjHighTab: -1,
+      //     ParamID_TH: null,
+      //     Name_TH: 'Блокировка для календаря',
+      //     Array: 0,
+      //   });
 
-        formDataLocked.append('data', requestBody);
+      //   formDataLocked.append('data', requestBody);
 
-        fetch(C.srvv + C.cacheAddTable, {
-          credentials: 'include',
-          method: 'post',
-          body: formDataLocked,
-        }).then((response) => {
-          if (response) {
-            const formDataSaveCache = new FormData();
+      //   fetch(C.srvv + C.cacheAddTable, {
+      //     credentials: 'include',
+      //     method: 'post',
+      //     body: formDataLocked,
+      //   }).then((response) => {
+      //     if (response) {
+      //       const formDataSaveCache = new FormData();
 
-            formDataSaveCache.append('InterfaceID', '1792');
-            formDataSaveCache.append('ParrentObjHighTab', '-1');
-            formDataSaveCache.append('RapidCalc', '0');
-            formDataSaveCache.append('Ignore39', '0');
+      //       formDataSaveCache.append('InterfaceID', '1792');
+      //       formDataSaveCache.append('ParrentObjHighTab', '-1');
+      //       formDataSaveCache.append('RapidCalc', '0');
+      //       formDataSaveCache.append('Ignore39', '0');
 
-            fetch(C.srvv + C.cacheSaveTable, {
-              credentials: 'include',
-              method: 'post',
-              body: formDataSaveCache,
-            }).then((response) => {});
-          }
-        });
-      });
-
+      //       fetch(C.srvv + C.cacheSaveTable, {
+      //         credentials: 'include',
+      //         method: 'post',
+      //         body: formDataSaveCache,
+      //       }).then((response) => {});
+      //     }
+      //   });
+      // });
+      await lockingActionApi(weekToBlockIDs, isLocked);
+      
       let currentLockedDatesArr = JSON.parse(
         localStorage.getItem('lockedDatesArray'),
       );
