@@ -8,6 +8,7 @@ export default defineConfig({
     port: 5500,
   },
   build: {
+    outDir: 'prod',
     rollupOptions: {
       input: {
         main: './index.html',
