@@ -30,7 +30,7 @@ import {
   addBlockOverlays,
   removeOverlays,
   toggleIcon,
-} from './ui/checkBlockedDays.js';
+} from './ui/checkBlockedDays';
 import { checkCurrentEventsAndBlockApproveBtn } from './ui/checkCurrentEvents';
 import { eventContent } from './ui/eventContent.js';
 import { eventDrop } from './ui/eventDrop.js';

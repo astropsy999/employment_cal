@@ -7,35 +7,32 @@ import {
 import { formatDate } from '../utils/mainGlobFunctions';
 import { Modal, Popover, Tooltip } from 'bootstrap';
 import { fullCalendar } from '../utils/fullcalendar';
+import { Calendar } from '@fullcalendar/core';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
+import { convertToISODate } from '../utils/datesUtils';
+import { approveEventsApi } from '../api/approveEvents';
 
-export function convertToISODate(dateString) {
-  const parts = dateString.split('.');
-  const day = parts[0].padStart(2, '0');
-  const month = parts[1].padStart(2, '0');
-  const year = parts[2];
 
-  return `${year}-${month}-${day}`;
-}
-
-export const lockEmploynment = (calendar) => {
+export const lockEmploynment = (calendar: Calendar) => {
   const lockBtn = document.querySelector('.lockBtn');
 
   const lockAction = () => {
-    const isLocked = JSON.parse(localStorage.getItem('isWeekLocked'));
+    const isLocked = getLocalStorageItem('isWeekLocked');
     // Получаем текущий вид календаря
     const currentView = calendar.view;
 
     // Получаем фамилию выбранного пользователя
-    const otherUsersSelector = document.querySelector('#otherUsers');
-    const selectedUser = otherUsers?.selectedOptions[0].textContent;
-    const selectedUserId = otherUsers?.value;
+    // const otherUsersSelector = document.querySelector('#otherUsers');
+    // const selectedUser = otherUsers?.selectedOptions[0].textContent;
+    // console.log('selectedUser: ', selectedUser);
+    // const selectedUserId = otherUsers?.value;
 
     let hasUnsubmittedEvents = false;
 
-    const lockedUserSurname = document.querySelector('.lockedUserSurname');
-    const unLockedUserSurname = document.querySelector('.unLockedUserSurname');
-    lockedUserSurname.textContent = selectedUser;
-    unLockedUserSurname.textContent = selectedUser;
+    // const lockedUserSurname = document.querySelector('.lockedUserSurname');
+    // const unLockedUserSurname = document.querySelector('.unLockedUserSurname');
+    // lockedUserSurname.textContent = selectedUser;
+    // unLockedUserSurname.textContent = selectedUser;
 
     const lockEmplmodal = document.querySelector('#LockEmplModal');
     const unlockEmplmodal = document.querySelector('#unLockEmplModal');
@@ -47,7 +44,7 @@ export const lockEmploynment = (calendar) => {
 
     const eventsInCurrentWeek = currentEvents.filter((event) => {
       const eventStart = event.start;
-      return eventStart >= startDate && eventStart <= endDate;
+      return eventStart! >= startDate && eventStart! <= endDate;
     });
 
     if (eventsInCurrentWeek.length > 0) {
@@ -60,63 +57,35 @@ export const lockEmploynment = (calendar) => {
       });
     }
 
-    const lastEvent = eventsInCurrentWeek.reduce(
-      (latestEvent, currentEvent) => {
-        const latestEventDate = latestEvent ? latestEvent.start : null;
-        const currentEventDate = currentEvent.start;
+    // const lastEvent = eventsInCurrentWeek.reduce(
+    //   (latestEvent, currentEvent) => {
+    //     const latestEventDate = latestEvent ? latestEvent.start : null;
+    //     const currentEventDate = currentEvent.start;
 
-        if (!latestEventDate || currentEventDate > latestEventDate) {
-          return currentEvent;
-        } else {
-          return latestEvent;
-        }
-      },
-      null,
-    );
+    //     if (!latestEventDate || currentEventDate > latestEventDate) {
+    //       return currentEvent;
+    //     } else {
+    //       return latestEvent;
+    //     }
+    //   },
+    //   null,
+    // );
 
-    eventsInCurrentWeek.sort((a, b) => a.start - b.start);
+    // eventsInCurrentWeek.sort((a, b) => a.start - b.start);
+
+
 
     const approveAndLockAction = () => {
-      const yesOnPopover = document.querySelector('.yesOnPopover');
-      eventsInCurrentWeek.forEach((e) => {
-        const delID = e._def.extendedProps.delID;
+    const yesOnPopover = document.querySelector('.yesOnPopover');
 
-        const managerName = localStorage.getItem('managerName');
-
-        let formDataApproved = new FormData();
-
-        formDataApproved.append('ID', delID);
-        formDataApproved.append('TypeID', '1094');
-        formDataApproved.append('Data[0][name]', '9245');
-        formDataApproved.append('Data[0][value]', managerName);
-        formDataApproved.append('Data[0][isName]', 'false');
-        formDataApproved.append('Data[0][maninp]', 'false');
-        formDataApproved.append('Data[0][GroupID]', '2443');
-        formDataApproved.append('ParentObjID', localStorage.getItem('iddb'));
-        formDataApproved.append('CalcParamID', '-1');
-        formDataApproved.append('InterfaceID', '1593');
-        formDataApproved.append('ImportantInterfaceID', '');
-        formDataApproved.append('templ_mode', 'false');
-        formDataApproved.append('Ignor39', '0');
-
-        fetch(C.srvv + C.addValueObjTrue, {
-          credentials: 'include',
-          method: 'post',
-          body: formDataApproved,
-        }).then((response) => {
-          yesOnPopover.textContent = 'Согласовано';
-          const changedCalendarEvents = calendar.getEvents();
-          changedCalendarEvents.forEach((event) => {
-            if (event._def.defId === e._def.defId) {
-              event.setExtendedProp('isApproved', managerName);
-              event.dropable = false;
-              fullCalendar.fullCalendarInit();
-            }
-          });
+      approveEventsApi(eventsInCurrentWeek)
+      .then((response) => {
+          yesOnPopover!.textContent = 'Согласовано';
+        
+          fullCalendar.fullCalendarInit();
 
           lockingAction();
         });
-      });
     };
 
     let modal;
@@ -302,7 +271,7 @@ export const lockEmploynment = (calendar) => {
       }
 
       setTimeout(() => {
-        modal.hide();
+        modal?.hide();
         lockActionBtn.textContent = 'Да';
         unlockActionBtn.textContent = 'Да';
       }, 800);
