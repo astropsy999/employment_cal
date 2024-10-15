@@ -275,12 +275,12 @@ export const lockEmploynment = (calendar: Calendar) => {
       // Записываем новые данные о датах блокировки в массив и localstorage
       setLocalStorageItem('lockedDatesArray', mergedLockedDatesArr);
 
-      return
 
       if (!isLocked) {
+        addBlockOverlays();
+        return
         lockActionBtn!.textContent = 'Заблокировано';
         toggleIcon('unlock');
-        addBlockOverlays();
         setLocalStorageItem('isWeekLocked', true);
       } else {
         unlockActionBtn!.textContent = 'Разблокировано';
@@ -288,7 +288,7 @@ export const lockEmploynment = (calendar: Calendar) => {
         removeOverlays();
         setLocalStorageItem('isWeekLocked', false);
       }
-
+      return
       setTimeout(() => {
         modal?.hide();
         lockActionBtn!.textContent = 'Да';

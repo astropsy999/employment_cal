@@ -5,6 +5,8 @@
  * @param {*} calendar
  */
 
+import { getLocalStorageItem } from "../utils/localStorageUtils";
+
 export const addBlockOverlays = () => {
 
     // Remove existing overlays to prevent duplicates
@@ -13,57 +15,57 @@ export const addBlockOverlays = () => {
       overlay.remove();
   });
 
-  // Выбираем все ячейки дней
+  // Выбираем все ячейки дней текущей недели
   const dayCells = Array.from(document.querySelectorAll('.fc-timegrid-col-frame'));
 
-  const calendarGrid = document.querySelector('.fc-daygrid-body'); // Выберите контейнер сетки месяца
-  // if (!calendarGrid) return; // Проверка наличия сетки
+  const lockedDatesArray = getLocalStorageItem('lockedDatesArray')?.map((date: string) => {
+    return date.split('.').reverse().join('-');
+  });
 
-  // Добавляем слой для заблокированных дней
+  console.log('lockedDatesArray: ', lockedDatesArray);
 
   dayCells.forEach((el) => {
-    const hasLockedClass = el.querySelector('.locked-day-overlay');
-    const lockBtn = document.querySelector('.lockBtn');
-    if (!hasLockedClass) {
-      const idx = dayCells.indexOf(el);
-      if (idx !== 0) {
-        const overlay = document.createElement('div');
-        overlay.classList.add('locked-day-overlay');
+    // Get the parent td element
+    const tdElement = el.closest('td[role="gridcell"]');
 
-        const label = document.createElement('span');
-        label.textContent = 'Заблокировано';
-        label.classList.add('overlay-label');
+    // Get the date from data-date attribute
+    const dateStr = tdElement?.getAttribute('data-date');
 
-        overlay.appendChild(label);
+    if (dateStr && lockedDatesArray?.includes(dateStr)) {
+      // Add overlay to this day
+      const overlay = document.createElement('div');
+      overlay.classList.add('locked-day-overlay');
 
-        el.insertAdjacentElement('afterBegin', overlay);
-      }
+      const label = document.createElement('span');
+      label.textContent = 'Заблокировано';
+      label.classList.add('overlay-label');
 
-      lockBtn?.removeAttribute('title');
-      lockBtn?.setAttribute('title', 'Разблокировать неделю');
+      overlay.appendChild(label);
+
+      el.insertAdjacentElement('afterbegin', overlay);
     }
   });
+
+  const lockBtn = document.querySelector('.lockBtn');
+  lockBtn?.removeAttribute('title');
+  lockBtn?.setAttribute('title', 'Разблокировать занятость');
+
 };
 
 export const removeOverlays = () => {
-  const dayCells = [...document.querySelectorAll('.fc-timegrid-col-frame')];
-  const lockBtn = document.querySelector('.lockBtn');
+  const overlays = document.querySelectorAll('.locked-day-overlay');
 
-  dayCells.forEach((el) => {
-    const idx = dayCells.indexOf(el);
-    const overlayToRemove = el.querySelector('.locked-day-overlay');
-    const labelToRemove = overlayToRemove?.querySelector('.overlay-label');
-    if (idx !== 0) {
-      overlayToRemove?.classList.remove('locked-day-overlay');
-      labelToRemove?.remove();
-    }
+  overlays.forEach((overlay) => {
+    overlay.remove();
   });
 
+  const lockBtn = document.querySelector('.lockBtn');
+
   lockBtn?.removeAttribute('title');
-  lockBtn?.setAttribute('title', 'Заблокировать неделю');
+  lockBtn?.setAttribute('title', 'Блокировать занятость');
 };
 
-export function toggleIcon(action) {
+export function toggleIcon(action: 'lock' | 'unlock') {
   const button = document.getElementById('lockBtn');
   const addTaskBtn = document.querySelector('#addTaskBtn');
   if (button) {
@@ -78,11 +80,11 @@ export function toggleIcon(action) {
       // Определяем нужную иконку и цвет в зависимости от значения параметра "action"
       if (action === 'unlock') {
         newIcon.classList.add('bi', 'bi-lock-fill', 'text-danger');
-        addTaskBtn.setAttribute('disabled', 'disabled');
+        addTaskBtn!.setAttribute('disabled', 'disabled');
       } else {
         newIcon.classList.add('bi', 'bi-unlock-fill', 'text-success');
         // Добавляем красный цвет для состояния "lock"
-        addTaskBtn.removeAttribute('disabled');
+        addTaskBtn!.removeAttribute('disabled');
       }
 
       // Добавляем новую иконку на кнопку
