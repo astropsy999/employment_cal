@@ -39,6 +39,7 @@ export const lockEmploynment = (calendar: Calendar) => {
     const lockEmplmodal = document.querySelector('#LockEmplModal') as HTMLElement;
     const unlockEmplmodal = document.querySelector('#unLockEmplModal') as HTMLElement;
     const dailyBlockContainer = document.querySelector('.dailyBlockContainer') as HTMLElement;
+    const dailyUnBlockContainer = document.querySelector('.dailyUnBlockContainer') as HTMLElement;
 
     const startDate = new Date(calendar.view.currentStart);
     const endDate = new Date(calendar.view.currentEnd);
@@ -195,7 +196,13 @@ export const lockEmploynment = (calendar: Calendar) => {
       return new Date(parseDateString(date)!);
     }).reverse();
 
-    generateDaysCheckboxes(dailyBlockContainer, parsedLockedDatesArr);
+    
+    if(!isLocked) {
+      generateDaysCheckboxes(dailyBlockContainer, parsedLockedDatesArr)
+    }
+    else {
+      generateDaysCheckboxes(dailyUnBlockContainer, parsedLockedDatesArr)
+    }
 
 
     // Подтверждение блокировки/разблокировки
