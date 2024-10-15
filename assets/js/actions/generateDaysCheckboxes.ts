@@ -11,9 +11,18 @@ interface UniqueDates {
   [key: string]: UniqueDate;
 }
 
-// Type Guard для определения, что массив содержит EventApi
+/**
+ * Type Guard для определения, что массив содержит EventApi
+ * @param source - Исходный массив.
+ * @returns true, если массив содержит только объекты EventApi.
+ */
 function isEventApiArray(source: any[]): source is EventApi[] {
-  return source.length > 0 && 'start' in source[0];
+  return (
+    source.length > 0 &&
+    typeof source[0] === 'object' &&
+    source[0] !== null &&
+    'start' in source[0]
+  );
 }
 
 // Type Guard для определения, что массив содержит Date
@@ -84,14 +93,6 @@ export const generateDaysCheckboxes = (
     label.classList.add('form-check-label');
     label.htmlFor = `checkbox-${dateStr}`;
     label.textContent = `${formattedDate}`;
-
-    // Дополнительно: отображение количества событий, если они есть
-    // if (uniqueDate.events && uniqueDate.events.length > 0) {
-    //   const countSpan = document.createElement('span');
-    //   countSpan.classList.add('badge', 'bg-primary', 'ms-2');
-    //   countSpan.textContent = uniqueDate.events.length.toString();
-    //   label.appendChild(countSpan);
-    // }
 
     div.appendChild(checkbox);
     div.appendChild(label);

@@ -9,9 +9,10 @@ import { Modal, Popover, Tooltip } from 'bootstrap';
 import { fullCalendar } from '../utils/fullcalendar';
 import { Calendar } from '@fullcalendar/core';
 import { getLocalStorageItem, setLocalStorageItem } from '../utils/localStorageUtils';
-import { convertToISODate } from '../utils/datesUtils';
+import { convertToISODate, parseDateString } from '../utils/datesUtils';
 import { approveEventsApi } from '../api/approveEvents';
 import { lockingActionApi } from '../api/lockingActionApi';
+import { generateDaysCheckboxes } from './generateDaysCheckboxes';
 
 
 export const lockEmploynment = (calendar: Calendar) => {
@@ -37,6 +38,7 @@ export const lockEmploynment = (calendar: Calendar) => {
 
     const lockEmplmodal = document.querySelector('#LockEmplModal') as HTMLElement;
     const unlockEmplmodal = document.querySelector('#unLockEmplModal') as HTMLElement;
+    const dailyBlockContainer = document.querySelector('.dailyBlockContainer') as HTMLElement;
 
     const startDate = new Date(calendar.view.currentStart);
     const endDate = new Date(calendar.view.currentEnd);
@@ -95,6 +97,7 @@ export const lockEmploynment = (calendar: Calendar) => {
       modal = new Modal(unlockEmplmodal);
     } else {
       modal = new Modal(lockEmplmodal);
+      // generateDaysCheckboxes()
     }
 
     // Получаем все objID соответствующие датам текущей недели для блокировки
@@ -119,7 +122,6 @@ export const lockEmploynment = (calendar: Calendar) => {
           lockingDatesArr.push(date);
         }
       }
-      //   weekToBlockIDs = [...new Set(weekToBlockIDsArr)];
       weekToBlockIDs = weekToBlockIDsArr;
 
       return { lockingDatesArr, weekToBlockIDs };
@@ -189,61 +191,22 @@ export const lockEmploynment = (calendar: Calendar) => {
       parentIdDataArr,
     );
 
+    const parsedLockedDatesArr = lockingDatesArr.map((date: string) => {
+      return new Date(parseDateString(date)!);
+    }).reverse();
+
+    generateDaysCheckboxes(dailyBlockContainer, parsedLockedDatesArr);
+
+
     // Подтверждение блокировки/разблокировки
 
     async function lockingAction() {
       lockActionBtn?.removeEventListener('click', lockingAction);
       unlockActionBtn?.removeEventListener('click', lockingAction);
-      // weekToBlockIDs.forEach((ObjID) => {
-      //   const managerName = localStorage.getItem('managerName');
-
-      //   let formDataLocked = new FormData();
-
-      //   const requestBody = JSON.stringify({
-      //     Value: !isLocked ? managerName : '',
-      //     UserTabID: null,
-      //     UnitID: '',
-      //     UnitName: '',
-      //     isOnlyYear: false,
-      //     OrigValue: '',
-      //     ParamID: 9249,
-      //     ObjID,
-      //     InterfaceID: 1792,
-      //     GroupID: 2720,
-      //     ObjTypeID: 1040,
-      //     ParrentObjHighTab: -1,
-      //     ParamID_TH: null,
-      //     Name_TH: 'Блокировка для календаря',
-      //     Array: 0,
-      //   });
-
-      //   formDataLocked.append('data', requestBody);
-
-      //   fetch(C.srvv + C.cacheAddTable, {
-      //     credentials: 'include',
-      //     method: 'post',
-      //     body: formDataLocked,
-      //   }).then((response) => {
-      //     if (response) {
-      //       const formDataSaveCache = new FormData();
-
-      //       formDataSaveCache.append('InterfaceID', '1792');
-      //       formDataSaveCache.append('ParrentObjHighTab', '-1');
-      //       formDataSaveCache.append('RapidCalc', '0');
-      //       formDataSaveCache.append('Ignore39', '0');
-
-      //       fetch(C.srvv + C.cacheSaveTable, {
-      //         credentials: 'include',
-      //         method: 'post',
-      //         body: formDataSaveCache,
-      //       }).then((response) => {});
-      //     }
-      //   });
-      // });
+     
       await lockingActionApi(weekToBlockIDs, isLocked);
       
       let currentLockedDatesArr = getLocalStorageItem('lockedDatesArray');
-      //   const lockingDatesArrUn = [...new Set(lockingDatesArr)];
       const lockingDatesArrUn = lockingDatesArr;
       let mergedLockedDatesArr;
 
