@@ -14,27 +14,55 @@ import { approveEventsApi } from '../api/approveEvents';
 import { lockingActionApi } from '../api/lockingActionApi';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
 
+    /**
+     * Собирает все выбранные даты из чекбоксов внутри контейнера.
+     * @param container - HTML-элемент контейнера с чекбоксами.
+     * @returns Массив выбранных дат в формате 'DD.MM.YYYY'.
+     */
+  const getSelectedDates = (container: HTMLElement): string[] => {
+    const checkboxes = container?.querySelectorAll<HTMLInputElement>('.form-check-input');
+    checkboxes.forEach((cb, index) => {
+      console.log(`Checkbox ${index}: value=${cb.value}, checked=${cb.checked}`);
+    });
+    const selectedDates = Array.from(checkboxes)
+      .filter(checkbox => checkbox.checked)
+      .map(checkbox => checkbox.value);
+
+    return selectedDates;
+  };
+
+  /**
+     * Возвращает массив дат текущей недели, начиная с startDate.
+     * @param startDate - Строка начальной даты в формате 'DD.MM.YYYY'.
+     * @returns Массив строковых дат в формате 'DD.MM.YYYY'.
+     */
+  const getCurrentWeekDates = (startDate: string): string[] => {
+    const currentWeekDatesArr: string[] = [];
+
+    const start = parseDateString(startDate);
+    if (!start) {
+      console.error('Некорректный формат startDate:', startDate);
+      return currentWeekDatesArr; // Возвращаем пустой массив при некорректной дате
+    }
+
+    for (let i = 0; i < 7; i++) {
+      const currentDate = new Date(start);
+      currentDate.setDate(start.getDate() + i); // Добавляем дни
+
+      // Форматируем дату и добавляем в массив
+      currentWeekDatesArr.push(formatDate(currentDate));
+    }
+
+    return currentWeekDatesArr;
+  };
+
 
 export const lockEmploynment = (calendar: Calendar) => {
   const lockBtn = document.querySelector('.lockBtn');
 
   const lockAction = () => {
     const isLocked = getLocalStorageItem('isWeekLocked');
-    // Получаем текущий вид календаря
-    const currentView = calendar.view;
-
-    // Получаем фамилию выбранного пользователя
-    // const otherUsersSelector = document.querySelector('#otherUsers');
-    // const selectedUser = otherUsers?.selectedOptions[0].textContent;
-    // console.log('selectedUser: ', selectedUser);
-    // const selectedUserId = otherUsers?.value;
-
     let hasUnsubmittedEvents = false;
-
-    // const lockedUserSurname = document.querySelector('.lockedUserSurname');
-    // const unLockedUserSurname = document.querySelector('.unLockedUserSurname');
-    // lockedUserSurname.textContent = selectedUser;
-    // unLockedUserSurname.textContent = selectedUser;
 
     const lockEmplmodal = document.querySelector('#LockEmplModal') as HTMLElement;
     const unlockEmplmodal = document.querySelector('#unLockEmplModal') as HTMLElement;
@@ -77,8 +105,6 @@ export const lockEmploynment = (calendar: Calendar) => {
 
     // eventsInCurrentWeek.sort((a, b) => a.start - b.start);
 
-
-
     const approveAndLockAction = () => {
       const yesOnPopover = document.querySelector('.yesOnPopover');
 
@@ -98,36 +124,35 @@ export const lockEmploynment = (calendar: Calendar) => {
       modal = new Modal(unlockEmplmodal);
     } else {
       modal = new Modal(lockEmplmodal);
-      // generateDaysCheckboxes()
     }
 
-    // Получаем все objID соответствующие датам текущей недели для блокировки
-
-    const getKeysForWeek = (startDate: string, arr: any) => {
-      const lockingDatesArr = [];
-      const weekToBlockIDsArr = [];
-      let weekToBlockIDs;
-
-      const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000; // 1 неделя в миллисекундах
-
-      const startDateTime = new Date(convertToISODate(startDate)).getTime();
-      const endDateTime = startDateTime + oneWeekInMilliseconds;
+    /**
+     * Фильтрует выбранные даты и возвращает соответствующие ключи.
+     * @param selectedDates - Массив выбранных дат в формате 'DD.MM.YYYY'.
+     * @param arr - Массив объектов с ключами и датами.
+     * @returns Объект с массивами lockingDatesArr и weekToBlockIDs.
+     */
+    const getKeysForSelectedDates = (selectedDates: string[], arr: Array<{ [key: string]: string }>) => {
+      const lockingDatesArr: string[] = [];
+      const weekToBlockIDsArr: string[] = [];
 
       for (const obj of arr) {
         const key = Object.keys(obj)[0];
         const date = obj[key];
-        const dateTime = new Date(convertToISODate(date)).getTime();
-
-        if (dateTime >= startDateTime && dateTime < endDateTime) {
+        
+        if (selectedDates.includes(date)) {
           weekToBlockIDsArr.push(key);
           lockingDatesArr.push(date);
         }
       }
-      weekToBlockIDs = weekToBlockIDsArr;
 
-      return { lockingDatesArr, weekToBlockIDs };
+      console.log('lockingDatesArr: ', lockingDatesArr);
+      console.log('weekToBlockIDs: ', weekToBlockIDsArr);
+
+      return { lockingDatesArr, weekToBlockIDs: weekToBlockIDsArr };
     };
     modal.show();
+  
     if (
       modal &&
       //@ts-ignore
@@ -184,11 +209,17 @@ export const lockEmploynment = (calendar: Calendar) => {
     const formattedEndDate = formatDate(endDate);
     const parentIdDataArr = getLocalStorageItem('parentIdDataArr');
 
+    
+
+    const currentWeekDatesArr = getCurrentWeekDates(formattedStartDate);
+
     startLockDate.innerText = startUnlockDate.innerText = formattedStartDate;
     endLockDate.innerText = endUnlockDate.innerText = formattedEndDate;
 
-    const { lockingDatesArr, weekToBlockIDs } = getKeysForWeek(
-      formattedStartDate,
+    
+
+    const { lockingDatesArr, weekToBlockIDs } = getKeysForSelectedDates(
+      currentWeekDatesArr,
       parentIdDataArr,
     );
 
@@ -210,26 +241,41 @@ export const lockEmploynment = (calendar: Calendar) => {
     async function lockingAction() {
       lockActionBtn?.removeEventListener('click', lockingAction);
       unlockActionBtn?.removeEventListener('click', lockingAction);
-     
-      await lockingActionApi(weekToBlockIDs, isLocked);
+
+    const selectedDatesArr = getSelectedDates(dailyBlockContainer);
+    console.log('selectedDatesArr: ', selectedDatesArr);
+
+    const { lockingDatesArr, weekToBlockIDs } = getKeysForSelectedDates(
+      selectedDatesArr,
+      parentIdDataArr,
+    );
+
+
+      console.log('weekToBlockIDs: ', weekToBlockIDs);
+
+      // await lockingActionApi(weekToBlockIDs, isLocked);
       
       let currentLockedDatesArr = getLocalStorageItem('lockedDatesArray');
+      console.log('currentLockedDatesArr: ', currentLockedDatesArr);
       const lockingDatesArrUn = lockingDatesArr;
       let mergedLockedDatesArr;
 
       if (!isLocked) {
         mergedLockedDatesArr = [...currentLockedDatesArr, ...lockingDatesArrUn];
+        console.log('mergedLockedDatesArr: ', mergedLockedDatesArr);
       } else {
         mergedLockedDatesArr = currentLockedDatesArr.filter(
           (date: string) => !lockingDatesArrUn.includes(date),
         );
+
+        console.log('mergedLockedDatesArr: ', mergedLockedDatesArr);
+
       }
 
       // Записываем новые данные о датах блокировки в массив и localstorage
-      localStorage.setItem(
-        'lockedDatesArray',
-        JSON.stringify(mergedLockedDatesArr),
-      );
+      setLocalStorageItem('lockedDatesArray', mergedLockedDatesArr);
+
+      return
 
       if (!isLocked) {
         lockActionBtn!.textContent = 'Заблокировано';

@@ -6,8 +6,15 @@
  */
 
 export const addBlockOverlays = () => {
-  const dayCells = [...document.querySelectorAll('.fc-timegrid-col-frame')];
-  // toggleIcon('unlock');
+
+    // Remove existing overlays to prevent duplicates
+  const existingOverlays = document.querySelectorAll('.locked-day-overlay');
+    existingOverlays.forEach((overlay) => {
+      overlay.remove();
+  });
+
+  // Выбираем все ячейки дней
+  const dayCells = Array.from(document.querySelectorAll('.fc-timegrid-col-frame'));
 
   const calendarGrid = document.querySelector('.fc-daygrid-body'); // Выберите контейнер сетки месяца
   // if (!calendarGrid) return; // Проверка наличия сетки
