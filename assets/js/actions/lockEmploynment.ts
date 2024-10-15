@@ -13,6 +13,7 @@ import { convertToISODate, parseDateString } from '../utils/datesUtils';
 import { approveEventsApi } from '../api/approveEvents';
 import { lockingActionApi } from '../api/lockingActionApi';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
+import { buttonLoader } from '../ui/buttonLoader';
 
     /**
      * Собирает все выбранные даты из чекбоксов внутри контейнера.
@@ -203,8 +204,8 @@ export const lockEmploynment = (calendar: Calendar) => {
     const startUnlockDate = document.querySelector('.startUnlockDate') as HTMLElement;
     const endLockDate = document.querySelector('.endLockDate') as HTMLElement;
     const endUnlockDate = document.querySelector('.endUnlockDate') as HTMLElement;
-    const lockActionBtn = document.querySelector('.lock-action');
-    const unlockActionBtn = document.querySelector('.unlock-action');
+    const lockActionBtn = document.querySelector('.lock-action') as HTMLButtonElement;
+    const unlockActionBtn = document.querySelector('.unlock-action') as HTMLButtonElement;
     const formattedStartDate = formatDate(startDate);
     const formattedEndDate = formatDate(endDate);
     const parentIdDataArr = getLocalStorageItem('parentIdDataArr');
@@ -249,8 +250,13 @@ export const lockEmploynment = (calendar: Calendar) => {
         parentIdDataArr,
       );
 
+      lockActionBtn && buttonLoader(lockActionBtn, true);
+      unlockActionBtn && buttonLoader(unlockActionBtn, true);
 
       await lockingActionApi(weekToBlockIDs, isLocked);
+
+      lockActionBtn && buttonLoader(lockActionBtn, false);
+      unlockActionBtn && buttonLoader(unlockActionBtn, false);
       
       let currentLockedDatesArr = getLocalStorageItem('lockedDatesArray');
       

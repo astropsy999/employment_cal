@@ -3,7 +3,7 @@
  * @param {HTMLElement} button - элемент кнопки
  * @param {boolean} flag - флаг включения-отключения
  */
-export const buttonLoader = (button, flag) => {
+export const buttonLoader = (button: HTMLButtonElement, flag: boolean) => {
   if (flag) {
     button.disabled = true;
     button.classList.add('loadingBtn');
