@@ -108,3 +108,32 @@ export function getDatesInRange(startDate: Date, endDate: Date): Date[] {
       parseInt(timeParts[1]),
     );
   }
+
+/**
+ * Парсит строку даты в формате 'DD.MM.YYYY' и возвращает объект Date.
+ * @param dateStr - Строка даты в формате 'DD.MM.YYYY'.
+ * @returns Объект Date или null, если строка некорректна.
+ */
+export function parseDateString(dateStr: string): Date | null {
+  const parts = dateStr.split('.');
+  if (parts.length !== 3) return null;
+
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1; // Месяцы в Date начинаются с 0
+  const year = parseInt(parts[2], 10);
+
+  if (
+    isNaN(day) ||
+    isNaN(month) ||
+    isNaN(year) ||
+    day < 1 ||
+    day > 31 ||
+    month < 0 ||
+    month > 11
+  ) {
+    return null;
+  }
+
+  const date = new Date(year, month, day);
+  return isNaN(date.getTime()) ? null : date;
+}
