@@ -137,3 +137,28 @@ export function parseDateString(dateStr: string): Date | null {
   const date = new Date(year, month, day);
   return isNaN(date.getTime()) ? null : date;
 }
+
+  /**
+     * Возвращает массив дат текущей недели, начиная с startDate.
+     * @param startDate - Строка начальной даты в формате 'DD.MM.YYYY'.
+     * @returns Массив строковых дат в формате 'DD.MM.YYYY'.
+     */
+  export const getCurrentWeekDates = (startDate: string): string[] => {
+    const currentWeekDatesArr: string[] = [];
+
+    const start = parseDateString(startDate);
+    if (!start) {
+      console.error('Некорректный формат startDate:', startDate);
+      return currentWeekDatesArr; // Возвращаем пустой массив при некорректной дате
+    }
+
+    for (let i = 0; i < 7; i++) {
+      const currentDate = new Date(start);
+      currentDate.setDate(start.getDate() + i); // Добавляем дни
+
+      // Форматируем дату и добавляем в массив
+      currentWeekDatesArr.push(formatDate(currentDate));
+    }
+
+    return currentWeekDatesArr;
+  };

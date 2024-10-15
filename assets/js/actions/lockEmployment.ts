@@ -9,56 +9,17 @@ import { Modal, Popover, Tooltip } from 'bootstrap';
 import { fullCalendar } from '../utils/fullcalendar';
 import { Calendar } from '@fullcalendar/core';
 import { getLocalStorageItem, setLocalStorageItem } from '../utils/localStorageUtils';
-import { convertToISODate, parseDateString } from '../utils/datesUtils';
+import { convertToISODate, getCurrentWeekDates, parseDateString } from '../utils/datesUtils';
 import { approveEventsApi } from '../api/approveEvents';
 import { lockingActionApi } from '../api/lockingActionApi';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
 import { buttonLoader } from '../ui/buttonLoader';
+import { getSelectedDates } from '../utils/lockUnlockUtils';
 
-    /**
-     * Собирает все выбранные даты из чекбоксов внутри контейнера.
-     * @param container - HTML-элемент контейнера с чекбоксами.
-     * @returns Массив выбранных дат в формате 'DD.MM.YYYY'.
-     */
-  const getSelectedDates = (container: HTMLElement): string[] => {
-    const checkboxes = container?.querySelectorAll<HTMLInputElement>('.form-check-input');
-    checkboxes.forEach((cb, index) => {
-      console.log(`Checkbox ${index}: value=${cb.value}, checked=${cb.checked}`);
-    });
-    const selectedDates = Array.from(checkboxes)
-      .filter(checkbox => checkbox.checked)
-      .map(checkbox => checkbox.value);
-
-    return selectedDates;
-  };
-
-  /**
-     * Возвращает массив дат текущей недели, начиная с startDate.
-     * @param startDate - Строка начальной даты в формате 'DD.MM.YYYY'.
-     * @returns Массив строковых дат в формате 'DD.MM.YYYY'.
-     */
-  const getCurrentWeekDates = (startDate: string): string[] => {
-    const currentWeekDatesArr: string[] = [];
-
-    const start = parseDateString(startDate);
-    if (!start) {
-      console.error('Некорректный формат startDate:', startDate);
-      return currentWeekDatesArr; // Возвращаем пустой массив при некорректной дате
-    }
-
-    for (let i = 0; i < 7; i++) {
-      const currentDate = new Date(start);
-      currentDate.setDate(start.getDate() + i); // Добавляем дни
-
-      // Форматируем дату и добавляем в массив
-      currentWeekDatesArr.push(formatDate(currentDate));
-    }
-
-    return currentWeekDatesArr;
-  };
+ 
 
 
-export const lockEmploynment = (calendar: Calendar) => {
+export const lockEmployment = (calendar: Calendar) => {
   const lockBtn = document.querySelector('.lockBtn');
 
   const lockAction = () => {
@@ -134,6 +95,7 @@ export const lockEmploynment = (calendar: Calendar) => {
      * @returns Объект с массивами lockingDatesArr и weekToBlockIDs.
      */
     const getKeysForSelectedDates = (selectedDates: string[], arr: Array<{ [key: string]: string }>) => {
+      console.log('selectedDates: ', selectedDates);
       const lockingDatesArr: string[] = [];
       const weekToBlockIDsArr: string[] = [];
 
@@ -250,13 +212,7 @@ export const lockEmploynment = (calendar: Calendar) => {
         parentIdDataArr,
       );
 
-      lockActionBtn && buttonLoader(lockActionBtn, true);
-      unlockActionBtn && buttonLoader(unlockActionBtn, true);
-
-      await lockingActionApi(weekToBlockIDs, isLocked);
-
-      lockActionBtn && buttonLoader(lockActionBtn, false);
-      unlockActionBtn && buttonLoader(unlockActionBtn, false);
+      
       
       let currentLockedDatesArr = getLocalStorageItem('lockedDatesArray');
       
@@ -275,6 +231,14 @@ export const lockEmploynment = (calendar: Calendar) => {
         console.log('mergedLockedDatesArr: ', mergedLockedDatesArr);
 
       }
+
+      lockActionBtn && buttonLoader(lockActionBtn, true);
+      unlockActionBtn && buttonLoader(unlockActionBtn, true);
+
+      await lockingActionApi(weekToBlockIDs, isLocked);
+
+      lockActionBtn && buttonLoader(lockActionBtn, false);
+      unlockActionBtn && buttonLoader(unlockActionBtn, false);
 
       // Записываем новые данные о датах блокировки в массив и localstorage
       setLocalStorageItem('lockedDatesArray', mergedLockedDatesArr);

@@ -2,7 +2,6 @@ import { Calendar } from "@fullcalendar/core";
 import { blockBtnAddTitle, unblockBtnAddTitle } from "../utils/mainGlobFunctions";
 
 export const checkCurrentEventsAndBlockApproveBtn = (calendar: Calendar) => {
-  console.log("🚀 ~ checkCurrentEventsAndBlockApproveBtn ~ Вызов функции");
 
   const approveBtn = document.querySelector('.approveBtn');
   const lockBtn = document.querySelector('.lockBtn');
@@ -17,8 +16,6 @@ export const checkCurrentEventsAndBlockApproveBtn = (calendar: Calendar) => {
 
   // Добавляем обработчик события 'datesSet'
   calendar.on('datesSet', function (info) {
-    console.log("Событие 'datesSet' сработало:", info);
-    console.log("Текущий вид календаря:", info.view.type);
 
     if (info.view.type === 'timeGridWeek') {
       const startDate = info.start;
@@ -29,19 +26,12 @@ export const checkCurrentEventsAndBlockApproveBtn = (calendar: Calendar) => {
       const selectedUserLevel = Number(localStorage.getItem('managerLevel'));
       const currentUserLevel = Number(localStorage.getItem('currentManagerLevel'));
 
-      console.log("selectedUserName:", selectedUserName);
-      console.log("managerName:", managerName);
-      console.log("selectedUserLevel:", selectedUserLevel);
-      console.log("currentUserLevel:", currentUserLevel);
-
       // Получаем события в текущем диапазоне дат
       const eventsInCurrentRange = calendar
         .getEvents()
         .filter(function (event) {
           return event.start! >= startDate && event.start! < endDate;
         });
-
-      console.log("События в текущем диапазоне:", eventsInCurrentRange);
 
       const hasApproved = eventsInCurrentRange.filter(
         (e) => e.extendedProps.isApproved,

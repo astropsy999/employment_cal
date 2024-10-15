@@ -10,10 +10,10 @@ import { getLocalStorageItem } from "../utils/localStorageUtils";
 export const addBlockOverlays = () => {
 
     // Remove existing overlays to prevent duplicates
-  const existingOverlays = document.querySelectorAll('.locked-day-overlay');
-    existingOverlays.forEach((overlay) => {
-      overlay.remove();
-  });
+  // const existingOverlays = document.querySelectorAll('.locked-day-overlay');
+  //   existingOverlays.forEach((overlay) => {
+  //     overlay.remove();
+  // });
 
   // Выбираем все ячейки дней текущей недели
   const dayCells = Array.from(document.querySelectorAll('.fc-timegrid-col-frame'));
@@ -54,6 +54,12 @@ export const addBlockOverlays = () => {
 
 export const removeOverlays = () => {
   const overlays = document.querySelectorAll('.locked-day-overlay');
+
+  const lockedDatesArray = getLocalStorageItem('lockedDatesArray')?.map((date: string) => {
+    return date.split('.').reverse().join('-');
+  });
+
+  console.log('lockedDatesArray: ', lockedDatesArray);
 
   overlays.forEach((overlay) => {
     overlay.remove();

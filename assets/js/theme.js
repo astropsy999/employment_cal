@@ -4,7 +4,7 @@ import { addEventToCal } from './actions/addEvent';
 import { approveEmploynment } from './actions/approveEmploynment';
 import { delEvent } from './actions/delEvent';
 import { editEvent } from './actions/editEvent';
-import { lockEmploynment } from './actions/lockEmploynment';
+import { lockEmployment } from './actions/lockEmployment';
 import { massMonthAddEvent } from './actions/massMonthAddEvent';
 import { multipleAddEventsToBase } from './actions/multiAddEvents';
 import * as GDD from './api/getDropDownData';
@@ -65,6 +65,7 @@ import {
   transformDateTime,
 } from './utils/mainGlobFunctions';
 import { toggleElem } from './utils/toggleElem';
+import {checkWeekLockStatus} from './utils/lockUnlockUtils';
 
 export const api = {
   srvv,
@@ -594,20 +595,22 @@ const employmentCalendar = async () => {
             localStorage.getItem('lockedDatesArray'),
           );
 
-          const isWeekLocked = (date) => {
-            const day = date.getDate().toString().padStart(2, '0');
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const year = date.getFullYear().toString();
-            const formattedDate = `${day}.${month}.${year}`;
-            if (lockedDatesArr?.includes(formattedDate)) {
-              localStorage.setItem('isWeekLocked', true);
-              return true;
-            }
-            localStorage.setItem('isWeekLocked', false);
-            return false;
-          };
+          // const isWeekLocked = (date) => {
+          //   const day = date.getDate().toString().padStart(2, '0');
+          //   const month = (date.getMonth() + 1).toString().padStart(2, '0');
+          //   const year = date.getFullYear().toString();
+          //   const formattedDate = `${day}.${month}.${year}`;
+          //   if (lockedDatesArr?.includes(formattedDate)) {
+          //     localStorage.setItem('isWeekLocked', true);
+          //     return true;
+          //   }
+          //   localStorage.setItem('isWeekLocked', false);
+          //   return false;
+          // };
 
-          if (isWeekLocked(dateInfo.start)) {
+          const isWeekLocked = checkWeekLockStatus(dateInfo.start, lockedDatesArr);
+
+          if (isWeekLocked) {
             addBlockOverlays();
             toggleIcon('unlock');
           } else {
@@ -1504,7 +1507,7 @@ const employmentCalendar = async () => {
       approveEmploynment(calendar);
 
       // Блокировка добавления
-      lockEmploynment(calendar);
+      lockEmployment(calendar);
 
       // checkBlockedDays(calendar);
 
