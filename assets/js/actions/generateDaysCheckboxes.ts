@@ -79,8 +79,6 @@ export const generateDaysCheckboxes = (
 
   const lockedDatesArray = getLocalStorageItem('lockedDatesArray')
   const isLocked = getLocalStorageItem('isWeekLocked');
-  console.log('isLocked: ', isLocked);
-  console.log('lockedDatesArray: ', lockedDatesArray);
 
   // Создаем чекбоксы для каждой уникальной даты
   Object.keys(uniqueDates).forEach((dateStr) => {

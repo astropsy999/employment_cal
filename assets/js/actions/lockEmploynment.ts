@@ -242,18 +242,18 @@ export const lockEmploynment = (calendar: Calendar) => {
       lockActionBtn?.removeEventListener('click', lockingAction);
       unlockActionBtn?.removeEventListener('click', lockingAction);
 
-    const selectedDatesArr = getSelectedDates(dailyBlockContainer);
-    console.log('selectedDatesArr: ', selectedDatesArr);
+      const selectedDatesArr = isLocked ? getSelectedDates(dailyUnBlockContainer) : getSelectedDates(dailyBlockContainer);
 
-    const { lockingDatesArr, weekToBlockIDs } = getKeysForSelectedDates(
-      selectedDatesArr,
-      parentIdDataArr,
-    );
+      const { lockingDatesArr, weekToBlockIDs } = getKeysForSelectedDates(
+        selectedDatesArr,
+        parentIdDataArr,
+      );
 
 
       await lockingActionApi(weekToBlockIDs, isLocked);
       
       let currentLockedDatesArr = getLocalStorageItem('lockedDatesArray');
+      
       console.log('currentLockedDatesArr: ', currentLockedDatesArr);
       const lockingDatesArrUn = lockingDatesArr;
       let mergedLockedDatesArr;
