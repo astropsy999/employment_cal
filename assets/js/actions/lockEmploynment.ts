@@ -251,9 +251,7 @@ export const lockEmploynment = (calendar: Calendar) => {
     );
 
 
-      console.log('weekToBlockIDs: ', weekToBlockIDs);
-
-      // await lockingActionApi(weekToBlockIDs, isLocked);
+      await lockingActionApi(weekToBlockIDs, isLocked);
       
       let currentLockedDatesArr = getLocalStorageItem('lockedDatesArray');
       console.log('currentLockedDatesArr: ', currentLockedDatesArr);
@@ -278,17 +276,16 @@ export const lockEmploynment = (calendar: Calendar) => {
 
       if (!isLocked) {
         addBlockOverlays();
-        return
         lockActionBtn!.textContent = 'Заблокировано';
         toggleIcon('unlock');
         setLocalStorageItem('isWeekLocked', true);
       } else {
+        removeOverlays();
         unlockActionBtn!.textContent = 'Разблокировано';
         toggleIcon('lock');
-        removeOverlays();
         setLocalStorageItem('isWeekLocked', false);
       }
-      return
+
       setTimeout(() => {
         modal?.hide();
         lockActionBtn!.textContent = 'Да';
