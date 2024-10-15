@@ -1,5 +1,6 @@
 import { EventApi } from '@fullcalendar/core';
 import { formatDate, formatDayNameDate } from '../utils/datesUtils';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 
 
 interface UniqueDate {
@@ -40,6 +41,8 @@ export const generateDaysCheckboxes = (
   generateSource: EventApi[] | Date[],
 ) => {
   element.innerHTML = ''; // Очищаем контейнер
+  console.log('generateSource: ', generateSource);
+
 
   // Создаем объект для хранения уникальных дат
   const uniqueDates: UniqueDates = {};
@@ -74,8 +77,14 @@ export const generateDaysCheckboxes = (
     });
   }
 
+  const lockedDatesArray = getLocalStorageItem('lockedDatesArray')
+  const isLocked = getLocalStorageItem('isWeekLocked');
+  console.log('isLocked: ', isLocked);
+  console.log('lockedDatesArray: ', lockedDatesArray);
+
   // Создаем чекбоксы для каждой уникальной даты
   Object.keys(uniqueDates).forEach((dateStr) => {
+    console.log('dateStr: ', dateStr);
     const uniqueDate = uniqueDates[dateStr];
     const formattedDate = formatDayNameDate(uniqueDate.date);
 
@@ -87,7 +96,7 @@ export const generateDaysCheckboxes = (
     checkbox.type = 'checkbox';
     checkbox.value = dateStr;
     checkbox.id = `checkbox-${dateStr}`;
-    checkbox.checked = true; // По умолчанию все даты выбраны
+    isLocked ? checkbox.checked = lockedDatesArray?.includes(dateStr) : checkbox.checked = true;
 
     const label = document.createElement('label');
     label.classList.add('form-check-label');
