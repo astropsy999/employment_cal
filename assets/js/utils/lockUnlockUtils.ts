@@ -39,3 +39,27 @@ export const checkWeekLockStatus = (startDate: Date, lockedDatesArr: string[]): 
     
         return selectedDates;
       };
+
+/**
+     * Фильтрует выбранные даты и возвращает соответствующие ключи.
+     * @param selectedDates - Массив выбранных дат в формате 'DD.MM.YYYY'.
+     * @param arr - Массив объектов с ключами и датами.
+     * @returns Объект с массивами lockingDatesArr и weekToBlockIDs.
+     */
+export const getKeysForSelectedDates = (selectedDates: string[], arr: Array<{ [key: string]: string }>) => {
+    console.log('selectedDates: ', selectedDates);
+    const lockingDatesArr: string[] = [];
+    const weekToBlockIDsArr: string[] = [];
+
+    for (const obj of arr) {
+      const key = Object.keys(obj)[0];
+      const date = obj[key];
+      
+      if (selectedDates.includes(date)) {
+        weekToBlockIDsArr.push(key);
+        lockingDatesArr.push(date);
+      }
+    }
+
+    return { lockingDatesArr, weekToBlockIDs: weekToBlockIDsArr };
+  };

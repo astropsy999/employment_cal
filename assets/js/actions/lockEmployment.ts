@@ -14,7 +14,7 @@ import { approveEventsApi } from '../api/approveEvents';
 import { lockingActionApi } from '../api/lockingActionApi';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
 import { buttonLoader } from '../ui/buttonLoader';
-import { getSelectedDates } from '../utils/lockUnlockUtils';
+import { getKeysForSelectedDates, getSelectedDates } from '../utils/lockUnlockUtils';
 
  
 
@@ -88,32 +88,7 @@ export const lockEmployment = (calendar: Calendar) => {
       modal = new Modal(lockEmplmodal);
     }
 
-    /**
-     * Фильтрует выбранные даты и возвращает соответствующие ключи.
-     * @param selectedDates - Массив выбранных дат в формате 'DD.MM.YYYY'.
-     * @param arr - Массив объектов с ключами и датами.
-     * @returns Объект с массивами lockingDatesArr и weekToBlockIDs.
-     */
-    const getKeysForSelectedDates = (selectedDates: string[], arr: Array<{ [key: string]: string }>) => {
-      console.log('selectedDates: ', selectedDates);
-      const lockingDatesArr: string[] = [];
-      const weekToBlockIDsArr: string[] = [];
-
-      for (const obj of arr) {
-        const key = Object.keys(obj)[0];
-        const date = obj[key];
-        
-        if (selectedDates.includes(date)) {
-          weekToBlockIDsArr.push(key);
-          lockingDatesArr.push(date);
-        }
-      }
-
-      console.log('lockingDatesArr: ', lockingDatesArr);
-      console.log('weekToBlockIDs: ', weekToBlockIDsArr);
-
-      return { lockingDatesArr, weekToBlockIDs: weekToBlockIDsArr };
-    };
+    
     modal.show();
   
     if (
@@ -194,9 +169,9 @@ export const lockEmployment = (calendar: Calendar) => {
     if(!isLocked) {
       generateDaysCheckboxes(dailyBlockContainer, parsedLockedDatesArr)
     }
-    else {
-      generateDaysCheckboxes(dailyUnBlockContainer, parsedLockedDatesArr)
-    }
+    // else {
+    //   generateDaysCheckboxes(dailyUnBlockContainer, parsedLockedDatesArr)
+    // }
 
 
     // Подтверждение блокировки/разблокировки
@@ -206,13 +181,12 @@ export const lockEmployment = (calendar: Calendar) => {
       unlockActionBtn?.removeEventListener('click', lockingAction);
 
       const selectedDatesArr = isLocked ? getSelectedDates(dailyUnBlockContainer) : getSelectedDates(dailyBlockContainer);
+      console.log('selectedDatesArr: ', selectedDatesArr);
 
       const { lockingDatesArr, weekToBlockIDs } = getKeysForSelectedDates(
         selectedDatesArr,
         parentIdDataArr,
       );
-
-      
       
       let currentLockedDatesArr = getLocalStorageItem('lockedDatesArray');
       

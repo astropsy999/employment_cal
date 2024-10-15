@@ -27,6 +27,9 @@ import * as C from '../config';
     isLocked: boolean,
   ): Promise<void> {
     const managerName = localStorage.getItem('managerName') || '';
+
+    console.log('weekToBlockIDs: ', weekToBlockIDs);
+
     
     try {
       for (const ObjID of weekToBlockIDs) {
