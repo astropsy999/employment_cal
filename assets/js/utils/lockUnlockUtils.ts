@@ -66,16 +66,16 @@ export const getKeysForSelectedDates = (selectedDates: string[], arr: Array<{ [k
   };
 
 /**
- * Проверяет, есть ли несогласованные события в выбранном интервале дат.
+ * Получает события, попадающие в выбранные даты.
  * @param calendar Экземпляр календаря.
  * @param selectedDatesArr Массив выбранных дат в формате 'YYYY-MM-DD'.
- * @returns Возвращает true, если есть хотя бы одно несогласованное событие, иначе false.
+ * @returns Массив событий, попадающих в выбранные даты.
  */
-export function hasUnSubmittedEvents(
+export function getEventsInSelectedDates(
   calendar: Calendar,
   selectedDatesArr: string[]
-): boolean {
-  if (selectedDatesArr.length === 0) return false;
+): EventApi[] {
+  if (selectedDatesArr.length === 0) return [];
 
   // Получаем все события из календаря
   const allEvents: EventApi[] = calendar.getEvents();
@@ -87,10 +87,25 @@ export function hasUnSubmittedEvents(
     return selectedDatesArr.includes(eventDateStr);
   });
 
+  return eventsInSelectedDates;
+}
+
+/**
+ * Проверяет, есть ли несогласованные события в выбранном интервале дат.
+ * @param calendar Экземпляр календаря.
+ * @param selectedDatesArr Массив выбранных дат в формате 'YYYY-MM-DD'.
+ * @returns Возвращает true, если есть хотя бы одно несогласованное событие, иначе false.
+ */
+export function hasUnSubmittedEvents(
+  calendar: Calendar,
+  selectedDatesArr: string[]
+): boolean {
+  const eventsInSelectedDates = getEventsInSelectedDates(calendar, selectedDatesArr);
+
   // Проверяем, есть ли среди отфильтрованных событий несогласованные
-  const hasUnSubmitted = eventsInSelectedDates.some(
+  const hasUnsubmitted = eventsInSelectedDates.some(
     (event) => event.extendedProps.isApproved === ''
   );
 
-  return hasUnSubmitted;
+  return hasUnsubmitted;
 }
