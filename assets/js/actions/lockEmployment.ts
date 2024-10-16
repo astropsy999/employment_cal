@@ -1,23 +1,19 @@
-import * as C from '../config';
+import { Calendar } from '@fullcalendar/core';
+import { Modal, Popover } from 'bootstrap';
+import { approveEventsApi } from '../api/approveEvents';
+import { lockingActionApi } from '../api/lockingActionApi';
+import { buttonLoader } from '../ui/buttonLoader';
 import {
   addBlockOverlays,
   removeOverlays,
   toggleIcon,
 } from '../ui/checkBlockedDays';
-import { formatDate } from '../utils/mainGlobFunctions';
-import { Modal, Popover, Tooltip } from 'bootstrap';
+import { getCurrentWeekDates, parseDateString } from '../utils/datesUtils';
 import { fullCalendar } from '../utils/fullcalendar';
-import { Calendar } from '@fullcalendar/core';
 import { getLocalStorageItem, setLocalStorageItem } from '../utils/localStorageUtils';
-import { convertToISODate, getCurrentWeekDates, parseDateString } from '../utils/datesUtils';
-import { approveEventsApi } from '../api/approveEvents';
-import { lockingActionApi } from '../api/lockingActionApi';
+import { getKeysForSelectedDates, getSelectedDates, hasUnSubmittedEvents } from '../utils/lockUnlockUtils';
+import { formatDate } from '../utils/mainGlobFunctions';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
-import { buttonLoader } from '../ui/buttonLoader';
-import { getKeysForSelectedDates, getSelectedDates } from '../utils/lockUnlockUtils';
-
- 
-
 
 export const lockEmployment = (calendar: Calendar) => {
   const lockBtn = document.querySelector('.lockBtn');
@@ -73,9 +69,7 @@ export const lockEmployment = (calendar: Calendar) => {
       approveEventsApi(eventsInCurrentWeek)
       .then((response) => {
           yesOnPopover!.textContent = 'Согласовано';
-        
           fullCalendar.fullCalendarInit();
-
           lockingAction();
         });
     };
@@ -88,16 +82,15 @@ export const lockEmployment = (calendar: Calendar) => {
       modal = new Modal(lockEmplmodal);
     }
 
-    
+
     modal.show();
-  
+
     if (
       modal &&
       //@ts-ignore
       modal._element.id === 'LockEmplModal' &&
       //@ts-ignore
-      modal._isShown &&
-      hasUnsubmittedEvents
+      modal._isShown && hasUnsubmittedEvents
     ) {
       let popover = new Popover('.lock-action', {
         // container: '.modal-body',
@@ -147,31 +140,29 @@ export const lockEmployment = (calendar: Calendar) => {
     const formattedEndDate = formatDate(endDate);
     const parentIdDataArr = getLocalStorageItem('parentIdDataArr');
 
-    
-
     const currentWeekDatesArr = getCurrentWeekDates(formattedStartDate);
 
     startLockDate.innerText = startUnlockDate.innerText = formattedStartDate;
     endLockDate.innerText = endUnlockDate.innerText = formattedEndDate;
-
-    
 
     const { lockingDatesArr, weekToBlockIDs } = getKeysForSelectedDates(
       currentWeekDatesArr,
       parentIdDataArr,
     );
 
+    console.log('🚀 ~ lockAction ~ lockingDatesArr:', lockingDatesArr);
+
     const parsedLockedDatesArr = lockingDatesArr.map((date: string) => {
       return new Date(parseDateString(date)!);
     }).reverse();
 
-    
+
     if(!isLocked) {
       generateDaysCheckboxes(dailyBlockContainer, parsedLockedDatesArr)
     }
-    // else {
-    //   generateDaysCheckboxes(dailyUnBlockContainer, parsedLockedDatesArr)
-    // }
+    else {
+      generateDaysCheckboxes(dailyUnBlockContainer, parsedLockedDatesArr)
+    }
 
 
     // Подтверждение блокировки/разблокировки
@@ -187,9 +178,9 @@ export const lockEmployment = (calendar: Calendar) => {
         selectedDatesArr,
         parentIdDataArr,
       );
-      
+
       let currentLockedDatesArr = getLocalStorageItem('lockedDatesArray');
-      
+
       console.log('currentLockedDatesArr: ', currentLockedDatesArr);
       const lockingDatesArrUn = lockingDatesArr;
       let mergedLockedDatesArr;
@@ -205,6 +196,10 @@ export const lockEmployment = (calendar: Calendar) => {
         console.log('mergedLockedDatesArr: ', mergedLockedDatesArr);
 
       }
+
+      const hasUmSubmittedEvents = hasUnSubmittedEvents(calendar, selectedDatesArr);
+      console.log('hasUmSubmittedEvents: ', hasUmSubmittedEvents);
+
 
       lockActionBtn && buttonLoader(lockActionBtn, true);
       unlockActionBtn && buttonLoader(unlockActionBtn, true);
@@ -236,6 +231,7 @@ export const lockEmployment = (calendar: Calendar) => {
         unlockActionBtn!.textContent = 'Да';
       }, 800);
     }
+
     if (!hasUnsubmittedEvents) {
       lockActionBtn?.addEventListener('click', lockingAction);
     }

@@ -1,7 +1,8 @@
+import { Calendar, EventApi, EventClickArg } from "@fullcalendar/core";
 import { formatDate, getCurrentWeekDates } from "./datesUtils";
 import { setLocalStorageItem } from "./localStorageUtils";
 
-    /*** 
+    /***
     * Проверяет блокировку для всех дней недели.
     * @param startDate Начальная дата недели.
     * @param lockedDatesArr Массив заблокированных дат в формате 'DD.MM.YYYY'.
@@ -36,7 +37,7 @@ export const checkWeekLockStatus = (startDate: Date, lockedDatesArr: string[]): 
         const selectedDates = Array.from(checkboxes)
           .filter(checkbox => checkbox.checked)
           .map(checkbox => checkbox.value);
-    
+
         return selectedDates;
       };
 
@@ -54,7 +55,7 @@ export const getKeysForSelectedDates = (selectedDates: string[], arr: Array<{ [k
     for (const obj of arr) {
       const key = Object.keys(obj)[0];
       const date = obj[key];
-      
+
       if (selectedDates.includes(date)) {
         weekToBlockIDsArr.push(key);
         lockingDatesArr.push(date);
@@ -63,3 +64,33 @@ export const getKeysForSelectedDates = (selectedDates: string[], arr: Array<{ [k
 
     return { lockingDatesArr, weekToBlockIDs: weekToBlockIDsArr };
   };
+
+/**
+ * Проверяет, есть ли несогласованные события в выбранном интервале дат.
+ * @param calendar Экземпляр календаря.
+ * @param selectedDatesArr Массив выбранных дат в формате 'YYYY-MM-DD'.
+ * @returns Возвращает true, если есть хотя бы одно несогласованное событие, иначе false.
+ */
+export function hasUnSubmittedEvents(
+  calendar: Calendar,
+  selectedDatesArr: string[]
+): boolean {
+  if (selectedDatesArr.length === 0) return false;
+
+  // Получаем все события из календаря
+  const allEvents: EventApi[] = calendar.getEvents();
+
+  // Фильтруем события, которые попадают в выбранные даты
+  const eventsInSelectedDates: EventApi[] = allEvents.filter((event) => {
+    if (!event.start) return false;
+    const eventDateStr = formatDate(event.start); // Преобразуем дату события в 'YYYY-MM-DD'
+    return selectedDatesArr.includes(eventDateStr);
+  });
+
+  // Проверяем, есть ли среди отфильтрованных событий несогласованные
+  const hasUnSubmitted = eventsInSelectedDates.some(
+    (event) => event.extendedProps.isApproved === ''
+  );
+
+  return hasUnSubmitted;
+}
