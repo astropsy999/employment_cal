@@ -109,3 +109,25 @@ export function hasUnSubmittedEvents(
 
   return hasUnsubmitted;
 }
+
+export function toggleYesNoButtonsState(disable: boolean) {
+  const lockActionBtn = document.querySelector(
+    '.lock-action',
+  ) as HTMLButtonElement | null;
+  const unlockActionBtn = document.querySelector(
+    '.unlock-action',
+  ) as HTMLButtonElement | null;
+  const cancelActionBtn = document.querySelector(
+    '.cancel-action',
+  ) as HTMLButtonElement | null;
+
+  if (disable) {
+    lockActionBtn && lockActionBtn.setAttribute('disabled', 'disabled');
+    unlockActionBtn && unlockActionBtn.setAttribute('disabled', 'disabled');
+    cancelActionBtn && cancelActionBtn.setAttribute('disabled', 'disabled');
+  } else {
+    lockActionBtn && lockActionBtn.removeAttribute('disabled');
+    unlockActionBtn && unlockActionBtn.removeAttribute('disabled');
+    cancelActionBtn && cancelActionBtn.removeAttribute('disabled');
+  }
+}

@@ -11,7 +11,7 @@ import {
 import { getCurrentWeekDates, parseDateString } from '../utils/datesUtils';
 import { fullCalendar } from '../utils/fullcalendar';
 import { getLocalStorageItem, setLocalStorageItem } from '../utils/localStorageUtils';
-import { getEventsInSelectedDates, getKeysForSelectedDates, getSelectedDates, hasUnSubmittedEvents } from '../utils/lockUnlockUtils';
+import { getEventsInSelectedDates, getKeysForSelectedDates, getSelectedDates, hasUnSubmittedEvents, toggleYesNoButtonsState } from '../utils/lockUnlockUtils';
 import { formatDate } from '../utils/mainGlobFunctions';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
 
@@ -28,18 +28,13 @@ export const lockEmployment = (calendar: Calendar) => {
     const modalElement = isLocked ? unlockEmplModalElement : lockEmplModalElement;
     const modal = new Modal(modalElement);
     modal.show();
+    toggleYesNoButtonsState(false);
 
     // Настраиваем даты и содержимое модального окна
     const startDate = new Date(calendar.view.currentStart);
     const endDate = new Date(calendar.view.currentEnd);
     endDate.setDate(endDate.getDate() - 1);
     const formattedStartDate = formatDate(startDate);
-    const formattedEndDate = formatDate(endDate);
-
-    // const startLockDate = modalElement.querySelector('.startLockDate') as HTMLElement;
-    // const endLockDate = modalElement.querySelector('.endLockDate') as HTMLElement;
-    // startLockDate.innerText = formattedStartDate;
-    // endLockDate.innerText = formattedEndDate;
 
     const parentIdDataArr = getLocalStorageItem('parentIdDataArr');
     const currentWeekDatesArr = getCurrentWeekDates(formattedStartDate);
@@ -60,6 +55,7 @@ export const lockEmployment = (calendar: Calendar) => {
 
     const lockActionBtn = modalElement.querySelector('.lock-action') as HTMLButtonElement;
     const unlockActionBtn = modalElement.querySelector('.unlock-action') as HTMLButtonElement;
+    const cancelActionBtn = modalElement.querySelector('.cancel-action') as HTMLButtonElement;
 
    function updateUIAfterLocking(mergedLockedDatesArr: string[]) {
      // Записываем новые данные о датах блокировки в массив и localStorage
@@ -109,7 +105,6 @@ export const lockEmployment = (calendar: Calendar) => {
 
 
     const handleLockAction = async () => {
-        console.log('🚀 ~ handleLockAction ~ handleLockAction:');
 
       lockActionBtn?.removeEventListener('click', handleLockAction);
       unlockActionBtn?.removeEventListener('click', handleLockAction);
@@ -136,7 +131,6 @@ export const lockEmployment = (calendar: Calendar) => {
       }
 
       const hasUnsubmittedEvents = hasUnSubmittedEvents(calendar, selectedDatesArr);
-      console.log("🚀 ~ handleLockAction ~ hasUnsubmittedEvents:", hasUnsubmittedEvents)
       const eventsInSelectedDates = getEventsInSelectedDates(calendar, selectedDatesArr);
 
 
@@ -175,6 +169,8 @@ export const lockEmployment = (calendar: Calendar) => {
               const noOnPopover = popoverElement.querySelector('.noOnPopover');
               const yesOnPopover = popoverElement.querySelector('.yesOnPopover');
 
+              toggleYesNoButtonsState(true)
+
               cancelButton?.addEventListener('click', () => {
                 modal.hide();
                 popover.hide();
@@ -190,6 +186,7 @@ export const lockEmployment = (calendar: Calendar) => {
                 unlockActionBtn && buttonLoader(unlockActionBtn, false);
 
                 updateUIAfterLocking(mergedLockedDatesArr);
+
                 popover.hide();
               });
 
@@ -201,9 +198,13 @@ export const lockEmployment = (calendar: Calendar) => {
                 unlockActionBtn && buttonLoader(unlockActionBtn, false);
 
                 updateUIAfterLocking(mergedLockedDatesArr);
+
                 popover.hide();
+
               });
             }
+
+            fullCalendar.fullCalendarInit();
           });
         }
       } else {
@@ -217,7 +218,7 @@ export const lockEmployment = (calendar: Calendar) => {
 
         updateUIAfterLocking(mergedLockedDatesArr);
       }
-      // fullCalendar.fullCalendarInit();
+      fullCalendar.fullCalendarInit();
     };
 
 
