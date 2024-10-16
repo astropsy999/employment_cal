@@ -61,34 +61,56 @@ export const lockEmployment = (calendar: Calendar) => {
     const lockActionBtn = modalElement.querySelector('.lock-action') as HTMLButtonElement;
     const unlockActionBtn = modalElement.querySelector('.unlock-action') as HTMLButtonElement;
 
-    function updateUIAfterLocking(mergedLockedDatesArr: string[]) {
-      // Записываем новые данные о датах блокировки в массив и localstorage
-      setLocalStorageItem('lockedDatesArray', mergedLockedDatesArr);
-    
-      if (!isLocked) {
-        addBlockOverlays();
-        lockActionBtn!.textContent = 'Заблокировано';
-        toggleIcon('unlock');
-        setLocalStorageItem('isWeekLocked', true);
-      } else {
-        removeOverlays();
-        unlockActionBtn!.textContent = 'Разблокировано';
-        toggleIcon('lock');
-        setLocalStorageItem('isWeekLocked', false);
-      }
-    
-      setTimeout(() => {
-        modal?.hide();
-        if(lockActionBtn && unlockActionBtn) {
-          lockActionBtn.textContent = 'Да';
-          unlockActionBtn.textContent = 'Да';
-        }
-        
-      }, 800);
-    }
+   function updateUIAfterLocking(mergedLockedDatesArr: string[]) {
+     // Записываем новые данные о датах блокировки в массив и localStorage
+     setLocalStorageItem('lockedDatesArray', mergedLockedDatesArr);
+
+     if (!isLocked) {
+       addBlockOverlays();
+       toggleIcon('unlock');
+       setLocalStorageItem('isWeekLocked', true);
+
+       if (lockActionBtn) {
+         lockActionBtn.textContent = 'Заблокировано';
+       }
+
+       setTimeout(() => {
+         if (lockActionBtn) {
+           lockActionBtn.textContent = 'Да';
+         }
+        fullCalendar.fullCalendarInit();
+
+       }, 500);
+     } else {
+       removeOverlays();
+       toggleIcon('lock');
+       setLocalStorageItem('isWeekLocked', false);
+
+       if (unlockActionBtn) {
+         unlockActionBtn.textContent = 'Разблокировано';
+       }
+     }
+
+     setTimeout(() => {
+       if (lockActionBtn) {
+         lockActionBtn.textContent = 'Да';
+       }
+       if (unlockActionBtn) {
+         unlockActionBtn.textContent = 'Да';
+       }
+
+       modal?.hide();
+       fullCalendar.fullCalendarInit();
+
+       // Если нужно, можно перезагрузить календарь
+     }, 800);
+   }
+
 
 
     const handleLockAction = async () => {
+        console.log('🚀 ~ handleLockAction ~ handleLockAction:');
+
       lockActionBtn?.removeEventListener('click', handleLockAction);
       unlockActionBtn?.removeEventListener('click', handleLockAction);
 
@@ -114,10 +136,11 @@ export const lockEmployment = (calendar: Calendar) => {
       }
 
       const hasUnsubmittedEvents = hasUnSubmittedEvents(calendar, selectedDatesArr);
+      console.log("🚀 ~ handleLockAction ~ hasUnsubmittedEvents:", hasUnsubmittedEvents)
       const eventsInSelectedDates = getEventsInSelectedDates(calendar, selectedDatesArr);
 
-     
-      if (hasUnsubmittedEvents) {
+
+      if (!isLocked && hasUnsubmittedEvents) {
         const popoverTriggerEl = lockActionBtn;
         if (popoverTriggerEl) {
           const popover = new Popover(popoverTriggerEl, {
@@ -194,7 +217,9 @@ export const lockEmployment = (calendar: Calendar) => {
 
         updateUIAfterLocking(mergedLockedDatesArr);
       }
+      // fullCalendar.fullCalendarInit();
     };
+
 
     lockActionBtn?.addEventListener('click', handleLockAction);
     unlockActionBtn?.addEventListener('click', handleLockAction);
