@@ -20,32 +20,40 @@ export const lockEmployment = (calendar: Calendar) => {
 
   const lockAction = () => {
     const isLocked = getLocalStorageItem('isWeekLocked');
-    let hasUnsubmittedEvents = false;
+    // let hasUnsubmittedEvents = false;
 
-    const lockEmplmodal = document.querySelector('#LockEmplModal') as HTMLElement;
-    const unlockEmplmodal = document.querySelector('#unLockEmplModal') as HTMLElement;
-    const dailyBlockContainer = document.querySelector('.dailyBlockContainer') as HTMLElement;
-    const dailyUnBlockContainer = document.querySelector('.dailyUnBlockContainer') as HTMLElement;
+    const lockEmplmodal = document.querySelector(
+      '#LockEmplModal',
+    ) as HTMLElement;
+    const unlockEmplmodal = document.querySelector(
+      '#unLockEmplModal',
+    ) as HTMLElement;
+    const dailyBlockContainer = document.querySelector(
+      '.dailyBlockContainer',
+    ) as HTMLElement;
+    const dailyUnBlockContainer = document.querySelector(
+      '.dailyUnBlockContainer',
+    ) as HTMLElement;
 
     const startDate = new Date(calendar.view.currentStart);
     const endDate = new Date(calendar.view.currentEnd);
 
-    const currentEvents = calendar.getEvents();
+    // const currentEvents = calendar.getEvents();
 
-    const eventsInCurrentWeek = currentEvents.filter((event) => {
-      const eventStart = event.start;
-      return eventStart! >= startDate && eventStart! <= endDate;
-    });
+    // const eventsInCurrentWeek = currentEvents.filter((event) => {
+    //   const eventStart = event.start;
+    //   return eventStart! >= startDate && eventStart! <= endDate;
+    // });
 
-    if (eventsInCurrentWeek.length > 0) {
-      eventsInCurrentWeek.forEach((ev) => {
-        const isApproved = ev._def.extendedProps.isApproved;
-        if (isApproved === '') {
-          hasUnsubmittedEvents = true;
-          return;
-        }
-      });
-    }
+    // if (eventsInCurrentWeek.length > 0) {
+    //   eventsInCurrentWeek.forEach((ev) => {
+    //     const isApproved = ev._def.extendedProps.isApproved;
+    //     if (isApproved === '') {
+    //       hasUnsubmittedEvents = true;
+    //       return;
+    //     }
+    //   });
+    // }
 
     // const lastEvent = eventsInCurrentWeek.reduce(
     //   (latestEvent, currentEvent) => {
@@ -63,16 +71,16 @@ export const lockEmployment = (calendar: Calendar) => {
 
     // eventsInCurrentWeek.sort((a, b) => a.start - b.start);
 
-    const approveAndLockAction = () => {
-      const yesOnPopover = document.querySelector('.yesOnPopover');
+    // const approveAndLockAction = () => {
+    //   const yesOnPopover = document.querySelector('.yesOnPopover');
 
-      approveEventsApi(eventsInCurrentWeek)
-      .then((response) => {
-          yesOnPopover!.textContent = 'Согласовано';
-          fullCalendar.fullCalendarInit();
-          lockingAction();
-        });
-    };
+    //   approveEventsApi(eventsInCurrentWeek)
+    //   .then((response) => {
+    //       yesOnPopover!.textContent = 'Согласовано';
+    //       fullCalendar.fullCalendarInit();
+    //       lockingAction();
+    //     });
+    // };
 
     let modal: Modal;
 
@@ -82,7 +90,6 @@ export const lockEmployment = (calendar: Calendar) => {
       modal = new Modal(lockEmplmodal);
     }
 
-
     modal.show();
 
     if (
@@ -90,52 +97,60 @@ export const lockEmployment = (calendar: Calendar) => {
       //@ts-ignore
       modal._element.id === 'LockEmplModal' &&
       //@ts-ignore
-      modal._isShown && hasUnsubmittedEvents
+      modal._isShown
+      // && hasUnsubmittedEvents
     ) {
-      let popover = new Popover('.lock-action', {
-        // container: '.modal-body',
-        placement: 'bottom',
-        title: 'Согласовать перед блокировкой?',
-        html: true,
-        template: `<div style="max-width:fit-content;" class="popover" role="tooltip"><div class="popover-inner">
-                <div class="modal-body fs-0">
-                Есть несогласованные задачи!<br>
-                <b>Согласуете перед блокировкой?</b></div>
-                <div class="card-footer d-flex justify-content-center align-items-center bg-light p-0">
-                <button type='button' class='btn btn-success m-2 yesOnPopover'>Да</button>
-                <button type='button' class='btn btn-success m-2 noOnPopover'>Нет</button>
-              <button type='button' class='btn btn-warning m-2 cancelPopover' >Отмена</button></div></div></div>`,
-        trigger: 'click',
-        sanitize: false,
-      });
-
-      // @ts-ignore
-      popover._element.addEventListener('shown.bs.popover', () => {
-        const cancelButton = document.querySelector('.cancelPopover');
-        const noOnPopover = document.querySelector('.noOnPopover');
-        const yesOnPopover = document.querySelector('.yesOnPopover');
-
-        cancelButton?.addEventListener('click', function () {
-          modal.hide();
-          popover.disable();
-        });
-
-        noOnPopover?.addEventListener('click', lockingAction);
-        yesOnPopover?.addEventListener('click', approveAndLockAction);
-        popover.disable();
-      });
+      // let popover = new Popover('.lock-action', {
+      //   // container: '.modal-body',
+      //   placement: 'bottom',
+      //   title: 'Согласовать перед блокировкой?',
+      //   html: true,
+      //   template: `<div style="max-width:fit-content;" class="popover" role="tooltip"><div class="popover-inner">
+      //           <div class="modal-body fs-0">
+      //           Есть несогласованные задачи!<br>
+      //           <b>Согласуете перед блокировкой?</b></div>
+      //           <div class="card-footer d-flex justify-content-center align-items-center bg-light p-0">
+      //           <button type='button' class='btn btn-success m-2 yesOnPopover'>Да</button>
+      //           <button type='button' class='btn btn-success m-2 noOnPopover'>Нет</button>
+      //         <button type='button' class='btn btn-warning m-2 cancelPopover' >Отмена</button></div></div></div>`,
+      //   trigger: 'click',
+      //   sanitize: false,
+      // });
+      // // @ts-ignore
+      // popover._element.addEventListener('shown.bs.popover', () => {
+      //   const cancelButton = document.querySelector('.cancelPopover');
+      //   const noOnPopover = document.querySelector('.noOnPopover');
+      //   const yesOnPopover = document.querySelector('.yesOnPopover');
+      //   cancelButton?.addEventListener('click', function () {
+      //     modal.hide();
+      //     popover.disable();
+      //   });
+      //   noOnPopover?.addEventListener('click', lockingAction);
+      //   yesOnPopover?.addEventListener('click', lockingAction);
+      //   popover.disable();
+      // });
     }
 
     // Использование функции для преобразования дат
 
     endDate.setDate(endDate.getDate() - 1);
 
-    const startLockDate = document.querySelector('.startLockDate') as HTMLElement;
-    const startUnlockDate = document.querySelector('.startUnlockDate') as HTMLElement;
+    const startLockDate = document.querySelector(
+      '.startLockDate',
+    ) as HTMLElement;
+    const startUnlockDate = document.querySelector(
+      '.startUnlockDate',
+    ) as HTMLElement;
     const endLockDate = document.querySelector('.endLockDate') as HTMLElement;
-    const endUnlockDate = document.querySelector('.endUnlockDate') as HTMLElement;
-    const lockActionBtn = document.querySelector('.lock-action') as HTMLButtonElement;
-    const unlockActionBtn = document.querySelector('.unlock-action') as HTMLButtonElement;
+    const endUnlockDate = document.querySelector(
+      '.endUnlockDate',
+    ) as HTMLElement;
+    const lockActionBtn = document.querySelector(
+      '.lock-action',
+    ) as HTMLButtonElement;
+    const unlockActionBtn = document.querySelector(
+      '.unlock-action',
+    ) as HTMLButtonElement;
     const formattedStartDate = formatDate(startDate);
     const formattedEndDate = formatDate(endDate);
     const parentIdDataArr = getLocalStorageItem('parentIdDataArr');
@@ -152,26 +167,47 @@ export const lockEmployment = (calendar: Calendar) => {
 
     console.log('🚀 ~ lockAction ~ lockingDatesArr:', lockingDatesArr);
 
-    const parsedLockedDatesArr = lockingDatesArr.map((date: string) => {
-      return new Date(parseDateString(date)!);
-    }).reverse();
+    const parsedLockedDatesArr = lockingDatesArr
+      .map((date: string) => {
+        return new Date(parseDateString(date)!);
+      })
+      .reverse();
 
-
-    if(!isLocked) {
-      generateDaysCheckboxes(dailyBlockContainer, parsedLockedDatesArr)
+    if (!isLocked) {
+      generateDaysCheckboxes(dailyBlockContainer, parsedLockedDatesArr);
+    } else {
+      generateDaysCheckboxes(dailyUnBlockContainer, parsedLockedDatesArr);
     }
-    else {
-      generateDaysCheckboxes(dailyUnBlockContainer, parsedLockedDatesArr)
-    }
 
+    let popover: Popover;
+
+    // @ts-ignore
+    document.addEventListener('shown.bs.popover', () => {
+      console.log('🚀 ~ lockingAction ~ popover:', popover);
+
+      const cancelButton = document.querySelector('.cancelPopover');
+      const noOnPopover = document.querySelector('.noOnPopover');
+      const yesOnPopover = document.querySelector('.yesOnPopover');
+
+      cancelButton?.addEventListener('click', function () {
+        modal.hide();
+        popover?.disable();
+      });
+
+      noOnPopover?.addEventListener('click', lockingAction);
+      yesOnPopover?.addEventListener('click', lockingAction);
+      popover?.disable();
+    });
 
     // Подтверждение блокировки/разблокировки
-
+    let hasUmSubmittedEvents;
     async function lockingAction() {
       lockActionBtn?.removeEventListener('click', lockingAction);
       unlockActionBtn?.removeEventListener('click', lockingAction);
 
-      const selectedDatesArr = isLocked ? getSelectedDates(dailyUnBlockContainer) : getSelectedDates(dailyBlockContainer);
+      const selectedDatesArr = isLocked
+        ? getSelectedDates(dailyUnBlockContainer)
+        : getSelectedDates(dailyBlockContainer);
       console.log('selectedDatesArr: ', selectedDatesArr);
 
       const { lockingDatesArr, weekToBlockIDs } = getKeysForSelectedDates(
@@ -194,13 +230,31 @@ export const lockEmployment = (calendar: Calendar) => {
         );
 
         console.log('mergedLockedDatesArr: ', mergedLockedDatesArr);
-
       }
 
-      const hasUmSubmittedEvents = hasUnSubmittedEvents(calendar, selectedDatesArr);
+      hasUmSubmittedEvents = hasUnSubmittedEvents(calendar, selectedDatesArr);
       console.log('hasUmSubmittedEvents: ', hasUmSubmittedEvents);
 
+      if (hasUmSubmittedEvents) {
+        let popover = new Popover('.lock-action', {
+          // container: '.modal-body',
+          placement: 'bottom',
+          title: 'Согласовать перед блокировкой?',
+          html: true,
+          template: `<div style="max-width:fit-content;" class="popover" role="tooltip"><div class="popover-inner">
+                <div class="modal-body fs-0">
+                Есть несогласованные задачи!<br>
+                <b>Согласуете перед блокировкой?</b></div>
+                <div class="card-footer d-flex justify-content-center align-items-center bg-light p-0">
+                <button type='button' class='btn btn-success m-2 yesOnPopover'>Да</button>
+                <button type='button' class='btn btn-success m-2 noOnPopover'>Нет</button>
+              <button type='button' class='btn btn-warning m-2 cancelPopover' >Отмена</button></div></div></div>`,
+          trigger: 'click',
+          sanitize: false,
+        }).show();
+      }
 
+      return;
       lockActionBtn && buttonLoader(lockActionBtn, true);
       unlockActionBtn && buttonLoader(unlockActionBtn, true);
 
@@ -211,7 +265,6 @@ export const lockEmployment = (calendar: Calendar) => {
 
       // Записываем новые данные о датах блокировки в массив и localstorage
       setLocalStorageItem('lockedDatesArray', mergedLockedDatesArr);
-
 
       if (!isLocked) {
         addBlockOverlays();
@@ -232,7 +285,7 @@ export const lockEmployment = (calendar: Calendar) => {
       }, 800);
     }
 
-    if (!hasUnsubmittedEvents) {
+    if (!hasUmSubmittedEvents) {
       lockActionBtn?.addEventListener('click', lockingAction);
     }
     unlockActionBtn?.addEventListener('click', lockingAction);
