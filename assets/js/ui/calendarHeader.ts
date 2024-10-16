@@ -26,7 +26,7 @@ export const usersForManagersSelector = async (userID: string) => {
     // Уровень текущего руководителя
     localStorage.setItem('currentManagerLevel', managerLevel!);
     setLocalStorageItem('managerName', managerName!);
-    localStorage.setItem('selectedUserName', managerName!);
+    setLocalStorageItem('selectedUserName', managerName!);
     localStorage.setItem('isMan', isMan);
     /**
      * Получения элемента , куда будет помещен новый селектор сотрудников и добавление в него селектора

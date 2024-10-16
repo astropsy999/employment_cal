@@ -24,10 +24,19 @@ export const lockEmployment = (calendar: Calendar) => {
     const unlockEmplModalElement = document.querySelector('#unLockEmplModal') as HTMLElement;
     const dailyBlockContainer = document.querySelector('.dailyBlockContainer') as HTMLElement;
     const dailyUnBlockContainer = document.querySelector('.dailyUnBlockContainer') as HTMLElement;
+    const lockingName = document.querySelector(
+      '.lockedUserSurname',
+    ) as HTMLElement;
+    const unlockingName = document.querySelector(
+      '.unLockedUserSurname',
+    ) as HTMLElement;
 
     const modalElement = isLocked ? unlockEmplModalElement : lockEmplModalElement;
     const modal = new Modal(modalElement);
     modal.show();
+    lockingName && (lockingName.textContent = getLocalStorageItem('selectedUserName'));
+    unlockingName &&
+      (unlockingName.textContent = getLocalStorageItem('selectedUserName'));
     toggleYesNoButtonsState(false);
 
     // Настраиваем даты и содержимое модального окна

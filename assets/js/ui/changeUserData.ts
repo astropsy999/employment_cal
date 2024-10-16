@@ -6,7 +6,7 @@ import { isManager } from '../api/isManager';
 import { parseResievedDataToCal } from './parseResievedDataToCal';
 import { tempLoader } from './tempLoader';
 import { forceCalendarRecalculate } from '../utils/fullcalendar';
-import { getLocalStorageItem } from '../utils/localStorageUtils';
+import { getLocalStorageItem, setLocalStorageItem } from '../utils/localStorageUtils';
 import {
   formatDate,
   getMonthRange,
@@ -76,7 +76,7 @@ export const changeUserData = (calendar: Calendar, userID: string) => {
       const isSelectedMan = await isManager(userSelector.value);
       const selectedUser = e.target.value.toString();
       const selectedUserName = e.target.selectedOptions[0].textContent;
-      localStorage.setItem('selectedUserName', selectedUserName);
+      setLocalStorageItem('selectedUserName', selectedUserName);
       const managerName = getLocalStorageItem('managerName');
       localStorage.setItem('iddb', selectedUser);
 
