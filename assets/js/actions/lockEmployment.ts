@@ -15,9 +15,15 @@ import { getEventsInSelectedDates, getKeysForSelectedDates, getSelectedDates, ha
 import { formatDate } from '../utils/mainGlobFunctions';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
 
+/**
+ * Функция для управления блокировкой и разблокировкой занятости в календаре.
+ * @param {Calendar} calendar - экземпляр календаря FullCalendar
+ */
 export const lockEmployment = (calendar: Calendar) => {
   const lockBtn = document.querySelector('.lockBtn');
-
+    /**
+     * Функция, обрабатывающая действие блокировки или разблокировки занятости.
+     */
   const lockAction = () => {
     const isLocked = getLocalStorageItem('isWeekLocked');
     const lockEmplModalElement = document.querySelector('#LockEmplModal') as HTMLElement;
@@ -35,10 +41,12 @@ export const lockEmployment = (calendar: Calendar) => {
     const modal = new Modal(modalElement);
     modal.show();
 
+    // Добавляем обработчик события для обновления состояния чекбоксов при показе модального окна разблокировки
     unlockEmplModalElement.addEventListener('shown.bs.modal', () => {
       lockCheckboxesState(isLocked);
     });
-   
+    
+    // Устанавливаем имя пользователя в модальном окне
     lockingName && (lockingName.textContent = getLocalStorageItem('selectedUserName'));
     unlockingName &&
       (unlockingName.textContent = getLocalStorageItem('selectedUserName'));
@@ -61,6 +69,7 @@ export const lockEmployment = (calendar: Calendar) => {
       .map((date: string) => new Date(parseDateString(date)!))
       .reverse();
 
+      // Генерируем чекбоксы для выбора дат блокировки или разблокировки
     if (!isLocked) {
       generateDaysCheckboxes(dailyBlockContainer, parsedLockedDatesArr);
     } else {
@@ -69,8 +78,11 @@ export const lockEmployment = (calendar: Calendar) => {
 
     const lockActionBtn = modalElement.querySelector('.lock-action') as HTMLButtonElement;
     const unlockActionBtn = modalElement.querySelector('.unlock-action') as HTMLButtonElement;
-    const cancelActionBtn = modalElement.querySelector('.cancel-action') as HTMLButtonElement;
-
+    
+    /**
+     * Обновляет UI после выполнения операции блокировки или разблокировки.
+     * @param {string[]} mergedLockedDatesArr - массив дат, которые были заблокированы или разблокированы
+     */
    function updateUIAfterLocking(mergedLockedDatesArr: string[]) {
      // Записываем новые данные о датах блокировки в массив и localStorage
      setLocalStorageItem('lockedDatesArray', mergedLockedDatesArr);
@@ -115,9 +127,15 @@ export const lockEmployment = (calendar: Calendar) => {
        // Если нужно, можно перезагрузить календарь
     }, 800);
   }
-  let popoverShownHandler: (() => void) | null = null;
-    const handleLockAction = async () => {
 
+    // Объявляем обработчик события показа Popover
+    let popoverShownHandler: (() => void) | null = null;
+
+    /**
+     * Обработчик для действий по блокировке или разблокировке при нажатии на кнопки "Да".
+     */
+    const handleLockAction = async () => {
+      // Удаляем предыдущие обработчики событий, чтобы избежать дублирования
       lockActionBtn?.removeEventListener('click', handleLockAction);
       unlockActionBtn?.removeEventListener('click', handleLockAction);
 
@@ -150,6 +168,7 @@ export const lockEmployment = (calendar: Calendar) => {
         const popoverTriggerEl = lockActionBtn;
         console.log('popoverTriggerEl: ', popoverTriggerEl);
         if (popoverTriggerEl) {
+          // Удаляем предыдущий обработчик события, если он существует
           if (popoverShownHandler) {
             popoverTriggerEl.removeEventListener('shown.bs.popover', popoverShownHandler);
           }
@@ -176,6 +195,9 @@ export const lockEmployment = (calendar: Calendar) => {
             sanitize: false,
           });
 
+          /**
+           * Обработчик события показа Popover, навешивает обработчики на кнопки внутри Popover.
+           */
           popoverShownHandler = () => {
             const popoverElement = (popover as any).tip as HTMLElement;
             if (popoverElement) {
@@ -186,13 +208,21 @@ export const lockEmployment = (calendar: Calendar) => {
               const yesOnPopover = popoverElement.querySelector('.yesOnPopover') as HTMLButtonElement;
     
               toggleYesNoButtonsState(true);
-    
+              
+              /**
+               * Обработчик для кнопки "Отмена" в Popover.
+               * Закрывает модальное окно и Popover, удаляет обработчики событий.
+               */
               const cancelHandler = () => {
                 modal.hide();
                 popover.hide();
                 removePopoverEventListeners();
               };
-    
+              
+              /**
+               * Обработчик для кнопки "Нет" в Popover.
+               * Выполняет блокировку без согласования задач, обновляет UI.
+               */
               const noHandler = async () => {
                 removePopoverEventListeners();
                 popover.dispose();
@@ -208,13 +238,17 @@ export const lockEmployment = (calendar: Calendar) => {
                 updateUIAfterLocking(mergedLockedDatesArr);
     
               };
-    
+              
+              /**
+               * Обработчик для кнопки "Да" в Popover.
+               * Согласует задачи и выполняет блокировку, обновляет UI.
+               */
               const yesHandler = async () => {
                 buttonLoader(yesOnPopover, true);
                 await approveEventsApi(eventsInSelectedDates);
                 removePopoverEventListeners();
                 buttonLoader(yesOnPopover, false);
-                yesOnPopover.textContent = 'V';
+                yesOnPopover.textContent = 'Согласовано';
                 popover.disable();
                 popover.hide();
 
@@ -229,11 +263,15 @@ export const lockEmployment = (calendar: Calendar) => {
                 updateUIAfterLocking(mergedLockedDatesArr);
                 removePopoverEventListeners();
               };
-    
+              
+              // Навешиваем обработчики событий на кнопки внутри Popover
               cancelButton?.addEventListener('click', cancelHandler);
               noOnPopover?.addEventListener('click', noHandler);
               yesOnPopover?.addEventListener('click', yesHandler);
-    
+              
+              /**
+               * Удаляет обработчики событий с кнопок внутри Popover и снимает обработчик события 'shown.bs.popover'.
+               */
               function removePopoverEventListeners() {
                 cancelButton?.removeEventListener('click', cancelHandler);
                 noOnPopover?.removeEventListener('click', noHandler);
@@ -251,6 +289,7 @@ export const lockEmployment = (calendar: Calendar) => {
           popover.show();
         }
       } else {
+        // Если нет несогласованных событий или выполняется разблокировка
         lockActionBtn && buttonLoader(lockActionBtn, true);
         unlockActionBtn && buttonLoader(unlockActionBtn, true);
 
@@ -264,11 +303,12 @@ export const lockEmployment = (calendar: Calendar) => {
       fullCalendar.fullCalendarInit();
     };
 
-
+    // Навешиваем обработчики событий на кнопки "Да" в модальном окне
     lockActionBtn?.addEventListener('click', handleLockAction);
     unlockActionBtn?.addEventListener('click', handleLockAction);
   };
-
+  
+  // Навешиваем обработчик события на кнопку блокировки
   lockBtn?.addEventListener('click', lockAction);
 };
 
