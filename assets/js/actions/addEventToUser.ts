@@ -6,13 +6,13 @@ import addEventWithMethods from '../methods/addEventWithMethods';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
 import { Modal } from 'bootstrap';
 import { buttonLoader } from '../ui/buttonLoader';
-import { unblockBtnAddTitle } from '../utils/mainGlobFunctions';
+import { handleWooTime, unblockBtnAddTitle } from '../utils/mainGlobFunctions';
 import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
 import { Calendar } from '@fullcalendar/core';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { updateCalendarTimeBounds } from '../utils/calendarUtils';
 import { addEventToUserApi } from '../api/addEventToUserApi';
-import { getKrState } from '../utils/uiUtils';
+import { getFormElements, getKrState } from '../utils/uiUtils';
 
 
 /**
@@ -23,22 +23,23 @@ import { getKrState } from '../utils/uiUtils';
 
 export const addEventToUser = (calendar: Calendar) => {
   return async function (e: Event) {
-    const kindOfTasks = document.querySelector('#kindOfTasks') as HTMLSelectElement;
-    const kindOfSubTask = document.querySelector('#kindOfSubTask') as HTMLSelectElement;
-    const eventTitle = document.querySelector('#eventTitle') as HTMLInputElement;
-    const longDesc = document.querySelector('#longDesc') as HTMLTextAreaElement;
-    const taskObj = document.querySelector('#taskObj') as HTMLSelectElement;
-    const taskCreator = document.querySelector('#taskCreator') as HTMLSelectElement;
-    const eventStartDate = document.querySelector('#eventStartDate') as HTMLInputElement;
-    const eventEndDate = document.querySelector('#eventEndDate') as HTMLInputElement;
-    const eventSpentTime = document.querySelector('#eventSpentTime') as HTMLInputElement;
-    const eventSource = document.querySelector('#eventSource') as HTMLSelectElement;
-    const eventNotes = document.querySelector('#eventNotes') as HTMLTextAreaElement;
-    const locations = document.querySelector('#locObj') as HTMLSelectElement;
-    const employment = document.querySelector('#employment') as HTMLSelectElement;
-    const addEventModal = document.querySelector('#addEventModal') as HTMLElement;
-    const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn') as HTMLButtonElement;
-    const approveBtn = document.querySelector('#approveBtn');
+    const {
+      kindOfTasks,
+      kindOfSubTask,
+      eventTitle,
+      longDesc,
+      taskObj,
+      taskCreator,
+      eventStartDate,
+      eventEndDate,
+      eventSpentTime,
+      eventSource,
+      eventNotes,
+      locations,
+      employment,
+      addEventModal,
+      eventTaskModalBtn,
+    } = getFormElements();
 
     eventTaskModalBtn?.addEventListener('hidden.bs.modal', function (event) {
       buttonLoader(eventTaskModalBtn, false);
@@ -198,9 +199,6 @@ export const addEventToUser = (calendar: Calendar) => {
           console.log(error);
         }
 
-        
-
-              
       } else {
         e.preventDefault();
 
@@ -282,7 +280,7 @@ export const addEventToUser = (calendar: Calendar) => {
             setViewAndDateToLS,
           );
         } else {
-          mainFunc.handleWooTime('single');
+          handleWooTime('single');
         }
       }
     }
