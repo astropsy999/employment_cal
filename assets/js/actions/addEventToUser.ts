@@ -1,20 +1,22 @@
+import { Calendar } from '@fullcalendar/core';
+import { Modal } from 'bootstrap';
+import { addEventToUserApi } from '../api/addEventToUserApi';
 import * as c from '../config';
-import { findParentID } from './eventsActions';
-import * as mainFunc from '../utils/mainGlobFunctions';
-import { oftenSelectedCollectInLS } from '../ui/oftenSelectedCollectInLS';
+import { Locations } from '../enums/locations';
+import { TaskType } from '../enums/taskTypes';
 import addEventWithMethods from '../methods/addEventWithMethods';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
-import { Modal } from 'bootstrap';
 import { buttonLoader } from '../ui/buttonLoader';
-import { handleWooTime, unblockBtnAddTitle } from '../utils/mainGlobFunctions';
+import { showError } from '../ui/notification';
+import { oftenSelectedCollectInLS } from '../ui/oftenSelectedCollectInLS';
 import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
-import { Calendar } from '@fullcalendar/core';
-import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { updateCalendarTimeBounds } from '../utils/calendarUtils';
-import { addEventToUserApi } from '../api/addEventToUserApi';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
+import * as mainFunc from '../utils/mainGlobFunctions';
+import { handleWooTime } from '../utils/mainGlobFunctions';
 import { getFormElements, getKrState } from '../utils/uiUtils';
 import { checkEmploymentMode, validateCondition } from '../utils/validationUtils';
-import { showError } from '../ui/notification';
+import { findParentID } from './eventsActions';
 
 
 /**
@@ -55,12 +57,8 @@ export const addEventToUser = (calendar: Calendar) => {
     buttonLoader(eventTaskModalBtn, true);
 
     const isMethodsAvailableMode =
-      kindOfTasks.value === 'Техническое диагностирование' ||
-      kindOfSubTask.value === 'Проведение контроля в лаборатории';
-
-    const isRootUser =
-      localStorage.getItem('managerName') ===
-      localStorage.getItem('selectedUserName');
+      kindOfTasks.value === TaskType.TechnicalDiagnostic ||
+      kindOfSubTask.value === TaskType.LaboratoryControl;
 
     let justAddedDelID = '';
     const iddb = getLocalStorageItem('iddb');
@@ -76,11 +74,11 @@ export const addEventToUser = (calendar: Calendar) => {
     const valCondition = validateCondition(valCond, locations, kindOfTasks, eventEndDate);
 
     if (valCondition) {
-      if (locations.value === 'Не выбрано') {
+      if (locations.value === Locations.NotSelected) {
         locations.classList.add('is-invalid');
       }
 
-      if (kindOfTasks.value === 'Не выбрано') {
+      if (kindOfTasks.value === TaskType.NotSelected) {
         kindOfTasks.classList.add('is-invalid');
       }
 
@@ -88,8 +86,8 @@ export const addEventToUser = (calendar: Calendar) => {
       buttonLoader(eventTaskModalBtn, false);
     } else {
       if (
-        kindOfTasks.value !== 'Техническое диагностирование' &&
-        kindOfSubTask.value !== 'Проведение контроля в лаборатории'
+        kindOfTasks.value !== TaskType.TechnicalDiagnostic &&
+        kindOfSubTask.value !== TaskType.LaboratoryControl
       ) {
         e.preventDefault();
 
