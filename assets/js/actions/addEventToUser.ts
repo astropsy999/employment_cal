@@ -10,6 +10,8 @@ import { unblockBtnAddTitle } from '../utils/mainGlobFunctions';
 import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
 import { Calendar } from '@fullcalendar/core';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
+import { updateCalendarTimeBounds } from '../utils/calendarUtils';
+import { addEventToUserApi } from '../api/addEventToUserApi';
 
 
 /**
@@ -19,7 +21,7 @@ import { getLocalStorageItem } from '../utils/localStorageUtils';
  */
 
 export const addEventToUser = (calendar: Calendar) => {
-  return function (e: Event) {
+  return async function (e: Event) {
     const kindOfTasks = document.querySelector('#kindOfTasks') as HTMLSelectElement;
     const kindOfSubTask = document.querySelector('#kindOfSubTask') as HTMLSelectElement;
     const eventTitle = document.querySelector('#eventTitle') as HTMLInputElement;
@@ -52,7 +54,7 @@ export const addEventToUser = (calendar: Calendar) => {
       localStorage.getItem('selectedUserName');
 
     let justAddedDelID = '';
-    const iddb = localStorage.getItem('iddb');
+    const iddb = getLocalStorageItem('iddb');
 
     /**
      * Проверка рабочего режима при добавлении задачи
@@ -149,136 +151,156 @@ export const addEventToUser = (calendar: Calendar) => {
 
         // Находим ParentID
 
-        const parentID = findParentID(parentIdDataArr, eventStartDate.value);
+        // const parentID = findParentID(parentIdDataArr, eventStartDate.value);
 
-        // Отправляем новый event в базу
+        // // Отправляем новый event в базу
 
-        let formDataEv2 = new FormData();
+        // let formDataEv2 = new FormData();
 
-        formDataEv2.append('ObjTypeID', c.OBJTYPEID);
-        formDataEv2.append('ParentID', parentID);
-        formDataEv2.append('Data[0][name]', c.addZeroName);
-        formDataEv2.append('Data[0][value]', cleanTodayDate);
-        formDataEv2.append('Data[0][isName]', 'false');
-        formDataEv2.append('Data[0][maninp]', 'false');
-        formDataEv2.append('Data[0][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[1][name]', c.fifthCol);
-        formDataEv2.append(
-          'Data[1][value]',
-          taskObj[taskObj.options.selectedIndex].getAttribute('objidattr') ||
-            '',
-        );
-        formDataEv2.append('Data[1][isName]', 'false');
-        formDataEv2.append('Data[1][maninp]', 'false');
-        formDataEv2.append('Data[1][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[4][name]', c.fourthCol);
-        formDataEv2.append('Data[4][value]', eventTitle.value);
-        formDataEv2.append('Data[4][isName]', 'false');
-        formDataEv2.append('Data[4][maninp]', 'false');
-        formDataEv2.append('Data[4][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[5][name]', 't8106');
-        formDataEv2.append('Data[5][value]', longDesc.value);
-        formDataEv2.append('Data[5][isName]', 'false');
-        formDataEv2.append('Data[5][maninp]', 'false');
-        formDataEv2.append('Data[5][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[6][name]', c.ninthCol);
-        formDataEv2.append('Data[6][value]', eventSpentTime.value);
-        formDataEv2.append('Data[6][isName]', 'false');
-        formDataEv2.append('Data[6][maninp]', 'false');
-        formDataEv2.append('Data[6][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[7][name]', c.tenthCol);
-        formDataEv2.append(
-          'Data[7][value]',
-          taskCreator[taskCreator.options.selectedIndex].getAttribute(
-            'objidattr',
-          ) || '',
-        );
-        formDataEv2.append('Data[7][isName]', 'false');
-        formDataEv2.append('Data[7][maninp]', 'false');
-        formDataEv2.append('Data[7][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[8][name]', c.eleventhCol);
-        formDataEv2.append('Data[8][value]', eventSource.value);
-        formDataEv2.append('Data[8][isName]', 'false');
-        formDataEv2.append('Data[8][maninp]', 'false');
-        formDataEv2.append('Data[8][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[9][name]', 't8107');
-        formDataEv2.append('Data[9][value]', eventNotes.value);
-        formDataEv2.append('Data[9][isName]', 'false');
-        formDataEv2.append('Data[9][maninp]', 'false');
-        formDataEv2.append('Data[9][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[10][name]', c.userCol);
-        formDataEv2.append('Data[10][value]', iddb!);
-        formDataEv2.append('Data[10][isName]', 'false');
-        formDataEv2.append('Data[10][maninp]', 'false');
-        formDataEv2.append('Data[10][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[11][name]', c.thirteenthCol);
-        formDataEv2.append('Data[11][value]', eventStartDate.value);
-        formDataEv2.append('Data[11][isName]', 'false');
-        formDataEv2.append('Data[11][maninp]', 'false');
-        formDataEv2.append('Data[11][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[12][name]', c.fourteenthCol);
-        formDataEv2.append('Data[12][value]', eventEndDate.value);
-        formDataEv2.append('Data[12][isName]', 'false');
-        formDataEv2.append('Data[12][maninp]', 'false');
-        formDataEv2.append('Data[12][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[13][name]', c.fifteenthCol);
-        formDataEv2.append(
-          'Data[13][value]',
-          mainFunc.notChoosenCleaning(locations.value),
-        );
-        formDataEv2.append('Data[13][isName]', 'false');
-        formDataEv2.append('Data[13][maninp]', 'false');
-        formDataEv2.append('Data[13][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[14][name]', '9042');
-        formDataEv2.append('Data[14][value]', employment.value);
-        formDataEv2.append('Data[14][isName]', 'false');
-        formDataEv2.append('Data[14][maninp]', 'false');
-        formDataEv2.append('Data[14][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[15][name]', '9043');
-        formDataEv2.append(
-          'Data[15][value]',
-          kindOfTasks[kindOfTasks.options.selectedIndex].getAttribute(
-            'taskid',
-          ) || '',
-        );
-        formDataEv2.append('Data[15][isName]', 'false');
-        formDataEv2.append('Data[15][maninp]', 'false');
-        formDataEv2.append('Data[15][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[16][name]', '9044');
-        formDataEv2.append(
-          'Data[16][value]',
-          kindOfSubTask[kindOfSubTask.options.selectedIndex].getAttribute(
-            'subtaskid',
-          ) || '',
-        );
-        formDataEv2.append('Data[16][isName]', 'false');
-        formDataEv2.append('Data[16][maninp]', 'false');
-        formDataEv2.append('Data[16][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[17][name]', '8852');
-        formDataEv2.append('Data[17][isName]', 'false');
-        formDataEv2.append('Data[17][maninp]', 'false');
-        formDataEv2.append('Data[17][GroupID]', c.dataGroupID);
-        formDataEv2.append('Data[17][value]', krState(kr));
-        formDataEv2.append('InterfaceID', c.dataInterfaceID);
-        formDataEv2.append('CalcParamID', c.addCalcParamID);
-        formDataEv2.append('isGetForm', '0');
-        formDataEv2.append('ImportantInterfaceID', '');
-        formDataEv2.append('Ignor39', '0');
-        formDataEv2.append('templ_mode', '0');
+        // formDataEv2.append('ObjTypeID', c.OBJTYPEID);
+        // formDataEv2.append('ParentID', parentID);
+        // formDataEv2.append('Data[0][name]', c.addZeroName);
+        // formDataEv2.append('Data[0][value]', cleanTodayDate);
+        // formDataEv2.append('Data[0][isName]', 'false');
+        // formDataEv2.append('Data[0][maninp]', 'false');
+        // formDataEv2.append('Data[0][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[1][name]', c.fifthCol);
+        // formDataEv2.append(
+        //   'Data[1][value]',
+        //   taskObj[taskObj.options.selectedIndex].getAttribute('objidattr') ||
+        //     '',
+        // );
+        // formDataEv2.append('Data[1][isName]', 'false');
+        // formDataEv2.append('Data[1][maninp]', 'false');
+        // formDataEv2.append('Data[1][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[4][name]', c.fourthCol);
+        // formDataEv2.append('Data[4][value]', eventTitle.value);
+        // formDataEv2.append('Data[4][isName]', 'false');
+        // formDataEv2.append('Data[4][maninp]', 'false');
+        // formDataEv2.append('Data[4][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[5][name]', 't8106');
+        // formDataEv2.append('Data[5][value]', longDesc.value);
+        // formDataEv2.append('Data[5][isName]', 'false');
+        // formDataEv2.append('Data[5][maninp]', 'false');
+        // formDataEv2.append('Data[5][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[6][name]', c.ninthCol);
+        // formDataEv2.append('Data[6][value]', eventSpentTime.value);
+        // formDataEv2.append('Data[6][isName]', 'false');
+        // formDataEv2.append('Data[6][maninp]', 'false');
+        // formDataEv2.append('Data[6][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[7][name]', c.tenthCol);
+        // formDataEv2.append(
+        //   'Data[7][value]',
+        //   taskCreator[taskCreator.options.selectedIndex].getAttribute(
+        //     'objidattr',
+        //   ) || '',
+        // );
+        // formDataEv2.append('Data[7][isName]', 'false');
+        // formDataEv2.append('Data[7][maninp]', 'false');
+        // formDataEv2.append('Data[7][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[8][name]', c.eleventhCol);
+        // formDataEv2.append('Data[8][value]', eventSource.value);
+        // formDataEv2.append('Data[8][isName]', 'false');
+        // formDataEv2.append('Data[8][maninp]', 'false');
+        // formDataEv2.append('Data[8][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[9][name]', 't8107');
+        // formDataEv2.append('Data[9][value]', eventNotes.value);
+        // formDataEv2.append('Data[9][isName]', 'false');
+        // formDataEv2.append('Data[9][maninp]', 'false');
+        // formDataEv2.append('Data[9][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[10][name]', c.userCol);
+        // formDataEv2.append('Data[10][value]', iddb!);
+        // formDataEv2.append('Data[10][isName]', 'false');
+        // formDataEv2.append('Data[10][maninp]', 'false');
+        // formDataEv2.append('Data[10][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[11][name]', c.thirteenthCol);
+        // formDataEv2.append('Data[11][value]', eventStartDate.value);
+        // formDataEv2.append('Data[11][isName]', 'false');
+        // formDataEv2.append('Data[11][maninp]', 'false');
+        // formDataEv2.append('Data[11][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[12][name]', c.fourteenthCol);
+        // formDataEv2.append('Data[12][value]', eventEndDate.value);
+        // formDataEv2.append('Data[12][isName]', 'false');
+        // formDataEv2.append('Data[12][maninp]', 'false');
+        // formDataEv2.append('Data[12][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[13][name]', c.fifteenthCol);
+        // formDataEv2.append(
+        //   'Data[13][value]',
+        //   mainFunc.notChoosenCleaning(locations.value),
+        // );
+        // formDataEv2.append('Data[13][isName]', 'false');
+        // formDataEv2.append('Data[13][maninp]', 'false');
+        // formDataEv2.append('Data[13][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[14][name]', '9042');
+        // formDataEv2.append('Data[14][value]', employment.value);
+        // formDataEv2.append('Data[14][isName]', 'false');
+        // formDataEv2.append('Data[14][maninp]', 'false');
+        // formDataEv2.append('Data[14][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[15][name]', '9043');
+        // formDataEv2.append(
+        //   'Data[15][value]',
+        //   kindOfTasks[kindOfTasks.options.selectedIndex].getAttribute(
+        //     'taskid',
+        //   ) || '',
+        // );
+        // formDataEv2.append('Data[15][isName]', 'false');
+        // formDataEv2.append('Data[15][maninp]', 'false');
+        // formDataEv2.append('Data[15][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[16][name]', '9044');
+        // formDataEv2.append(
+        //   'Data[16][value]',
+        //   kindOfSubTask[kindOfSubTask.options.selectedIndex].getAttribute(
+        //     'subtaskid',
+        //   ) || '',
+        // );
+        // formDataEv2.append('Data[16][isName]', 'false');
+        // formDataEv2.append('Data[16][maninp]', 'false');
+        // formDataEv2.append('Data[16][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[17][name]', '8852');
+        // formDataEv2.append('Data[17][isName]', 'false');
+        // formDataEv2.append('Data[17][maninp]', 'false');
+        // formDataEv2.append('Data[17][GroupID]', c.dataGroupID);
+        // formDataEv2.append('Data[17][value]', krState(kr));
+        // formDataEv2.append('InterfaceID', c.dataInterfaceID);
+        // formDataEv2.append('CalcParamID', c.addCalcParamID);
+        // formDataEv2.append('isGetForm', '0');
+        // formDataEv2.append('ImportantInterfaceID', '');
+        // formDataEv2.append('Ignor39', '0');
+        // formDataEv2.append('templ_mode', '0');
 
-        fetch(c.srvv + c.createNodeUrl, {
-          credentials: 'include',
-          method: 'post',
-          body: formDataEv2,
-        })
-          .then((response) => {
-            return response.json();
-          })
-          .then((data) => {
-            const objID = data.results[0].object;
-            justAddedDelID = objID;
+        // fetch(c.srvv + c.createNodeUrl, {
+        //   credentials: 'include',
+        //   method: 'post',
+        //   body: formDataEv2,
+        // })
+        //   .then((response) => {
+        //     return response.json();
+        //   })
+        //   .then((data) => {
+        //     const objID = data.results[0].object;
+        //     justAddedDelID = objID;
 
-            eventTaskModalBtn.addEventListener('click', () => {});
+        //     eventTaskModalBtn.addEventListener('click', () => {});
+
+              // Отправляем новый event в базу через отдельную функцию API
+              justAddedDelID = await addEventToUserApi({
+                eventStartDate,
+                eventEndDate,
+                eventTitle,
+                longDesc,
+                taskObj,
+                taskCreator,
+                eventSpentTime,
+                eventSource,
+                eventNotes,
+                locations,
+                employment,
+                kr,
+                iddb,
+                krState,
+                kindOfTasks,
+                kindOfSubTask,
+              });
 
             // Добавление задачи на клиенте (без перезагрузки)
 
@@ -310,42 +332,15 @@ export const addEventToUser = (calendar: Calendar) => {
             calendar.render();
             oftenSelectedCollectInLS(taskCreator);
 
-            // Проверка и расширение границ времени при добавлении
-
-            const slotmintime = calendar.getOption('slotMinTime');
-            const slotmaxtime = calendar.getOption('slotMaxTime');
-
-            const minTimeHours = slotmintime instanceof Date ? 
-              slotmintime.getHours() : 
-              typeof slotmintime === 'string' ? +(slotmintime.slice(0, 2)) : null;
-
-            const maxTimeHours = slotmaxtime instanceof Date ? 
-              slotmaxtime.getHours() : 
-              typeof slotmaxtime === 'string' ? +(slotmaxtime.slice(0, 2)) : null;
-
-            const startHours = new Date(
-              mainFunc.convertDateTime(eventStartDate.value),
-            ).getHours();
-            const endHours = new Date(
-              mainFunc.convertDateTime(eventEndDate.value),
-            ).getHours();
-
-            const setStartHours = Math.min(minTimeHours!, startHours);
-            const setEndHours = Math.max(maxTimeHours!, endHours);
-
-            calendar.setOption(
-              'slotMinTime',
-              `${mainFunc.addZeroBefore(setStartHours)}:00:00`,
-            );
-            calendar.setOption(
-              'slotMaxTime',
-              `${mainFunc.addZeroBefore(setEndHours)}:59:59`,
-            );
-
-            if (!isMethodsAvailableMode) {
-              buttonLoader(eventTaskModalBtn, false);
-            }
-          });
+            // Обновление границ времени календаря
+              updateCalendarTimeBounds({
+                calendar,
+                eventStartDate,
+                eventEndDate,
+                isMethodsAvailableMode,
+                eventTaskModalBtn,
+              });
+          // });
 
         localStorage.setItem('fcDefaultView', calendar.view.type);
         Modal?.getInstance(addEventModal)?.hide();
