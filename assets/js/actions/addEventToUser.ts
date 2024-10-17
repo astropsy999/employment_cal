@@ -13,6 +13,7 @@ import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { updateCalendarTimeBounds } from '../utils/calendarUtils';
 import { addEventToUserApi } from '../api/addEventToUserApi';
 import { getFormElements, getKrState } from '../utils/uiUtils';
+import { checkEmploymentMode, validateCondition } from '../utils/validationUtils';
 
 
 /**
@@ -58,23 +59,7 @@ export const addEventToUser = (calendar: Calendar) => {
     let justAddedDelID = '';
     const iddb = getLocalStorageItem('iddb');
 
-    /**
-     * Проверка рабочего режима при добавлении задачи
-     * @returns boolean
-     */
-    const checkEmploymentMode = () => {
-      const emplMode = document.querySelector('#employment') as HTMLSelectElement;
-      if (emplMode.value === 'Работа' && locations.value !== 'В дороге') {
-        return true;
-      } else if (
-        emplMode.value === 'Работа' &&
-        locations.value === 'В дороге'
-      ) {
-        return 'onRoad';
-      }
-      return false;
-    };
-    const valCond = checkEmploymentMode();
+    const valCond = checkEmploymentMode(locations);
 
     /**
      * Возвращает необходимое условие для валидации
@@ -82,22 +67,7 @@ export const addEventToUser = (calendar: Calendar) => {
      * @returns
      */
 
-    const validateCondition = (valC: boolean | 'onRoad') => {
-      switch (valC) {
-        case false:
-          return null === undefined;
-        case true:
-          return (
-            locations.value === 'Не выбрано' ||
-            kindOfTasks.value === 'Не выбрано' ||
-            eventEndDate?.classList.contains('is-invalid')
-          );
-        case 'onRoad':
-          return eventEndDate?.classList.contains('is-invalid');
-      }
-    };
-
-    const valCondition = validateCondition(valCond);
+    const valCondition = validateCondition(valCond, locations, kindOfTasks, eventEndDate);
 
     if (valCondition) {
       if (locations.value === 'Не выбрано') {
@@ -287,3 +257,5 @@ export const addEventToUser = (calendar: Calendar) => {
     calendar.render();
   };
 };
+
+
