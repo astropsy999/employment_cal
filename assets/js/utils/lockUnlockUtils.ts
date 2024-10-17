@@ -131,3 +131,23 @@ export function toggleYesNoButtonsState(disable: boolean) {
     cancelActionBtn && cancelActionBtn.removeAttribute('disabled');
   }
 }
+
+
+export function lockCheckboxesState(state: boolean) {
+  const dailyUnBlockContainer = document.querySelector('.dailyUnBlockContainer') as HTMLElement;
+  if (!dailyUnBlockContainer) return;
+
+  const checkboxes = dailyUnBlockContainer.querySelectorAll('input[type="checkbox"]');
+
+  checkboxes.forEach((checkbox) => {
+    const checkboxElement = checkbox as HTMLInputElement;
+   
+    if (state) {
+      // Если дата чекбокса меньше или равна сегодняшней, блокируем его
+      checkboxElement.disabled = true;
+    } else {
+      // Иначе разблокируем
+      checkboxElement.disabled = false;
+    }
+  });
+}

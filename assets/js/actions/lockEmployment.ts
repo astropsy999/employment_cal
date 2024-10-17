@@ -11,7 +11,7 @@ import {
 import { getCurrentWeekDates, parseDateString } from '../utils/datesUtils';
 import { fullCalendar } from '../utils/fullcalendar';
 import { getLocalStorageItem, setLocalStorageItem } from '../utils/localStorageUtils';
-import { getEventsInSelectedDates, getKeysForSelectedDates, getSelectedDates, hasUnSubmittedEvents, toggleYesNoButtonsState } from '../utils/lockUnlockUtils';
+import { getEventsInSelectedDates, getKeysForSelectedDates, getSelectedDates, hasUnSubmittedEvents, lockCheckboxesState, toggleYesNoButtonsState } from '../utils/lockUnlockUtils';
 import { formatDate } from '../utils/mainGlobFunctions';
 import { generateDaysCheckboxes } from './generateDaysCheckboxes';
 
@@ -34,6 +34,11 @@ export const lockEmployment = (calendar: Calendar) => {
     const modalElement = isLocked ? unlockEmplModalElement : lockEmplModalElement;
     const modal = new Modal(modalElement);
     modal.show();
+
+    unlockEmplModalElement.addEventListener('shown.bs.modal', () => {
+      lockCheckboxesState(isLocked);
+    });
+   
     lockingName && (lockingName.textContent = getLocalStorageItem('selectedUserName'));
     unlockingName &&
       (unlockingName.textContent = getLocalStorageItem('selectedUserName'));
@@ -108,11 +113,9 @@ export const lockEmployment = (calendar: Calendar) => {
        fullCalendar.fullCalendarInit();
 
        // Если нужно, можно перезагрузить календарь
-     }, 800);
-   }
-
-
-
+    }, 800);
+  }
+  let popoverShownHandler: (() => void) | null = null;
     const handleLockAction = async () => {
 
       lockActionBtn?.removeEventListener('click', handleLockAction);
@@ -145,7 +148,11 @@ export const lockEmployment = (calendar: Calendar) => {
 
       if (!isLocked && hasUnsubmittedEvents) {
         const popoverTriggerEl = lockActionBtn;
+        console.log('popoverTriggerEl: ', popoverTriggerEl);
         if (popoverTriggerEl) {
+          if (popoverShownHandler) {
+            popoverTriggerEl.removeEventListener('shown.bs.popover', popoverShownHandler);
+          }
           const popover = new Popover(popoverTriggerEl, {
             placement: 'bottom',
             title: 'Согласовать перед блокировкой?',
@@ -169,52 +176,79 @@ export const lockEmployment = (calendar: Calendar) => {
             sanitize: false,
           });
 
-          popover.show();
-
-          popoverTriggerEl.addEventListener('shown.bs.popover', () => {
-            const popoverElement = document.querySelector('.popover');
+          popoverShownHandler = () => {
+            const popoverElement = (popover as any).tip as HTMLElement;
             if (popoverElement) {
+              console.log('popoverElement: ', popoverElement);
+    
               const cancelButton = popoverElement.querySelector('.cancelPopover');
               const noOnPopover = popoverElement.querySelector('.noOnPopover');
-              const yesOnPopover = popoverElement.querySelector('.yesOnPopover');
-
-              toggleYesNoButtonsState(true)
-
-              cancelButton?.addEventListener('click', () => {
+              const yesOnPopover = popoverElement.querySelector('.yesOnPopover') as HTMLButtonElement;
+    
+              toggleYesNoButtonsState(true);
+    
+              const cancelHandler = () => {
                 modal.hide();
                 popover.hide();
-              });
-
-              noOnPopover?.addEventListener('click', async () => {
-                lockActionBtn && buttonLoader(lockActionBtn, true);
-                unlockActionBtn && buttonLoader(unlockActionBtn, true);
-
+                removePopoverEventListeners();
+              };
+    
+              const noHandler = async () => {
+                removePopoverEventListeners();
+                popover.dispose();
+                console.log('popover: ', popover);
+                if (lockActionBtn) buttonLoader(lockActionBtn, true);
+                if (unlockActionBtn) buttonLoader(unlockActionBtn, true);
+    
                 await lockingActionApi(weekToBlockIDs, isLocked);
-
-                lockActionBtn && buttonLoader(lockActionBtn, false);
-                unlockActionBtn && buttonLoader(unlockActionBtn, false);
-
+    
+                if (lockActionBtn) buttonLoader(lockActionBtn, false);
+                if (unlockActionBtn) buttonLoader(unlockActionBtn, false);
+    
                 updateUIAfterLocking(mergedLockedDatesArr);
-
-                popover.hide();
-              });
-
-              yesOnPopover?.addEventListener('click', async () => {
+    
+              };
+    
+              const yesHandler = async () => {
+                buttonLoader(yesOnPopover, true);
                 await approveEventsApi(eventsInSelectedDates);
-                await lockingActionApi(weekToBlockIDs, isLocked);
-
-                lockActionBtn && buttonLoader(lockActionBtn, false);
-                unlockActionBtn && buttonLoader(unlockActionBtn, false);
-
-                updateUIAfterLocking(mergedLockedDatesArr);
-
+                removePopoverEventListeners();
+                buttonLoader(yesOnPopover, false);
+                yesOnPopover.textContent = 'V';
+                popover.disable();
                 popover.hide();
 
-              });
-            }
+                if (lockActionBtn) buttonLoader(lockActionBtn, true);
+                if (unlockActionBtn) buttonLoader(unlockActionBtn, true);
 
-            fullCalendar.fullCalendarInit();
-          });
+                await lockingActionApi(weekToBlockIDs, isLocked);
+    
+                if (lockActionBtn) buttonLoader(lockActionBtn, false);
+                if (unlockActionBtn) buttonLoader(unlockActionBtn, false);
+    
+                updateUIAfterLocking(mergedLockedDatesArr);
+                removePopoverEventListeners();
+              };
+    
+              cancelButton?.addEventListener('click', cancelHandler);
+              noOnPopover?.addEventListener('click', noHandler);
+              yesOnPopover?.addEventListener('click', yesHandler);
+    
+              function removePopoverEventListeners() {
+                cancelButton?.removeEventListener('click', cancelHandler);
+                noOnPopover?.removeEventListener('click', noHandler);
+                yesOnPopover?.removeEventListener('click', yesHandler);
+                popoverTriggerEl.removeEventListener('shown.bs.popover', popoverShownHandler!);
+                popoverShownHandler = null;
+              }
+            }
+          };
+    
+          // Добавляем обработчик события
+          popoverTriggerEl.addEventListener('shown.bs.popover', popoverShownHandler);
+    
+          // Показываем Popover
+          popover.show();
         }
       } else {
         lockActionBtn && buttonLoader(lockActionBtn, true);
