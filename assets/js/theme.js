@@ -42,7 +42,7 @@ import {
   getTemplateNoFooter,
   getTemplateNoFooterNoDelete,
 } from './ui/templates.js';
-import { tempLoader } from './ui/tempLoader.js';
+import { tempLoader } from './ui/tempLoader';
 import { docReady, utils } from './utils/docReady.js';
 import { fullCalendarInit, renderCalendar } from './utils/fullcalendar';
 import {

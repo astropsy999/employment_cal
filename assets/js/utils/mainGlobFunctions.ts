@@ -204,7 +204,7 @@ export const changeTextToIconForMobile = () => {
 
 // Преобразование дд.мм.гггг чч:мм в гггг-мм-дд чч:мм:сс
 
-export const convertDateTime = (olddatetime) => {
+export const convertDateTime = (olddatetime: string): string => {
   const nessDate = olddatetime.slice(0, 10);
   const nessTime = olddatetime.slice(11, 16);
 

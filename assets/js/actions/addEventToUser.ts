@@ -13,7 +13,7 @@ import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
 import { updateCalendarTimeBounds } from '../utils/calendarUtils';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import * as mainFunc from '../utils/mainGlobFunctions';
-import { handleWooTime } from '../utils/mainGlobFunctions';
+import { convertDateTime, handleWooTime, notChoosenCleaning } from '../utils/mainGlobFunctions';
 import { getFormElements, getKrState } from '../utils/uiUtils';
 import { checkEmploymentMode, validateCondition } from '../utils/validationUtils';
 import { findParentID } from './eventsActions';
@@ -231,7 +231,7 @@ export const addEventToUser = (calendar: Calendar) => {
             fourteenthCol: c.fourteenthCol,
             endDate: eventEndDate.value,
             fifteenthCol: c.fifteenthCol,
-            locationVal: mainFunc.notChoosenCleaning(locations.value),
+            locationVal: notChoosenCleaning(locations.value),
             employmentVal: employment.value,
             dataInterfaceID: c.dataInterfaceID,
             addCalcParamID: c.addCalcParamID,
@@ -242,7 +242,7 @@ export const addEventToUser = (calendar: Calendar) => {
             kindOfSubTaskVal: kindOfSubTask.value,
             kindOfTasksVal: kindOfTasks.value,
             calendar,
-            convertDateTime: mainFunc.convertDateTime,
+            convertDateTime,
             krBase: krStateValue,
           };
 

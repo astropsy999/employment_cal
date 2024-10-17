@@ -1,15 +1,13 @@
 import { Modal } from 'bootstrap';
-import { getSelectedUserData } from '../api/getSlectedUserData';
-import { changeUserData } from '../ui/changeUserData';
+import { buttonLoader } from '../ui/buttonLoader';
+import { tempLoader } from '../ui/tempLoader';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 import {
   convertDateTime,
   refreshBtnAction,
   transformToMethods,
 } from '../utils/mainGlobFunctions';
-import { tempLoader } from '../ui/tempLoader';
-import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
-import { buttonLoader } from '../ui/buttonLoader';
-import { getLocalStorageItem } from '../utils/localStorageUtils';
+import { MainEventMethods } from '../types/events';
 /**
  * Функция для добавлиния события при наличии в задаче метода или таблицы методов
  * @param {*} firstEventObj
@@ -17,9 +15,9 @@ import { getLocalStorageItem } from '../utils/localStorageUtils';
  * @param {*} setViewAndDateToLS
  */
 const addEventWithMethods = (
-  firstEventObj,
-  methodsArray,
-  setViewAndDateToLS,
+  firstEventObj: MainEventMethods,
+  methodsArray: any,
+  setViewAndDateToLS: any,
 ) => {
   const {
     OBJTYPEID,
