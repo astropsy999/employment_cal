@@ -14,6 +14,7 @@ import { updateCalendarTimeBounds } from '../utils/calendarUtils';
 import { addEventToUserApi } from '../api/addEventToUserApi';
 import { getFormElements, getKrState } from '../utils/uiUtils';
 import { checkEmploymentMode, validateCondition } from '../utils/validationUtils';
+import { showError } from '../ui/notification';
 
 
 /**
@@ -42,9 +43,14 @@ export const addEventToUser = (calendar: Calendar) => {
       eventTaskModalBtn,
     } = getFormElements();
 
-    eventTaskModalBtn?.addEventListener('hidden.bs.modal', function (event) {
-      buttonLoader(eventTaskModalBtn, false);
-    });
+    // Убираем лодер с кнопки "Добавить"
+    eventTaskModalBtn?.addEventListener(
+      'hidden.bs.modal',
+      function (event) {
+        buttonLoader(eventTaskModalBtn, false);
+      },
+      { once: true } 
+    );
 
     buttonLoader(eventTaskModalBtn, true);
 
@@ -166,7 +172,8 @@ export const addEventToUser = (calendar: Calendar) => {
           localStorage.setItem('fcDefaultView', calendar.view.type);
           Modal?.getInstance(addEventModal)?.hide();
         } catch (error) {
-          console.log(error);
+          console.error('Ошибка при добавлении события:', error);
+          showError('Не удалось добавить задачу. Пожалуйста, попробуйте позже.');
         }
 
       } else {

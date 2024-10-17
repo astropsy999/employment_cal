@@ -1,5 +1,6 @@
 import { findParentID } from '../actions/eventsActions';
 import * as c from '../config';
+import { showError } from '../ui/notification';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { notChoosenCleaning } from '../utils/mainGlobFunctions';
 import { getKrState } from '../utils/uiUtils';
@@ -163,6 +164,7 @@ export const addEventToUserApi = async ({
     });
 
     if (!response.ok) {
+      showError('Сетевая ошибка. Повторите попытку позже');
       throw new Error(`Ошибка сети: ${response.statusText}`);
     }
 
@@ -171,6 +173,7 @@ export const addEventToUserApi = async ({
     return objID;
   } catch (error) {
     console.error('Ошибка при отправке события в API:', error);
+    showError('Сетевая ошибка. Повторите попытку позже');
     throw error;
   }
 };
