@@ -1,16 +1,15 @@
 import * as c from '../config';
-import * as mainFunc from '../utils/mainGlobFunctions';
-import grabMethodsDataTable from '../methods/grabMethodsDataTable';
-import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
-import { Modal } from 'bootstrap';
-import { buttonLoader } from '../ui/buttonLoader';
 import { findParentID } from './eventsActions';
+import * as mainFunc from '../utils/mainGlobFunctions';
 import { oftenSelectedCollectInLS } from '../ui/oftenSelectedCollectInLS';
 import addEventWithMethods from '../methods/addEventWithMethods';
-import { Calendar } from '@fullcalendar/core';
+import grabMethodsDataTable from '../methods/grabMethodsDataTable';
+import { Modal } from 'bootstrap';
+import { buttonLoader } from '../ui/buttonLoader';
 import { unblockBtnAddTitle } from '../utils/mainGlobFunctions';
-
-
+import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
+import { Calendar } from '@fullcalendar/core';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 
 
 /**
@@ -20,39 +19,37 @@ import { unblockBtnAddTitle } from '../utils/mainGlobFunctions';
  */
 
 export const addEventToUser = (calendar: Calendar) => {
-  return function (e) {
+  return function (e: Event) {
     const kindOfTasks = document.querySelector('#kindOfTasks') as HTMLSelectElement;
     const kindOfSubTask = document.querySelector('#kindOfSubTask') as HTMLSelectElement;
-    const eventTitle = document.querySelector('#eventTitle');
-    const longDesc = document.querySelector('#longDesc');
-    const taskObj = document.querySelector('#taskObj');
-    const taskCreator = document.querySelector('#taskCreator');
+    const eventTitle = document.querySelector('#eventTitle') as HTMLInputElement;
+    const longDesc = document.querySelector('#longDesc') as HTMLTextAreaElement;
+    const taskObj = document.querySelector('#taskObj') as HTMLSelectElement;
+    const taskCreator = document.querySelector('#taskCreator') as HTMLSelectElement;
     const eventStartDate = document.querySelector('#eventStartDate') as HTMLInputElement;
     const eventEndDate = document.querySelector('#eventEndDate') as HTMLInputElement;
     const eventSpentTime = document.querySelector('#eventSpentTime') as HTMLInputElement;
-    const eventSource = document.querySelector('#eventSource');
-    const eventNotes = document.querySelector('#eventNotes');
-    const locations = document.querySelector('#locObj');
-    const employment = document.querySelector('#employment');
-
-    const addEventModal = document.querySelector('#addEventModal');
-    const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
-
-    const approveBtn = document.querySelector('#approveBtn') as HTMLButtonElement;
+    const eventSource = document.querySelector('#eventSource') as HTMLSelectElement;
+    const eventNotes = document.querySelector('#eventNotes') as HTMLTextAreaElement;
+    const locations = document.querySelector('#locObj') as HTMLSelectElement;
+    const employment = document.querySelector('#employment') as HTMLSelectElement;
+    const addEventModal = document.querySelector('#addEventModal') as HTMLElement;
+    const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn') as HTMLButtonElement;
+    const approveBtn = document.querySelector('#approveBtn');
 
     eventTaskModalBtn?.addEventListener('hidden.bs.modal', function (event) {
-      buttonLoader(eventTaskModalBtn);
+      buttonLoader(eventTaskModalBtn, false);
     });
 
-    buttonLoader(eventTaskModalBtn, 'true');
+    buttonLoader(eventTaskModalBtn, true);
 
     const isMethodsAvailableMode =
-      kindOfTasks?.value === 'Техническое диагностирование' ||
-      kindOfSubTask?.value === 'Проведение контроля в лаборатории';
+      kindOfTasks.value === 'Техническое диагностирование' ||
+      kindOfSubTask.value === 'Проведение контроля в лаборатории';
 
-    // const isRootUser =
-    //   localStorage.getItem('managerName') ===
-    //   localStorage.getItem('selectedUserName');
+    const isRootUser =
+      localStorage.getItem('managerName') ===
+      localStorage.getItem('selectedUserName');
 
     let justAddedDelID = '';
     const iddb = localStorage.getItem('iddb');
@@ -81,7 +78,7 @@ export const addEventToUser = (calendar: Calendar) => {
      * @returns
      */
 
-    const validateCondition = (valC) => {
+    const validateCondition = (valC: boolean | 'onRoad') => {
       switch (valC) {
         case false:
           return null === undefined;
@@ -89,10 +86,10 @@ export const addEventToUser = (calendar: Calendar) => {
           return (
             locations.value === 'Не выбрано' ||
             kindOfTasks.value === 'Не выбрано' ||
-            eventEndDate.classList.contains('is-invalid')
+            eventEndDate?.classList.contains('is-invalid')
           );
         case 'onRoad':
-          return eventEndDate.classList.contains('is-invalid');
+          return eventEndDate?.classList.contains('is-invalid');
       }
     };
 
@@ -108,7 +105,7 @@ export const addEventToUser = (calendar: Calendar) => {
       }
 
       e.preventDefault();
-      buttonLoader(eventTaskModalBtn);
+      buttonLoader(eventTaskModalBtn, false);
     } else {
       if (
         kindOfTasks.value !== 'Техническое диагностирование' &&
@@ -118,8 +115,8 @@ export const addEventToUser = (calendar: Calendar) => {
 
         // Корректировка затраченного времени
 
-        if (eventEndDate?.value === '') {
-          if (eventSpentTime?.value === '') {
+        if (eventEndDate.value === '') {
+          if (eventSpentTime.value === '') {
             eventEndDate.value = `${eventStartDate.value.slice(0, 10)} 19:00`;
           } else {
             const newTime = eventStartDate.value.slice(11, 16);
@@ -135,12 +132,10 @@ export const addEventToUser = (calendar: Calendar) => {
 
         const cleanTodayDate = eventStartDate.value.slice(0, 10);
 
-        const parentIdDataArr = JSON.parse(
-          localStorage.getItem('parentIdDataArr'),
-        );
+        const parentIdDataArr = getLocalStorageItem('parentIdDataArr');
 
-        const kr = document.querySelector('#flexCheckDefault');
-        const krState = (krelem) => {
+        const kr = document.querySelector('#flexCheckDefault') as HTMLInputElement;
+        const krState = (krelem: HTMLInputElement) => {
           if (krelem && krelem.checked) {
             return 'Да';
           } else {
@@ -212,7 +207,7 @@ export const addEventToUser = (calendar: Calendar) => {
         formDataEv2.append('Data[9][maninp]', 'false');
         formDataEv2.append('Data[9][GroupID]', c.dataGroupID);
         formDataEv2.append('Data[10][name]', c.userCol);
-        formDataEv2.append('Data[10][value]', iddb);
+        formDataEv2.append('Data[10][value]', iddb!);
         formDataEv2.append('Data[10][isName]', 'false');
         formDataEv2.append('Data[10][maninp]', 'false');
         formDataEv2.append('Data[10][GroupID]', c.dataGroupID);
@@ -283,7 +278,7 @@ export const addEventToUser = (calendar: Calendar) => {
             const objID = data.results[0].object;
             justAddedDelID = objID;
 
-            eventTaskModalBtn.addEventListener('click', null);
+            eventTaskModalBtn.addEventListener('click', () => {});
 
             // Добавление задачи на клиенте (без перезагрузки)
 
@@ -320,8 +315,13 @@ export const addEventToUser = (calendar: Calendar) => {
             const slotmintime = calendar.getOption('slotMinTime');
             const slotmaxtime = calendar.getOption('slotMaxTime');
 
-            const minTimeHours = +slotmintime.slice(0, 2);
-            const maxTimeHours = +slotmaxtime.slice(0, 2);
+            const minTimeHours = slotmintime instanceof Date ? 
+              slotmintime.getHours() : 
+              typeof slotmintime === 'string' ? +(slotmintime.slice(0, 2)) : null;
+
+            const maxTimeHours = slotmaxtime instanceof Date ? 
+              slotmaxtime.getHours() : 
+              typeof slotmaxtime === 'string' ? +(slotmaxtime.slice(0, 2)) : null;
 
             const startHours = new Date(
               mainFunc.convertDateTime(eventStartDate.value),
@@ -330,8 +330,8 @@ export const addEventToUser = (calendar: Calendar) => {
               mainFunc.convertDateTime(eventEndDate.value),
             ).getHours();
 
-            const setStartHours = Math.min(minTimeHours, startHours);
-            const setEndHours = Math.max(maxTimeHours, endHours);
+            const setStartHours = Math.min(minTimeHours!, startHours);
+            const setEndHours = Math.max(maxTimeHours!, endHours);
 
             calendar.setOption(
               'slotMinTime',
@@ -343,21 +343,20 @@ export const addEventToUser = (calendar: Calendar) => {
             );
 
             if (!isMethodsAvailableMode) {
-              buttonLoader(eventTaskModalBtn);
+              buttonLoader(eventTaskModalBtn, false);
             }
-
           });
 
         localStorage.setItem('fcDefaultView', calendar.view.type);
-        Modal.getInstance(addEventModal).hide();
+        Modal?.getInstance(addEventModal)?.hide();
       } else {
         e.preventDefault();
 
         const validateTotalTime = mainFunc.validateTotalTimeOnObject('single');
 
         if (validateTotalTime === true) {
-          const kr = document.querySelector('#flexCheckDefault');
-          const krState = (krelem) => {
+          const kr = document.querySelector('#flexCheckDefault') as HTMLInputElement;
+          const krState = (krelem: HTMLInputElement) => {
             if (krelem && krelem.checked) {
               return 'Да';
             } else {
@@ -368,8 +367,8 @@ export const addEventToUser = (calendar: Calendar) => {
           // Формируем объект для передачи данных на сервер
 
           const parentID = findParentID(
-            JSON.parse(localStorage.getItem('parentIdDataArr')),
-            eventStartDate.value,
+            getLocalStorageItem('parentIdDataArr'),
+            eventStartDate?.value,
           );
           const cleanTodayDate = eventStartDate.value.slice(0, 10);
 
