@@ -2,6 +2,7 @@ import { findParentID } from '../actions/eventsActions';
 import * as c from '../config';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { notChoosenCleaning } from '../utils/mainGlobFunctions';
+import { getKrState } from '../utils/uiUtils';
 
 interface AddEventParams {
   eventStartDate: HTMLInputElement;
@@ -15,9 +16,8 @@ interface AddEventParams {
   eventNotes: HTMLTextAreaElement;
   locations: HTMLSelectElement;
   employment: HTMLSelectElement;
-  kr: HTMLInputElement;
   iddb: string;
-  krState: (krelem: HTMLInputElement) => string;
+  krStateValue: string;
   kindOfTasks: HTMLSelectElement;
   kindOfSubTask: HTMLSelectElement;
 }
@@ -40,9 +40,8 @@ export const addEventToUserApi = async ({
   eventNotes,
   locations,
   employment,
-  kr,
   iddb,
-  krState,
+  krStateValue,
   kindOfTasks,
   kindOfSubTask,
 }: AddEventParams): Promise<string> => {
@@ -148,7 +147,7 @@ export const addEventToUserApi = async ({
   formDataEv2.append('Data[17][isName]', 'false');
   formDataEv2.append('Data[17][maninp]', 'false');
   formDataEv2.append('Data[17][GroupID]', c.dataGroupID);
-  formDataEv2.append('Data[17][value]', krState(kr));
+  formDataEv2.append('Data[17][value]', krStateValue);
   formDataEv2.append('InterfaceID', c.dataInterfaceID);
   formDataEv2.append('CalcParamID', c.addCalcParamID);
   formDataEv2.append('isGetForm', '0');
