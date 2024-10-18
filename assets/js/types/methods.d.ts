@@ -1,5 +1,5 @@
 export interface MethStringObj {
-  wooMetod: string;
+  wooMethod: string;
   wooTime: string;
   wooObjects: string;
   wooZones: string;

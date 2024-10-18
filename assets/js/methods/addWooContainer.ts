@@ -4,153 +4,149 @@ import addMethodToClientTable from './addMethodToClientTable';
 import { settings } from '../api/settings';
 import { TaskType } from '../enums/taskTypes';
 import { Locations } from '../enums/locations';
-
+import { removeCheckMark, showCheckMark } from '../utils/uiUtils';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
- * @param {*} etarget
+ * @param {HTMLElement} etarget - Контейнер модального окна
  */
 const addWooContainer = (etarget: HTMLElement) => {
   const findTaskSubtaskRegion = etarget.querySelector('.tasksubtaskregion');
-  const findTypeOfTasks = etarget.querySelector('.typeoftasks') as HTMLSelectElement;
-  const findTypeOfSubTask = etarget.querySelector('.typeofsubtask') as HTMLSelectElement;
+  const findTypeOfTasks = etarget.querySelector(
+    '.typeoftasks',
+  ) as HTMLSelectElement;
+  const findTypeOfSubTask = etarget.querySelector(
+    '.typeofsubtask',
+  ) as HTMLSelectElement;
   const wooElem = etarget.querySelector('.woo') as HTMLDivElement;
-  const location = etarget.querySelector('.location') as HTMLInputElement;
+  const locationInput = etarget.querySelector('.location') as HTMLInputElement;
+
+
+
   /**
-   * Показ галочки КР
+   * Добавление обработчиков для ввода числовых значений
+   * @param {HTMLInputElement} input - элемент input
    */
-  const showCheckMark = () => {
-    const checkMarkRow = etarget.querySelector('.check-mark');
-    const checkElem = checkMarkRow?.querySelector('.check-elem');
-
-    if (!checkElem && settings.isKRChekboxAvailable) {
-      // Add check mark
-      const checkMarkElem = document.createElement('div');
-      checkMarkElem.classList.add('col-md-1', 'check-elem');
-      checkMarkElem.innerHTML = `<div class="">
-        <label class="fs-0 check-label" for="flexCheckDefault">КР</label>
-        <input class="form-control form-check-input" type="checkbox" value="" id="flexCheckDefault">
-        </div>`;
-
-      checkMarkRow?.append(checkMarkElem);
-    }
-  };
-  /**
-   * Показ таблицы методов в зависимости от наличия их в базе данных
-   */
-  const showWooElem = () => {
-    const wooElemDiv = document.createElement('div') as HTMLDivElement;
-    wooElem!.innerHTML = `
-        <h5 class="modal-title woo-title">Методы контроля</h5>
-        <div class="row work-on-object m-1">
-            <div class="col-md-2 mb-2 p-0 pr-1">
-                <select class="form-select" id="wooMetod" role="tooltip" title="Метод контроля" data-placement="bottom" >
-                        <option value="Не выбрано" selected="selected">Не выбрано</option>
-                </select>
-            </div>
-            <div class="col-md-3 mb-2 pr-0">
-                <input class="form-control" id="wooTime" type="number" placeholder="Продолжительность, ч" step="0.5" min="0.5" max="24" onkeyup="if(this.value<0){this.value = this.value * -1}" />
-            </div>
-            <div class="col mb-2 pr-1">
-                <input class="form-control" id="wooObjects" type="number"  min="1" placeholder="Кол-во объектов" onkeyup="if(this.value<0){this.value = this.value * -1}" />
-            </div>
-            <div class="col mb-2 p-0">
-                <input class="form-control" id="wooZones" type="number" min="1" placeholder="Кол-во зон/стыков" onkeyup="if(this.value<0){this.value = this.value * -1}" />
-            </div>
-            <div class="col-md-1 mb-2">
-                <button class="btn btn-success" type="button" id="addWooMet">
-                <span class="fas fa-plus"></span></button>
-            </div>
-        </div>
-        `;
-    wooElem?.append(wooElemDiv);
-
-    const wooMetod = etarget.querySelector('#wooMetod');
-
-    getMethodsDropDown(wooMetod);
-
-    const wooTitle = document.querySelector('.woo-title');
-
-    const tableElemHeader = document.createElement('div');
-    tableElemHeader.innerHTML = `<div class="table-responsive scrollbar">
-              <table class="table table-hover table-sm methods-table table-bordered">
-                <tbody class="methods-tbody">
-                </tbody>
-             </table>
-        </div>
-        `;
-    wooTitle?.after(tableElemHeader);
-
-    document.addEventListener(
-      'hidden.bs.modal',
-      () => {
-        wooElem!.innerHTML = '';
-      },
-      { once: true },
-    );
-
-    const addWooMetBtn = document.querySelector('#addWooMet');
-
-    addWooMetBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      addMethodToClientTable();
+  const addNumericInputHandler = (input: HTMLInputElement) => {
+    input.addEventListener('input', () => {
+      const value = parseFloat(input.value);
+      if (isNaN(value) || value < 0) {
+        input.value = '';
+      }
     });
   };
 
-  etarget.addEventListener('change', () => {
-    if (location?.value === 'Заказчик') {
-      showCheckMark();
-    } else {
-      const relCheckEl = document.querySelector('.check-elem');
-      if (relCheckEl) {
-        relCheckEl.remove();
-      }
-    }
-  });
   /**
-   * Отслеживание изменений селектора Локация
+   * Показ таблицы методов
    */
-  const watchForLocationChange = () => {
-    findTaskSubtaskRegion?.removeEventListener('change', watchForLocationChange);
-    findTaskSubtaskRegion?.addEventListener('change', watchForLocationChange);
+  const showWooElem = () => {
+    if (!wooElem) return;
+
+    wooElem.innerHTML = `
+      <h5 class="modal-title woo-title">Методы контроля</h5>
+      <div class="row work-on-object m-1">
+        <div class="col-md-2 mb-2 p-0 pr-1">
+          <select class="form-select" id="wooMethod" title="Метод контроля">
+            <option value="Не выбрано" selected>Не выбрано</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-2 pr-0">
+          <input class="form-control" id="wooTime" type="number" placeholder="Продолжительность, ч" step="0.5" min="0.5" max="24" />
+        </div>
+        <div class="col mb-2 pr-1">
+          <input class="form-control" id="wooObjects" type="number" min="1" placeholder="Кол-во объектов" />
+        </div>
+        <div class="col mb-2 p-0">
+          <input class="form-control" id="wooZones" type="number" min="1" placeholder="Кол-во зон/стыков" />
+        </div>
+        <div class="col-md-1 mb-2">
+          <button class="btn btn-success" type="button" id="addWooMethod">
+            <span class="fas fa-plus"></span>
+          </button>
+        </div>
+      </div>
+      <div class="table-responsive scrollbar">
+        <table class="table table-hover table-sm methods-table table-bordered">
+          <tbody class="methods-tbody"></tbody>
+        </table>
+      </div>
+    `;
+
+    const wooMethodSelect = wooElem.querySelector(
+      '#wooMethod',
+    ) as HTMLSelectElement;
+    getMethodsDropDown(wooMethodSelect);
+
+    const wooTimeInput = wooElem.querySelector('#wooTime') as HTMLInputElement;
+    const wooObjectsInput = wooElem.querySelector(
+      '#wooObjects',
+    ) as HTMLInputElement;
+    const wooZonesInput = wooElem.querySelector(
+      '#wooZones',
+    ) as HTMLInputElement;
+
+    addNumericInputHandler(wooTimeInput);
+    addNumericInputHandler(wooObjectsInput);
+    addNumericInputHandler(wooZonesInput);
+
+    const addWooMethodBtn = wooElem.querySelector(
+      '#addWooMethod',
+    ) as HTMLButtonElement;
+    addWooMethodBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      addMethodToClientTable();
+    });
+
+    const modalElement = etarget.closest('.modal');
+    modalElement?.addEventListener(
+      'hidden.bs.modal',
+      () => {
+        wooElem.innerHTML = '';
+      },
+      { once: true },
+    );
+  };
+
+  /**
+   * Обработчик изменения локации
+   */
+  const handleLocationChange = () => {
+    if (locationInput?.value === Locations.CLIENT) {
+      showCheckMark(etarget);
+    } else {
+      removeCheckMark(etarget);
+    }
+
+    if (locationInput?.value === Locations.ON_ROAD) {
+      selRemoveValidation(findTypeOfTasks);
+    }
+  };
+
+  /**
+   * Обработчик изменения типа задачи
+   */
+  const handleTaskTypeChange = () => {
     if (
       findTypeOfTasks?.value === TaskType.TECHNICAL_DIAGNOSTIC ||
       (findTypeOfTasks?.value === TaskType.LABORATORY_WORK &&
         findTypeOfSubTask?.value === TaskType.LABORATORY_CONTROL)
     ) {
       showWooElem();
-      wooElem!.style.display = 'block';
+      wooElem?.style.setProperty('display', 'block');
     } else {
-      wooElem.style.display = 'none';
-      const relCheckEl = document.querySelector('.check-elem');
-      if (relCheckEl) {
-        relCheckEl.remove();
-      }
-    }
-
-    if (location?.value === Locations.ON_ROAD) {
-      selRemoveValidation(findTypeOfTasks);
+      wooElem?.style.setProperty('display', 'none');
+      removeCheckMark(etarget);
     }
   };
 
-  if (findTypeOfTasks) {
-    const initialFLValue =
-      findTypeOfTasks?.options[findTypeOfTasks.selectedIndex]?.value;
-    if (initialFLValue !== TaskType.TECHNICAL_DIAGNOSTIC) {
-      watchForLocationChange();
-    } else if (initialFLValue === TaskType.TECHNICAL_DIAGNOSTIC) {
-      showWooElem();
-      watchForLocationChange();
-    }
-  }
+  // Инициализация
+  locationInput?.addEventListener('change', handleLocationChange);
+  findTypeOfTasks?.addEventListener('change', handleTaskTypeChange);
+  findTypeOfSubTask?.addEventListener('change', handleTaskTypeChange);
 
-  if (location?.value === Locations.CLIENT) {
-    showCheckMark();
-  }
-
-  if (location?.value === Locations.ON_ROAD) {
-    selRemoveValidation(findTypeOfTasks);
-  }
+  // Начальная установка
+  handleLocationChange();
+  handleTaskTypeChange();
 };
 
 export default addWooContainer;

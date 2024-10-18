@@ -1,3 +1,3 @@
 export const settings = {
-  isKRChekboxAvailable: false,
+  isKRChekboxAvailable: process.env.NODE_ENV === 'production' ? false : true,
 };

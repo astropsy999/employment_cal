@@ -1,3 +1,4 @@
+import { settings } from "../api/settings";
 
 /**
  * Получение состояния чекбокса и возврат соответствующего значения.
@@ -36,4 +37,31 @@ export const getKrState = (selector: string): string => {
       kr: document.querySelector('#flexCheckDefault') as HTMLInputElement,
       methodsTable: document.querySelector('.methods-tbody') as HTMLElement,
     };
+  };
+
+    /**
+   * Показ галочки КР
+   */
+  export const showCheckMark = (etarget: HTMLElement) => {
+    const checkMarkRow = etarget.querySelector('.check-mark');
+    const checkElem = checkMarkRow?.querySelector('.check-elem');
+
+    if (!checkElem && settings.isKRChekboxAvailable) {
+      const checkMarkElem = document.createElement('div');
+      checkMarkElem.classList.add('col-md-1', 'check-elem');
+      checkMarkElem.innerHTML = `
+        <div>
+          <label class="fs-0 check-label" for="krCheckbox">КР</label>
+          <input class="form-check-input" type="checkbox" id="krCheckbox">
+        </div>`;
+      checkMarkRow?.append(checkMarkElem);
+    }
+  };
+
+    /**
+   * Удаление галочки КР
+   */
+  export const removeCheckMark = (etarget: HTMLElement) => {
+    const checkElem = etarget.querySelector('.check-elem');
+    checkElem?.remove();
   };

@@ -3,229 +3,302 @@ import { MethStringObj } from '../types/methods';
 import { wooTimeIsOver } from '../utils/mainGlobFunctions';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
-export let wooMetodsArray: MethStringObj[] = [];
+/**
+ * Массив методов, добавленных пользователем
+ */
+export let wooMethodsArray: MethStringObj[] = [];
+
 /**
  * Добавление методов в таблицу на клиенте
  */
 const addMethodToClientTable = () => {
-  const wooMetod = document.querySelector('#wooMetod') as HTMLSelectElement;
-  const wooTime = document.querySelector('#wooTime') as HTMLInputElement;
-  const wooObjects = document.querySelector('#wooObjects') as HTMLInputElement;
-  const wooZones = document.querySelector('#wooZones') as HTMLInputElement;
-  const tHead = document.querySelector('.thead-dark');
-  let isEditMode = false;
-  const eventEditSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
+  const wooMethodSelect = document.querySelector(
+    '#wooMethod',
+  ) as HTMLSelectElement;
+  const wooTimeInput = document.querySelector('#wooTime') as HTMLInputElement;
+  const wooObjectsInput = document.querySelector(
+    '#wooObjects',
+  ) as HTMLInputElement;
+  const wooZonesInput = document.querySelector('#wooZones') as HTMLInputElement;
+  const methodsTable = document.querySelector(
+    '.methods-table',
+  ) as HTMLTableElement;
+  const methodsTbody = methodsTable.querySelector(
+    '.methods-tbody',
+  ) as HTMLTableSectionElement;
 
-  /**
-   * Удаление строки в таблице методов
-   * @param {*} ev
-   */
-  const deleteStringOfTable = (ev: Event) => {
-    const delStr = (ev.target as HTMLElement)?.closest('tr');
-    delStr?.remove();
-  };
-  /**
-   * Создание шапки таблицы методов
-   */
-  const addHeaderOfTable = () => {
-    const metTable = document.querySelector('.methods-table');
-    const tBody = metTable?.querySelector('tbody');
-    const tHead = metTable?.querySelector('thead');
-    if (!tHead) {
-      const addTHead = document.createElement('thead');
-      addTHead.classList.add('thead-dark');
-      addTHead.innerHTML = `<tr>
-                <th scope="col" style="width: 20%">Метод</th>
-                <th class="timeHeaderMeth" scope="col" style="width: 25%">Время, ч</th>
-                <th scope="col" style="width: 25%">Объек&shy;тов, шт</th>
-                <th scope="col" style="width: 21%">Зон/Стыков, шт</th>
-                <th scope="col" style="width: 9%"></th>
-              </tr>`;
-      tBody?.before(addTHead);
-    }
-  };
 
-  if (
-    wooMetod?.value &&
-    wooMetod.value !== 'Не выбрано' &&
-    wooTime?.value &&
-    !wooTimeIsOver()
-  ) {
-    if (!tHead) {
-      addHeaderOfTable();
-    }
-
-    let methStringObj = {
-      wooMetod: wooMetod.value,
-      wooTime: wooTime.value,
-      wooObjects: wooObjects?.value,
-      wooZones: wooZones.value,
-    };
-
-    wooMetodsArray.push(methStringObj);
-
-    let tBody = document.querySelector('.methods-tbody');
-
-    const trElem = document.createElement('tr');
-    trElem.classList.add('hover-actions-trigger');
-    trElem.classList.add('justadded');
-
-    trElem.innerHTML = `<td class="align-middle text-center text-nowrap ed methods-select">
-    <div class="d-flex align-items-center">
-    <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${wooMetod.value}</div>
-    </div>
-    </td>
-    <td class="align-middle text-nowrap ed wootime">${wooTime.value}</td>
-    <td class="align-middle text-nowrap w-auto ed">
-    ${wooObjects.value}
-    </td>
-    <td class="align-middle text-nowrap ed">${wooZones.value}</td>
-    <td class="align-middle text-nowrap">
-    <div class="btn-group btn-group hover-actions methods-table-hover">
-    <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать"><span class="fas fa-edit" style="color: green;"></span></button>
-    <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить"><span class="fas fa-trash-alt" style="color: red;"></span></button>
-    </div>
-    </td>
-    `;
-
-    tBody?.append(trElem);
-
-    wooMetod.value =  Methods.NOT_SELECTED;
-    wooTime.value = '';
-    wooObjects.value = '';
-    wooZones.value = '';
-    wooMetod.classList.remove('is-invalid');
-    wooTime.classList.remove('is-invalid');
-  } else if (!wooMetod.value || wooMetod.value === Methods.NOT_SELECTED) {
-    isInvalidElem(wooMetod);
-    wooMetod.addEventListener('change', () => {
-      if (wooMetod.value !== Methods.NOT_SELECTED) {
-        isValidElem(wooMetod);
-      }
-    });
-  } else if (!wooTime.value || wooTimeIsOver()) {
-    isInvalidElem(wooTime);
-    isInvalidElem(eventEditSpentTime);
-
-    wooTime.addEventListener('focus', () => {
-      isValidElem(wooTime);
-      isValidElem(eventEditSpentTime);
-    });
+  if (!validateInputs(wooMethodSelect, wooTimeInput)) {
+    return;
   }
 
-  const strEditBtnArr = Array.from(document.querySelectorAll('.edit-string'));
-  const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
+  // Создаем заголовок таблицы, если его еще нет
+  createTableHeader(methodsTable);
 
-  strEditBtnArr.forEach((item) => {
-    item.addEventListener('click', (e) => {
-      editStringOfTable(e);
-    });
-  });
-
-  delStrBtnArr.forEach((item) => {
-    item.addEventListener('click', (e) => {
-      deleteStringOfTable(e);
-    });
-  });
-
-  const editStringOfTable = (ev: Event) => {
-    if (!isEditMode) {
-      isEditMode = true;
-      const edString = (ev.target as HTMLElement).closest('tr');
-      let tdArr: HTMLElement[] = [];
-      if (edString) {
-        tdArr = Array.from(edString.querySelectorAll('td'));
-      }
-      tdArr.forEach((td) => {
-        if (td.classList.contains('ed')) {
-          if (!td.classList.contains('methods-select')) {
-            td.innerHTML = `<input class="form-control" type="number" min="1" value="${td.innerText}" onkeyup="if(this.value<0){this.value = this.value * -1}"></input>`;
-          } else {
-            const newVal = td.innerText;
-            const selectElem = wooMetod.innerHTML;
-            td.innerHTML = `<select class="form-select" id="wooMetodEdit">${selectElem}</select>`;
-            const editSelMeth = document.querySelector('#wooMetodEdit') as HTMLSelectElement;
-            editSelMeth.value = newVal;
-          }
-        } else {
-          td.innerHTML = `<div class="btn-group btn-group">
-                <button class="btn btn-light pe-2 save-edited" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Сохранить"><i class="fa fa-check" style="color: green;"></i></button>
-                </div>`;
-        }
-      });
-      const saveEditedBtn = document.querySelector('.save-edited') as HTMLButtonElement;
-      saveEditedBtn.addEventListener('click', (e) => {
-        const editedString = (e.target as HTMLElement)?.closest('tr');
-        const metSelTd = editedString?.querySelector('.methods-select');
-        const selMetSel = metSelTd?.querySelector('select');
-
-        if (selMetSel && selMetSel.value !== Methods.NOT_SELECTED) {
-          switchOffEditMode(e);
-        } else {
-          // selMetSel?.classList.add('is-invalid');
-          isInvalidElem(selMetSel!);
-          selMetSel?.addEventListener('change', () => {
-            if (selMetSel && selMetSel.value !== Methods.NOT_SELECTED) {
-              isValidElem(selMetSel);
-            } else {
-              isInvalidElem(selMetSel);
-            }
-          });
-        }
-      });
-      /**
-       * Выключение режима редактирования строки таблицы методов
-       * @param {*} ev
-       */
-      const switchOffEditMode = (ev: Event) => {
-        const editedString = (ev.target as HTMLElement)?.closest('tr');
-        let tdArray: HTMLTableCellElement[] = [];
-
-        if (editedString) {
-          tdArray = Array.from(editedString.querySelectorAll('td'));
-        }
-
-        tdArray.forEach((tdItem) => {
-          if (tdItem.classList.contains('ed')) {
-            if (tdItem.classList.contains('methods-select')) {
-              const selectElement = tdItem.children[0] as HTMLSelectElement;
-              tdItem.innerHTML = `<div class="d-flex align-items-center">
-                            <div class="ms-2">${selectElement.value}</div></div>`;
-            } else {
-              const inputElement = tdItem.children[0] as HTMLInputElement;
-              tdItem.innerText = inputElement.value;
-            }
-          } else {
-            tdItem.innerHTML = `<div class="btn-group btn-group hover-actions methods-table-hover">
-                <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать"><span class="fas fa-edit" style="color: green;"></span></button>
-                <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить"><span class="fas fa-trash-alt" style="color: red;"></span></button>
-                </div>`;
-          }
-        });
-
-        const editStringBtnArr = Array.from(document.querySelectorAll('.edit-string'));
-        const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
-
-        editStringBtnArr.forEach((item) => {
-          item.addEventListener('click', (e) => {
-            editStringOfTable(e);
-          });
-        });
-        delStrBtnArr.forEach((item) => {
-          item.addEventListener('click', (e) => {
-            deleteStringOfTable(e);
-          });
-        });
-        isEditMode = false;
-      };
-    }
-
-    delStrBtnArr.forEach((item) => {
-      item.addEventListener('click', (e) => {
-        deleteStringOfTable(e);
-      });
-    });
+  // Создаем объект метода
+  const methodObj: MethStringObj = {
+    wooMethod: wooMethodSelect.value,
+    wooTime: wooTimeInput.value,
+    wooObjects: wooObjectsInput?.value || '',
+    wooZones: wooZonesInput?.value || '',
   };
+
+  // Добавляем метод в массив
+  wooMethodsArray.push(methodObj);
+
+  // Добавляем строку в таблицу
+  const newRow = createMethodRow(methodObj);
+  methodsTbody.appendChild(newRow);
+
+  // Очищаем поля ввода
+  resetInputs(wooMethodSelect, wooTimeInput, wooObjectsInput, wooZonesInput);
+
+  // Добавляем обработчики событий
+  addRowEventListeners(newRow);
+};
+
+/**
+ * Валидация входных данных
+ */
+const validateInputs = (
+  wooMethodSelect: HTMLSelectElement,
+  wooTimeInput: HTMLInputElement,
+): boolean => {
+  let isValid = true;
+    const eventEditSpentTime = document.querySelector(
+      '#eventEditSpentTime',
+    ) as HTMLInputElement;
+
+  if (
+    !wooMethodSelect.value ||
+    wooMethodSelect.value === Methods.NOT_SELECTED
+  ) {
+    isInvalidElem(wooMethodSelect);
+    wooMethodSelect.addEventListener('change', () => {
+      if (wooMethodSelect.value !== Methods.NOT_SELECTED) {
+        isValidElem(wooMethodSelect);
+      }
+    });
+    isValid = false;
+  }
+
+  if (!wooTimeInput.value || wooTimeIsOver()) {
+    isInvalidElem(wooTimeInput);
+    isInvalidElem(eventEditSpentTime);
+
+    wooTimeInput.addEventListener('focus', () => {
+      isValidElem(wooTimeInput);
+      isValidElem(eventEditSpentTime);
+    });
+    isValid = false;
+  }
+
+  return isValid;
+};
+
+/**
+ * Создание заголовка таблицы методов
+ */
+const createTableHeader = (methodsTable: HTMLTableElement) => {
+  const existingHeader = methodsTable.querySelector('thead');
+  if (!existingHeader) {
+    const tHead = methodsTable.createTHead();
+    tHead.classList.add('thead-dark');
+    tHead.innerHTML = `<tr>
+      <th scope="col" style="width: 20%">Метод</th>
+      <th class="timeHeaderMeth" scope="col" style="width: 25%">Время, ч</th>
+      <th scope="col" style="width: 25%">Объек&shy;тов, шт</th>
+      <th scope="col" style="width: 21%">Зон/Стыков, шт</th>
+      <th scope="col" style="width: 9%"></th>
+    </tr>`;
+  }
+};
+
+/**
+ * Создание строки таблицы для метода
+ */
+const createMethodRow = (methodObj: MethStringObj): HTMLTableRowElement => {
+  const trElem = document.createElement('tr');
+  trElem.classList.add('hover-actions-trigger', 'justadded');
+
+  trElem.innerHTML = `
+    <td class="align-middle text-center text-nowrap ed methods-select">
+      <div class="d-flex align-items-center">
+        <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${methodObj.wooMethod}</div>
+      </div>
+    </td>
+    <td class="align-middle text-nowrap ed wootime">${methodObj.wooTime}</td>
+    <td class="align-middle text-nowrap w-auto ed">${methodObj.wooObjects}</td>
+    <td class="align-middle text-nowrap ed">${methodObj.wooZones}</td>
+    <td class="align-middle text-nowrap">
+      <div class="btn-group btn-group hover-actions methods-table-hover">
+        <button class="btn btn-light pe-2 edit-string" type="button" title="Редактировать">
+          <span class="fas fa-edit" style="color: green;"></span>
+        </button>
+        <button class="btn btn-light ps-2 delete-string" type="button" title="Удалить">
+          <span class="fas fa-trash-alt" style="color: red;"></span>
+        </button>
+      </div>
+    </td>
+  `;
+
+  return trElem;
+};
+
+/**
+ * Сброс значений полей ввода
+ */
+const resetInputs = (
+  wooMethodSelect: HTMLSelectElement,
+  wooTimeInput: HTMLInputElement,
+  wooObjectsInput: HTMLInputElement,
+  wooZonesInput: HTMLInputElement,
+) => {
+  wooMethodSelect.value = Methods.NOT_SELECTED;
+  wooTimeInput.value = '';
+  wooObjectsInput.value = '';
+  wooZonesInput.value = '';
+  wooMethodSelect.classList.remove('is-invalid');
+  wooTimeInput.classList.remove('is-invalid');
+};
+
+/**
+ * Добавление обработчиков событий к строке таблицы
+ */
+const addRowEventListeners = (row: HTMLTableRowElement) => {
+  const editButton = row.querySelector('.edit-string') as HTMLButtonElement;
+  const deleteButton = row.querySelector('.delete-string') as HTMLButtonElement;
+
+  editButton.addEventListener('click', (e) => {
+    editMethodRow(e, row);
+  });
+
+  deleteButton.addEventListener('click', () => {
+    deleteMethodRow(row);
+  });
+};
+
+/**
+ * Редактирование строки таблицы методов
+ */
+const editMethodRow = (e: Event, row: HTMLTableRowElement) => {
+  const isEditMode = row.classList.contains('edit-mode');
+  if (isEditMode) return;
+
+  row.classList.add('edit-mode');
+
+  const cells = row.querySelectorAll('td');
+  cells.forEach((cell) => {
+    if (cell.classList.contains('ed')) {
+      if (cell.classList.contains('methods-select')) {
+        const currentValue = cell.textContent?.trim() || '';
+        const selectElement = createMethodSelect(currentValue);
+        cell.innerHTML = '';
+        cell.appendChild(selectElement);
+      } else {
+        const currentValue = cell.textContent?.trim() || '';
+        const inputElement = document.createElement('input');
+        inputElement.classList.add('form-control');
+        inputElement.type = 'number';
+        inputElement.min = '1';
+        inputElement.value = currentValue;
+        cell.innerHTML = '';
+        cell.appendChild(inputElement);
+      }
+    } else {
+      cell.innerHTML = `
+        <div class="btn-group btn-group">
+          <button class="btn btn-light pe-2 save-edited" type="button" title="Сохранить">
+            <i class="fa fa-check" style="color: green;"></i>
+          </button>
+        </div>
+      `;
+    }
+  });
+
+  const saveButton = row.querySelector('.save-edited') as HTMLButtonElement;
+  saveButton.addEventListener('click', () => {
+    saveEditedRow(row);
+  });
+};
+
+/**
+ * Создание селекта для выбора метода при редактировании
+ */
+const createMethodSelect = (currentValue: string): HTMLSelectElement => {
+  const wooMethodSelect = document.querySelector(
+    '#wooMethod',
+  ) as HTMLSelectElement;
+  const selectElement = wooMethodSelect.cloneNode(true) as HTMLSelectElement;
+  selectElement.value = currentValue;
+
+  // Обработка валидации при изменении значения
+  selectElement.addEventListener('change', () => {
+    if (selectElement.value !== Methods.NOT_SELECTED) {
+      isValidElem(selectElement);
+    } else {
+      isInvalidElem(selectElement);
+    }
+  });
+
+  return selectElement;
+};
+
+/**
+ * Сохранение отредактированной строки таблицы
+ */
+const saveEditedRow = (row: HTMLTableRowElement) => {
+  const selectElement = row.querySelector(
+    '.methods-select select',
+  ) as HTMLSelectElement;
+  const inputElements = row.querySelectorAll('input');
+
+  if (selectElement.value === Methods.NOT_SELECTED) {
+    isInvalidElem(selectElement);
+    return;
+  }
+
+  row.classList.remove('edit-mode');
+
+  // Обновляем значения в ячейках
+  const cells = row.querySelectorAll('td');
+  cells.forEach((cell) => {
+    if (cell.classList.contains('ed')) {
+      if (cell.classList.contains('methods-select')) {
+        const methodValue = selectElement.value;
+        cell.innerHTML = `
+          <div class="d-flex align-items-center">
+            <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${methodValue}</div>
+          </div>
+        `;
+      } else {
+        const inputElement = cell.querySelector('input') as HTMLInputElement;
+        cell.textContent = inputElement.value;
+      }
+    } else {
+      cell.innerHTML = `
+        <div class="btn-group btn-group hover-actions methods-table-hover">
+          <button class="btn btn-light pe-2 edit-string" type="button" title="Редактировать">
+            <span class="fas fa-edit" style="color: green;"></span>
+          </button>
+          <button class="btn btn-light ps-2 delete-string" type="button" title="Удалить">
+            <span class="fas fa-trash-alt" style="color: red;"></span>
+          </button>
+        </div>
+      `;
+    }
+  });
+
+  // Обновляем обработчики событий
+  addRowEventListeners(row);
+};
+
+/**
+ * Удаление строки таблицы методов
+ */
+const deleteMethodRow = (row: HTMLTableRowElement) => {
+  row.remove();
+  // Здесь можно добавить удаление элемента из массива wooMethodsArray, если требуется
 };
 
 export default addMethodToClientTable;
