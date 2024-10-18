@@ -26,7 +26,7 @@ export interface MainEventMethods {
     idDB: string;
     thirteenthCol: string;
     startDate: string;
-    fourteenthCol: string;      
+    fourteenthCol: string;
     endDate: string;
     fifteenthCol: string;
     locationVal: string;
@@ -43,3 +43,15 @@ export interface MainEventMethods {
     convertDateTime: (param: string)=>string;
     krBase: string,
   }
+
+type MethodsParams = {
+  duration: string;
+  objects: string;
+  zones: string;
+}
+
+export interface MethodsArr {
+  method: string;
+  params: MethodsParams;
+}
+

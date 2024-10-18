@@ -6,7 +6,7 @@ import {
   refreshBtnAction,
   transformToMethods,
 } from '../utils/mainGlobFunctions';
-import { MainEventMethods } from '../types/events';
+import { MainEventMethods, MethodsArr } from '../types/events';
 /**
  * Функция для добавления события при наличии в задаче метода или таблицы методов
  * @param {*} firstEventObj
@@ -15,7 +15,7 @@ import { MainEventMethods } from '../types/events';
  */
 const addEventWithMethods = (
   firstEventObj: MainEventMethods,
-  methodsArray: any[],
+  methodsArray: MethodsArr[],
   setViewAndDateToLS: (calendar: any) => void,
 ) => {
 
@@ -170,6 +170,7 @@ const addEventWithMethods = (
       // Добавляем Методы
 
       methodsArray.forEach((element) => {
+
         const { method, params } = element;
 
         const { duration, objects, zones } = params;
