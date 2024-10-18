@@ -1,3 +1,4 @@
+// addEventWithMethods.ts
 import { Modal } from 'bootstrap';
 import { buttonLoader } from '../ui/buttonLoader';
 import { tempLoader } from '../ui/tempLoader';
@@ -7,18 +8,20 @@ import {
   transformToMethods,
 } from '../utils/mainGlobFunctions';
 import { MainEventMethods, MethodsArr } from '../types/events';
+import addMethodApi from '../api/addMethodApi';
+
+
 /**
  * Функция для добавления события при наличии в задаче метода или таблицы методов
- * @param {*} firstEventObj
- * @param {*} methodsArray
- * @param {*} setViewAndDateToLS
+ * @param {MainEventMethods} firstEventObj - Объект с основными данными события.
+ * @param {MethodsArr[]} methodsArray - Массив методов для добавления.
+ * @param {(calendar: any) => void} setViewAndDateToLS - Функция для установки вида и даты в localStorage.
  */
 const addEventWithMethods = (
   firstEventObj: MainEventMethods,
   methodsArray: MethodsArr[],
   setViewAndDateToLS: (calendar: any) => void,
 ) => {
-
   const {
     OBJTYPEID,
     addCalcParamID,
@@ -58,12 +61,17 @@ const addEventWithMethods = (
     taskObjVal,
     kindOfTasksVal,
     kindOfSubTaskVal,
-
   } = firstEventObj;
 
+  const eventTaskModalBtn = document.querySelector(
+    '#addTaskToCalBtn',
+  ) as HTMLButtonElement;
+  const addEventModal = document.querySelector(
+    '#addEventModal',
+  ) as HTMLFormElement;
+
   let formDataMet = new FormData();
-  const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn') as HTMLButtonElement;
-  const  addEventModal = document.querySelector('#addEventModal') as HTMLFormElement;
+  // Добавление данных в formDataMet (остается без изменений)
 
   formDataMet.append('ObjTypeID', OBJTYPEID);
   formDataMet.append('ParentID', parentID);
@@ -159,111 +167,68 @@ const addEventWithMethods = (
     method: 'post',
     body: formDataMet,
   })
-    .then((response) => {
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((data) => {
-      const { object, parent } = data.results[0];
+      const { object } = data.results[0];
       buttonLoader(eventTaskModalBtn, true);
       Modal.getInstance(addEventModal)!.hide();
 
-      // Добавляем Методы
+      // Создаем массив промисов для добавления методов
+      const methodPromises = methodsArray.map((element) =>
+        addMethodApi(object, element),
+      );
 
-      methodsArray.forEach((element) => {
+      // Ждем, пока все методы будут добавлены
+      Promise.all(methodPromises)
+        .then(() => {
+          const isRootUser =
+            localStorage.getItem('managerName') ===
+            localStorage.getItem('selectedUserName');
 
-        const { method, params } = element;
+          // Добавляем событие в календарь без перезагрузки
+          calendar.addEvent({
+            title: titleVal,
+            allDay: false,
+            classNames: isRootUser
+              ? 'bg-soft-secondary skeleton'
+              : 'bg-soft-primary',
+            start: convertDateTime(startDate),
+            end: convertDateTime(endDate),
+            extendedProps: {
+              delID: object,
+              director: taskCreatorVal,
+              factTime: spentTimeVal,
+              fullDescription: longDeskVal,
+              notes: eventNotesVal,
+              object: taskObjVal,
+              source: eventSourceVal,
+              location: locationVal,
+              employment: employmentVal,
+              taskTypeNew:
+                kindOfTasksVal === 'Не выбрано' ? '' : kindOfTasksVal,
+              subTaskTypeNew:
+                kindOfSubTaskVal === 'Не выбрано' ? '' : kindOfSubTaskVal,
+              isApproved: '',
+              methods: transformToMethods(methodsArray, object),
+            },
+          });
 
-        const { duration, objects, zones } = params;
-
-        let formDataaddMet = new FormData();
-
-        formDataaddMet.append('ObjTypeID', '1149');
-        formDataaddMet.append('ParentID', object);
-        formDataaddMet.append('Data[0][name]', '8764');
-        formDataaddMet.append('Data[0][value]', method);
-        formDataaddMet.append('Data[0][isName]', 'true');
-        formDataaddMet.append('Data[0][maninp]', 'false');
-        formDataaddMet.append('Data[0][GroupID]', '2549');
-        formDataaddMet.append('Data[1][name]', '8767');
-        formDataaddMet.append('Data[1][value]', duration);
-        formDataaddMet.append('Data[1][isName]', 'false');
-        formDataaddMet.append('Data[1][maninp]', 'false');
-        formDataaddMet.append('Data[1][GroupID]', '2549');
-        formDataaddMet.append('Data[2][name]', '8766');
-        formDataaddMet.append('Data[2][value]', objects);
-        formDataaddMet.append('Data[2][isName]', 'false');
-        formDataaddMet.append('Data[2][maninp]', 'false');
-        formDataaddMet.append('Data[2][GroupID]', '2549');
-        formDataaddMet.append('Data[3][name]', '8765');
-        formDataaddMet.append('Data[3][value]', zones);
-        formDataaddMet.append('Data[3][isName]', 'false');
-        formDataaddMet.append('Data[3][maninp]', 'false');
-        formDataaddMet.append('Data[3][GroupID]', '2549');
-        formDataaddMet.append('InterfaceID', '1685');
-        formDataaddMet.append('CalcParamID', '-1');
-        formDataaddMet.append('isGetForm', '0');
-        formDataaddMet.append('ImportantInterfaceID', '');
-        formDataaddMet.append('Ignor39', '1');
-        formDataaddMet.append('templ_mode', '0');
-
-        if (method !== 'Не выбрано' && duration !== '') {
-          fetch(srvv + createNodeUrl, {
-            credentials: 'include',
-            method: 'post',
-            body: formDataaddMet,
-          })
-            .then((response) => {
-              return response.json();
-            })
-            .then((data) => {
-              const { object, parent } = data.results[0];
-
-              // setViewAndDateToLS(calendar);
-            });
-        } else {
-          // setViewAndDateToLS(calendar);
-        }
-      });
-
-      const isRootUser =
-        localStorage.getItem('managerName') ===
-        localStorage.getItem('selectedUserName');
-
-      // Добавляем событие без перезагрузки
-
-      calendar.addEvent({
-        title: titleVal,
-        allDay: false,
-        classNames: isRootUser
-          ? 'bg-soft-secondary skeleton'
-          : 'bg-soft-primary',
-        start: convertDateTime(startDate),
-        end: convertDateTime(endDate),
-        extendedProps: {
-          delID: object,
-          director: taskCreatorVal,
-          factTime: spentTimeVal,
-          fullDescription: longDeskVal,
-          notes: eventNotesVal,
-          object: taskObjVal,
-          source: eventSourceVal,
-          location: locationVal,
-          employment: employmentVal,
-          taskTypeNew: kindOfTasksVal === 'Не выбрано' ? '' : kindOfTasksVal,
-          subTaskTypeNew:
-            kindOfSubTaskVal === 'Не выбрано' ? '' : kindOfSubTaskVal,
-          isApproved: '',
-          methods: transformToMethods(methodsArray, object),
-        },
-      });
-
-      if (isRootUser) {
-        tempLoader(true);
-        setTimeout(() => {
-          buttonLoader(eventTaskModalBtn, false);
-          refreshBtnAction(calendar);
-        }, 999);
-      }
+          if (isRootUser) {
+            tempLoader(true);
+            setTimeout(() => {
+              buttonLoader(eventTaskModalBtn, false);
+              refreshBtnAction(calendar);
+            }, 999);
+          }
+        })
+        .catch((error) => {
+          console.error('Ошибка при добавлении методов:', error);
+          // Обработка ошибки, если необходимо
+        });
+    })
+    .catch((error) => {
+      console.error('Ошибка при создании события:', error);
+      // Обработка ошибки, если необходимо
     });
 };
 
