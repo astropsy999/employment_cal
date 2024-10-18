@@ -1,23 +1,31 @@
 import { Methods } from '../enums/methods';
 import { EventInfo } from '../types/events';
 import { MethodData } from '../types/methods';
-import { wooTimeIsOver } from '../utils/mainGlobFunctions';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
+import saveEditedMethodToBaseApi from '../api/saveEditedMethodToBaseApi';
+import { getMethodsDropDown } from '../api/getDropDownData';
 
 /**
  * Показ/скрытие таблицы с методами
- * @param {*} eventInfo
- * @param {*} wooElem
- * @param {*} api
+ * @param {EventInfo} eventInfo
+ * @param {HTMLElement} wooElem
+ * @param {object} api
  */
-const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api: {[key: string]: string}) => {
+const showMethodsTable = (
+  eventInfo: EventInfo,
+  wooElem: HTMLElement,
+  api: { [key: string]: string },
+) => {
   const { srvv, addValueObjTrue, deleteNodeURL } = api;
   let isEditMode = false;
-  const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn');
+  const editSaveTaskBtn = document.querySelector(
+    '#editSaveTaskBtn',
+  ) as HTMLButtonElement | null;
 
   const methodsArray = eventInfo.extendedProps.methods;
   const taskTypeNew = eventInfo.extendedProps.taskTypeNew;
   const subTaskTypeNew = eventInfo.extendedProps.subTaskTypeNew;
+
   if (
     methodsArray &&
     (taskTypeNew === 'Техническое диагностирование' ||
@@ -43,17 +51,16 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api: {[key
     wooElem.after(tableElemHeader);
   }
 
-  let tBody = document.querySelector('.methods-tbody');
-  if (tBody) {
-    if (methodsArray) {
-      methodsArray.forEach((tablelem) => {
-        const method = Object.keys(tablelem)[0];
-        const methodParams = Object.values(tablelem)[0];
+  const tBody = document.querySelector('.methods-tbody') as HTMLElement;
+  if (tBody && methodsArray) {
+    methodsArray.forEach((tablelem) => {
+      const method = Object.keys(tablelem)[0];
+      const methodParams = Object.values(tablelem)[0];
 
-        const trElem = document.createElement('tr');
-        trElem.setAttribute('editid', methodParams['editID']);
-        trElem.classList.add('hover-actions-trigger');
-        trElem.innerHTML = `<td class="align-middle text-center text-nowrap ed methods-select">
+      const trElem = document.createElement('tr');
+      trElem.setAttribute('editid', methodParams['editID']);
+      trElem.classList.add('hover-actions-trigger');
+      trElem.innerHTML = `<td class="align-middle text-center text-nowrap ed methods-select">
                       <div class="d-flex align-items-center">
                          <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${method}</div>
                        </div>
@@ -65,111 +72,96 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api: {[key
                      <td class="align-middle text-nowrap ed">${methodParams['zones']}</td>
                      <td class="align-middle text-nowrap">
                      <div class="btn-group btn-group hover-actions methods-table-hover">
-                     <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать"><span class="fas fa-edit" style="color: green;"></span></button>
-                     <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить"><span class="fas fa-trash-alt" style="color: red;"></span></button>
+                     <button class="btn btn-light pe-2 edit-string" type="button" title="Редактировать"><span class="fas fa-edit" style="color: green;"></span></button>
+                     <button class="btn btn-light ps-2 delete-string" type="button" title="Удалить"><span class="fas fa-trash-alt" style="color: red;"></span></button>
                      </div>
                      </td>
                      `;
 
-        tBody.append(trElem);
-      });
-    }
+      tBody.append(trElem);
+    });
   }
+
   /**
-   * Отправка отредактированных методов в базу данных
-   * @param {*} methData
+   * Редактирование строки методов в таблице методов
+   * @param {Event} ev
    */
-  const sendEditedMethodToBase = (methData: MethodData) => {
-    const { methVal, durVal, objqVal, zonesVal, editID } = methData;
-
-    const editEventModal = document.querySelector('#editEventModal');
-    const delID = editEventModal?.getAttribute('delID');
-
-    const methodsTbody = editEventModal?.querySelector('.methods-tbody');
-
-    function sumUneditedMethodsTime() {
-      let tableRows = methodsTbody?.querySelectorAll('tr.hover-actions-trigger');
-      let sum = 0;
-      tableRows?.forEach((row) => {
-        let secondColumnValue = parseInt(row.children[1].textContent!);
-        if (!isNaN(secondColumnValue)) {
-          sum += secondColumnValue;
+  const editStringOfTableBase = (ev: Event) => {
+    if (!isEditMode) {
+      isEditMode = true;
+      const edString = (ev.target as HTMLElement)?.closest('tr');
+      let tdArr: HTMLTableCellElement[] = [];
+      if (edString) {
+        tdArr = Array.from(edString.querySelectorAll('td'));
+      }
+      tdArr.forEach((td) => {
+        if (td.classList.contains('ed')) {
+          if (!td.classList.contains('methods-select')) {
+            const value = td.innerText.trim();
+            td.innerHTML = `<input class="form-control" type="number" min="1" value="${value}">`;
+          } else {
+            const newVal = td.innerText.trim();
+            const selectElem = document.createElement('select');
+            selectElem.classList.add('form-select');
+            selectElem.id = 'wooMethodEdit';
+            getMethodsDropDown(selectElem);
+            td.innerHTML = '';
+            td.appendChild(selectElem);
+            selectElem.value = newVal;
+          }
+        } else {
+          td.innerHTML = `<div class="btn-group btn-group">
+                    <button class="btn btn-light pe-2 save-edited" type="button" title="Сохранить"><i class="fa fa-check" style="color: green;"></i></button>
+                    </div>`;
         }
       });
-      return sum;
-    }
 
-    const allMethodsTimeSum = sumUneditedMethodsTime();
-    const editedSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
+      const saveEditedBtn = edString?.querySelector('.save-edited') as HTMLButtonElement;
+      saveEditedBtn.addEventListener('click', (e) => {
+        const editedSpentTime = document.querySelector(
+          '#eventEditSpentTime',
+        ) as HTMLInputElement;
+        const editedString = (e.target as HTMLElement)?.closest('tr');
 
-    const editedSpentTimeValue = (document.querySelector(
-      '#eventEditSpentTime',
-    ) as HTMLInputElement)?.value;
+        const metSelTd = editedString?.querySelector('.methods-select');
+        const selMetSel = metSelTd?.querySelector('select');
 
-    if (allMethodsTimeSum > +editedSpentTimeValue) {
-      isInvalidElem(editedSpentTime);
+        if (selMetSel?.value !== Methods.NOT_SELECTED) {
+          const wooTimes = document.querySelectorAll('.wootime');
+          let totalWooTime = 0;
 
-      editedSpentTime.addEventListener('change', () => {});
-
-      const timeHeader = document.querySelector(
-        'th[scope="col"]:nth-of-type(2)',
-      ) as HTMLTableCellElement;
-      timeHeader.textContent = `Время методов не может быть > ${editedSpentTimeValue}ч`;
-      timeHeader.style.border = '2px solid red';
-      timeHeader.style.color = 'red';
-      editSaveTaskBtn?.setAttribute('disabled', 'disabled');
-
-      return;
-    }
-
-    let formDataEdMeth = new FormData();
-
-    formDataEdMeth.append('ID', editID);
-    formDataEdMeth.append('TypeID', '1149');
-    formDataEdMeth.append('Data[0][name]', '8764');
-    formDataEdMeth.append('Data[0][value]', methVal);
-    formDataEdMeth.append('Data[0][isName]', 'true');
-    formDataEdMeth.append('Data[0][maninp]', 'false');
-    formDataEdMeth.append('Data[0][GroupID]', '2549');
-    formDataEdMeth.append('Data[1][name]', '8767');
-    formDataEdMeth.append('Data[1][value]', durVal);
-    formDataEdMeth.append('Data[1][isName]', 'false');
-    formDataEdMeth.append('Data[1][maninp]', 'false');
-    formDataEdMeth.append('Data[1][GroupID]', '2549');
-    formDataEdMeth.append('Data[2][name]', '8766');
-    formDataEdMeth.append('Data[2][value]', objqVal);
-    formDataEdMeth.append('Data[2][isName]', 'false');
-    formDataEdMeth.append('Data[2][maninp]', 'false');
-    formDataEdMeth.append('Data[2][GroupID]', '2549');
-    formDataEdMeth.append('Data[3][name]', '8765');
-    formDataEdMeth.append('Data[3][value]', zonesVal);
-    formDataEdMeth.append('Data[3][isName]', 'false');
-    formDataEdMeth.append('Data[3][maninp]', 'false');
-    formDataEdMeth.append('Data[3][GroupID]', '2549');
-    formDataEdMeth.append('ParentObjID', delID!);
-    formDataEdMeth.append('CalcParamID', '-1');
-    formDataEdMeth.append('InterfaceID', '1685');
-    formDataEdMeth.append('ImportantInterfaceID', '');
-    formDataEdMeth.append('templ_mode', 'false');
-    formDataEdMeth.append('Ignor39', '1');
-
-    fetch(srvv + addValueObjTrue, {
-      credentials: 'include',
-      method: 'post',
-      body: formDataEdMeth,
-    })
-      .then((response) => {
-        console.log('Данные метода-сохранены');
-
-        return response.json();
-      })
-      .catch(function (error) {
-        console.log('Ошибка отправки данных по методу', error);
+          wooTimes.forEach((time) => {
+            let content = time.innerHTML;
+            if (content.includes('<input')) {
+              let value = (time.querySelector('input') as HTMLInputElement)?.value;
+              totalWooTime += parseFloat(value || '0');
+            } else {
+              totalWooTime += parseFloat(content);
+            }
+          });
+          if (totalWooTime <= parseFloat(editedSpentTime?.value)) {
+            switchOffEditModeBase(e);
+            isValidElem(editedSpentTime);
+          } else {
+            isInvalidElem(editedSpentTime);
+          }
+        } else {
+          isInvalidElem(selMetSel);
+          selMetSel.addEventListener('change', () => {
+            if (selMetSel.value !== Methods.NOT_SELECTED) {
+              isValidElem(selMetSel);
+            } else {
+              isInvalidElem(selMetSel);
+            }
+          });
+        }
       });
+    }
   };
+
   /**
-   * Отправка отредактированной строки в таблице методов в базу данных
-   * @param {*} ev
+   * Выход из режима редактирования и сохранение изменений
+   * @param {Event} ev
    */
   const switchOffEditModeBase = (ev: Event) => {
     let edMetDataObj: MethodData = {} as MethodData;
@@ -183,141 +175,81 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api: {[key
       tdArray = Array.from(editedString.querySelectorAll('td'));
     }
 
-    tdArray.forEach((tdItem, idx) => {
+    tdArray.forEach((tdItem) => {
       if (tdItem.classList.contains('ed')) {
-        const tdItemChildren=tdItem.children[0] as HTMLInputElement
+        const tdItemChildren = tdItem.children[0] as HTMLInputElement | HTMLSelectElement;
 
         if (tdItem.classList.contains('methods-select')) {
           tdItem.innerHTML = `<div class="d-flex align-items-center">
-                        <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${tdItemChildren.value}</div></div>`;
+                            <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${tdItemChildren.value}</div></div>`;
         } else {
           tdItem.innerText = tdItemChildren.value;
         }
       } else {
         tdItem.innerHTML = `<div class="btn-group btn-group hover-actions methods-table-hover">
-                <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать"><span class="fas fa-edit" style="color: green;"></span></button>
-                <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить"><span class="fas fa-trash-alt" style="color: red;"></span></button>
-                </div>`;
+                    <button class="btn btn-light pe-2 edit-string" type="button" title="Редактировать"><span class="fas fa-edit" style="color: green;"></span></button>
+                    <button class="btn btn-light ps-2 delete-string" type="button" title="Удалить"><span class="fas fa-trash-alt" style="color: red;"></span></button>
+                    </div>`;
       }
-      edMetDataObj['methVal'] = tdArray[0].innerText;
-      edMetDataObj['durVal'] = tdArray[1].innerText;
-      edMetDataObj['objqVal'] = tdArray[2].innerText;
-      edMetDataObj['zonesVal'] = tdArray[3].innerText;
     });
 
-    const editStringBtnArr = Array.from(document.querySelectorAll('.edit-string'));
-    const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
+    edMetDataObj['methVal'] = tdArray[0].innerText.trim();
+    edMetDataObj['durVal'] = tdArray[1].innerText.trim();
+    edMetDataObj['objqVal'] = tdArray[2].innerText.trim();
+    edMetDataObj['zonesVal'] = tdArray[3].innerText.trim();
 
-    editStringBtnArr.forEach((item) => {
-      item.addEventListener('click', (e) => {
-        editStringOfTableBase(e);
-      });
+    // Добавляем обработчики событий заново
+    const editStringBtn = editedString?.querySelector('.edit-string') as HTMLButtonElement;
+    const deleteStringBtn = editedString?.querySelector('.delete-string') as HTMLButtonElement;
+
+    editStringBtn.addEventListener('click', (e) => {
+      editStringOfTableBase(e);
     });
-    delStrBtnArr.forEach((item) => {
-      item.addEventListener('click', (e) => {
-        deleteStringOfTableBase(e);
-      });
+
+    deleteStringBtn.addEventListener('click', (e) => {
+      deleteStringOfTableBase(e);
     });
+
     isEditMode = false;
-    sendEditedMethodToBase(edMetDataObj);
+
+    const editedSpentTime = document.querySelector(
+      '#eventEditSpentTime',
+    ) as HTMLInputElement;
+
+    saveEditedMethodToBaseApi({
+      methData: edMetDataObj,
+      srvv,
+      addValueObjTrue,
+      editSaveTaskBtn,
+      editedSpentTime,
+    });
   };
-  /**
-   * Редактирование строки методов в таблице методов
-   * @param {*} ev
-   */
-  const editStringOfTableBase = (ev: Event) => {
-    if (!isEditMode) {
-      isEditMode = true;
-      const edString = (ev.target as HTMLElement)?.closest('tr');
-      let tdArr: HTMLTableCellElement[] = [];
-      if (edString) {
-        tdArr =Array.from(edString.querySelectorAll('td'));
-      }
-      tdArr.forEach((td) => {
-        if (td.classList.contains('ed')) {
-          // td.append(wooMetod)
 
-          if (!td.classList.contains('methods-select')) {
-            td.innerHTML = `<input class="form-control" type="number" min="1" value =${td.innerText} onkeyup="if(this.value<0){this.value = this.value * -1}"></input>`;
-          } else {
-            const newVal = td.innerText;
-            const selectElem = wooMethod.innerHTML;
-            td.innerHTML = `<select class="form-select" id="wooMethodEdit">${selectElem}</select>`;
-            const editSelMeth = document.querySelector('#wooMethodEdit') as HTMLSelectElement;
-            editSelMeth.value = newVal;
-          }
-        } else {
-          td.innerHTML = `<div class="btn-group btn-group">
-                <button class="btn btn-light pe-2 save-edited" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Сохранить"><i class="fa fa-check" style="color: green;"></i></button>
-                </div>`;
-        }
-      });
-
-      const saveEditedBtn = document.querySelector('.save-edited') as HTMLButtonElement;
-      saveEditedBtn.addEventListener('click', (e) => {
-        const editedSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
-        const editedString = (e.target as HTMLElement)?.closest('tr');
-
-        const metSelTd = editedString?.querySelector('.methods-select');
-        const selMetSel = metSelTd?.querySelector('select');
-
-        if (selMetSel?.value !== Methods.NOT_SELECTED) {
-          const wooTimes = document.querySelectorAll('.wootime');
-          let totalWooTime = 0;
-
-          wooTimes.forEach((time) => {
-            let content = time.innerHTML;
-            if (content.includes('<input')) {
-              let value = time.querySelector('input')?.value;
-              totalWooTime += +value!;
-            } else {
-              totalWooTime += +content;
-            }
-          });
-          if (totalWooTime <= +editedSpentTime?.value) {
-            switchOffEditModeBase(e);
-            isValidElem(editedSpentTime);
-          } else {
-            isInvalidElem(editedSpentTime);
-          }
-        } else {
-          isInvalidElem(selMetSel);
-          selMetSel.addEventListener('change', () => {
-            if (selMetSel.value !== 'Не выбрано') {
-              isValidElem(selMetSel);
-            } else {
-              isInvalidElem(selMetSel);
-            }
-          });
-        }
-      });
-    }
-  };
   /**
    * Удаление строки из таблицы методов
-   * @param {*} ev
+   * @param {Event} ev
    */
   const deleteStringOfTableBase = (ev: Event) => {
     const delStr = (ev.target as HTMLElement)?.closest('tr');
     const methDelID = delStr?.getAttribute('editid');
     delStr?.remove();
 
-    fetch(srvv + deleteNodeURL + `?ID=${methDelID}&TypeID=1149&TabID=1685`, {
+    fetch(`${srvv}${deleteNodeURL}?ID=${methDelID}&TypeID=1149&TabID=1685`, {
       credentials: 'include',
       method: 'GET',
     })
       .then((response) => {
         return response.json();
       })
-      .then((data) => {
+      .then(() => {
         console.log('Метод удален');
       })
-
-      .catch(function (error) {
-        console.log('Ошибка отправки удаления метода', error);
+      .catch((error) => {
+        console.error('Ошибка отправки удаления метода', error);
       });
   };
 
+  // Добавление обработчиков событий к кнопкам редактирования и удаления
   const strEditBtnArr = Array.from(document.querySelectorAll('.edit-string'));
   const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
 
