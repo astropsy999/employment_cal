@@ -1,12 +1,14 @@
-import * as GDD from '../api/getDropDownData';
+import { Calendar } from '@fullcalendar/core';
 import { selValidation } from '../utils/mainGlobFunctions';
 import { addEventToUser } from './addEventToUser';
+import * as GDD from '../api/getDropDownData';
+
 /**
  * Добавление задачи в календарь с помощью обычного выделения или кнопки Добавить
  * @param {Object} calendar - объект календаря
  * @returns
  */
-export const addEventToCal = (calendar) => {
+export const addEventToCal = (calendar: Calendar) => {
   const iddb = localStorage.getItem('iddb');
 
   const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
@@ -21,10 +23,10 @@ export const addEventToCal = (calendar) => {
   const taskCreator = document.querySelector('#taskCreator');
   const locations = document.querySelector('#locObj');
   const employment = document.querySelector('#employment');
-  const dataObj = JSON.parse(sessionStorage.getItem('dataObj'));
-  const dataCreator = JSON.parse(sessionStorage.getItem('dataCreator'));
-  const locObj = JSON.parse(sessionStorage.getItem('locObj'));
-  const emplObj = JSON.parse(sessionStorage.getItem('emplObj'));
+  const dataObj = JSON.parse(sessionStorage.getItem('dataObj')!);
+  const dataCreator = JSON.parse(sessionStorage.getItem('dataCreator')!);
+  const locObj = JSON.parse(sessionStorage.getItem('locObj')!);
+  const emplObj = JSON.parse(sessionStorage.getItem('emplObj')!);
 
   // Помечаем обязательные элементы формы
 
@@ -52,8 +54,8 @@ export const addEventToCal = (calendar) => {
   GDD.getTypesOfWorkOptions(kindOfTasks, kindOfSubTask, iddb);
   GDD.getTypesOfWorkOptions(multiKindOfTasks, multiKindOfSubTask, iddb);
 
-  eventTaskModalBtn.removeEventListener('click', addEventToUser);
-  eventTaskModalBtn.addEventListener('click', addEventToUser(calendar));
+  eventTaskModalBtn?.removeEventListener('click', addEventToUser(calendar));
+  eventTaskModalBtn?.addEventListener('click', addEventToUser(calendar));
 
   return;
 };

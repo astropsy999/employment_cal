@@ -1,4 +1,8 @@
 {
   "liveServer.settings.port": 5500,
-  "cSpell.language": "en,ru"
+  "cSpell.language": "en,ru",
+  "cSpell.words": [
+    "fullcalendar",
+    "iddb"
+  ]
 }
