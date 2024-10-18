@@ -9,6 +9,7 @@ import {
 } from '../utils/mainGlobFunctions';
 import { MainEventMethods, MethodsArr } from '../types/events';
 import addMethodApi from '../api/addMethodApi';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 
 
 /**
@@ -182,8 +183,8 @@ const addEventWithMethods = (
       Promise.all(methodPromises)
         .then(() => {
           const isRootUser =
-            localStorage.getItem('managerName') ===
-            localStorage.getItem('selectedUserName');
+            getLocalStorageItem('managerName') ===
+            getLocalStorageItem('selectedUserName');
 
           // Добавляем событие в календарь без перезагрузки
           calendar.addEvent({
