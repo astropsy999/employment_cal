@@ -4,6 +4,8 @@ import { MethodData } from '../types/methods';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 import saveEditedMethodToBaseApi from '../api/saveEditedMethodToBaseApi';
 import { getMethodsDropDown } from '../api/getDropDownData';
+import { TaskType } from '../enums/taskTypes';
+import { createMethodsTableHead } from '../utils/methodsUtils';
 
 /**
  * Показ/скрытие таблицы с методами
@@ -28,27 +30,10 @@ const showMethodsTable = (
 
   if (
     methodsArray &&
-    (taskTypeNew === 'Техническое диагностирование' ||
-      subTaskTypeNew === 'Проведение контроля в лаборатории')
+    (taskTypeNew === TaskType.TECHNICAL_DIAGNOSTIC ||
+      subTaskTypeNew ===  TaskType.LABORATORY_CONTROL)
   ) {
-    const tableElemHeader = document.createElement('div');
-    tableElemHeader.innerHTML = `<div class="table-responsive scrollbar">
-          <table class="table table-hover table-sm table-bordered">
-            <thead class="thead-dark">
-              <tr class="rounded-2">
-                <th scope="col" style="width: 20%">Метод</th>
-                <th scope="col" style="width: 25%">Время, ч</th>
-                <th scope="col" style="width: 25%">Объек&shy;тов, шт</th>
-                <th scope="col" style="width: 21%">Зон/Стыков, шт</th>
-                <th scope="col" style="width: 9%"></th>
-              </tr>
-            </thead>
-            <tbody class="methods-tbody">
-            </tbody>
-         </table>
-    </div>
-    `;
-    wooElem.after(tableElemHeader);
+    createMethodsTableHead(wooElem);
   }
 
   const tBody = document.querySelector('.methods-tbody') as HTMLElement;
