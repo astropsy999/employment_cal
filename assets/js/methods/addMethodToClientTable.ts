@@ -1,6 +1,7 @@
 import { Methods } from '../enums/methods';
 import { MethStringObj } from '../types/methods';
 import { wooTimeIsOver } from '../utils/mainGlobFunctions';
+import { updateMethodSelectOptions } from '../utils/methodsUtils';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
 /**
@@ -45,6 +46,9 @@ const addMethodToClientTable = () => {
 
   // Добавляем метод в массив
   wooMethodsArray.push(methodObj);
+
+  // Обновляем селектор методов
+  updateMethodSelectOptions(wooMethodSelect);
 
   // Добавляем строку в таблицу
   const newRow = createMethodRow(methodObj);
@@ -302,3 +306,4 @@ const deleteMethodRow = (row: HTMLTableRowElement) => {
 };
 
 export default addMethodToClientTable;
+

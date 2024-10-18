@@ -1,3 +1,5 @@
+import { Methods } from "../enums/methods";
+import { wooMethodsArray } from "../methods/addMethodToClientTable";
 import { MethodObj } from "../types/methods";
 
 /**
@@ -154,5 +156,30 @@ export const createMethodsTableBody = (
     });
   }
 };
+
+
+/**
+ * Обновляет опции в селекторе методов, блокируя уже добавленные методы.
+ * @param methodSelect - селектор методов, который нужно обновить.
+ * @param excludeMethod - метод, который нужно исключить из блокировки (например, при редактировании).
+ */
+export const updateMethodSelectOptions = (
+  methodSelect: HTMLSelectElement,
+  excludeMethod?: string,
+) => {
+  const selectedMethods = wooMethodsArray.map((methodObj) => methodObj.wooMethod);
+  Array.from(methodSelect.options).forEach((option) => {
+    if (
+      selectedMethods.includes(option.value) &&
+      option.value !== excludeMethod &&
+      option.value !== Methods.NOT_SELECTED
+    ) {
+      option.disabled = true;
+    } else {
+      option.disabled = false;
+    }
+  });
+};
+
 
   
