@@ -1,4 +1,5 @@
 import { Calendar } from "@fullcalendar/core";
+import { MethodObj, MethodParams } from "./methods";
 
 export interface MainEventMethods {
     parentID: string;
@@ -55,3 +56,58 @@ export interface MethodsArr {
   params: MethodsParams;
 }
 
+export interface EventInfo 
+  {
+    title: string,
+    groupId: string,
+    publicId: string,
+    url: string,
+    recurringDef: any,
+    defId: string,
+    sourceId: string,
+    allDay: boolean,
+    hasEnd: boolean,
+    ui: EventInfoUI ,
+    extendedProps: ExtendedProps
+}
+
+export interface EventInfoUI {
+  display: any,
+  constraints: any[],
+  overlap: any,
+  allows: any[],
+  backgroundColor: string,
+  borderColor: string,
+  textColor: string,
+  classNames: string[]
+}
+
+interface JsonObjAllWkk {
+  [key: string]: number
+}
+
+interface ExtendedProps {
+  jsonObjAllWkk: JsonObjAllWkk,
+  idx: number,
+  wkkKeys: string[],
+  wkkVals: number[],
+  delID: string,
+  typeID: string,
+  object: string,
+  taskType: string,
+  subTaskType: string,
+  fullDescription: string,
+  factTime: string,
+  director: string,
+  source: string,
+  notes: string,
+  location: string,
+  kr: string,
+  employment: string,
+  taskTypeNew: string,
+  subTaskTypeNew: string,
+  isApproved: string,
+  isLocked: string,
+  eventInteractive: boolean,
+  methods: MethodObj[],
+}
