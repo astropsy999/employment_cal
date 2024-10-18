@@ -43,7 +43,32 @@ export interface MainEventMethods {
     calendar: Calendar;
     convertDateTime: (param: string)=>string;
     krBase: string,
-  }
+}
+
+export interface EditEventMethods extends MainEventMethods {
+  methodsFromServer: MethodObj[],
+  addValueObjTrue: string,
+  dataObjID: number,
+  dataObjVal: string,
+  emplEditVal: string,
+  endEditDate: string,
+  eventEditNotesVal: string,
+  eventEditSourceVal: string,
+  kindOfEditTasksID: string,
+  kindOfEditTasksVal: string,
+  kindOfSubEditTaskID: string,
+  kindOfSubEditTaskVal: string,
+  longEditDeskVal: string,
+  savedTaskFromServer: string,
+  setViewAndDateToLS: (calendar: Calendar) => void;
+  spentEditTimeVal: string,
+  startEditDate: string,
+  taskEditCreatorID: string,
+  taskEditCreatorVal: string,
+  titleEditVal: string,
+  delID: string,
+}
+
 
 type MethodsParams = {
   duration: string;

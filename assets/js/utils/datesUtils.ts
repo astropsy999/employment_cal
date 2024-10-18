@@ -162,3 +162,4 @@ export function parseDateString(dateStr: string): Date | null {
 
     return currentWeekDatesArr;
   };
+
