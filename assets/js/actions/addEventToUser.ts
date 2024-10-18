@@ -57,8 +57,8 @@ export const addEventToUser = (calendar: Calendar) => {
     buttonLoader(eventTaskModalBtn, true);
 
     const isMethodsAvailableMode =
-      kindOfTasks.value === TaskType.TechnicalDiagnostic ||
-      kindOfSubTask.value === TaskType.LaboratoryControl;
+      kindOfTasks.value === TaskType.TECHNICAL_DIAGNOSTIC ||
+      kindOfSubTask.value === TaskType.LABORATORY_CONTROL;
 
     let justAddedDelID = '';
     const iddb = getLocalStorageItem('iddb');
@@ -74,11 +74,11 @@ export const addEventToUser = (calendar: Calendar) => {
     const valCondition = validateCondition(valCond, locations, kindOfTasks, eventEndDate);
 
     if (valCondition) {
-      if (locations.value === Locations.NotSelected) {
+      if (locations.value === Locations.NOT_SELECTED) {
         locations.classList.add('is-invalid');
       }
 
-      if (kindOfTasks.value === TaskType.NotSelected) {
+      if (kindOfTasks.value === TaskType.NOT_SELECTED) {
         kindOfTasks.classList.add('is-invalid');
       }
 
@@ -86,8 +86,8 @@ export const addEventToUser = (calendar: Calendar) => {
       buttonLoader(eventTaskModalBtn, false);
     } else {
       if (
-        kindOfTasks.value !== TaskType.TechnicalDiagnostic &&
-        kindOfSubTask.value !== TaskType.LaboratoryControl
+        kindOfTasks.value !== TaskType.TECHNICAL_DIAGNOSTIC &&
+        kindOfSubTask.value !== TaskType.TECHNICAL_DIAGNOSTIC
       ) {
         e.preventDefault();
 
@@ -147,9 +147,9 @@ export const addEventToUser = (calendar: Calendar) => {
               location: locations.value,
               employment: employment.value,
               taskTypeNew:
-                kindOfTasks.value === 'Не выбрано' ? '' : kindOfTasks.value,
+                kindOfTasks.value === TaskType.NOT_SELECTED ? '' : kindOfTasks.value,
               subTaskTypeNew:
-                kindOfSubTask.value === 'Не выбрано'
+                kindOfSubTask.value === TaskType.NOT_SELECTED
                   ? ''
                   : kindOfSubTask.value,
               isApproved: '',

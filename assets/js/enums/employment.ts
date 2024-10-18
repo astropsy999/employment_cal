@@ -1,6 +1,6 @@
 export enum Employment {
-    Work = 'Работа',
-    Vacation = 'Отпуск',
-    SickLeave = 'Больничный',
-    DayOff = 'Выходной',
+    WORK = 'Работа',
+    VACATION = 'Отпуск',
+    SICK_LEAVE = 'Больничный',
+    DAY_OFF = 'Выходной',
   }

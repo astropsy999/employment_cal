@@ -1,35 +1,36 @@
-import { buttonLoader } from '../ui/buttonLoader';
+import { Methods } from '../enums/methods';
+import { MethStringObj } from '../types/methods';
 import { wooTimeIsOver } from '../utils/mainGlobFunctions';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
-export let wooMetodsArray = [];
+export let wooMetodsArray: MethStringObj[] = [];
 /**
  * Добавление методов в таблицу на клиенте
  */
 const addMethodToClientTable = () => {
-  const wooMetod = document.querySelector('#wooMetod');
-  const wooTime = document.querySelector('#wooTime');
-  const wooObjects = document.querySelector('#wooObjects');
-  const wooZones = document.querySelector('#wooZones');
+  const wooMetod = document.querySelector('#wooMetod') as HTMLSelectElement;
+  const wooTime = document.querySelector('#wooTime') as HTMLInputElement;
+  const wooObjects = document.querySelector('#wooObjects') as HTMLInputElement;
+  const wooZones = document.querySelector('#wooZones') as HTMLInputElement;
   const tHead = document.querySelector('.thead-dark');
   let isEditMode = false;
-  const eventEditSpentTime = document.querySelector('#eventEditSpentTime');
+  const eventEditSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
 
   /**
    * Удаление строки в таблице методов
    * @param {*} ev
    */
-  const deleteStringOfTable = (ev) => {
-    const delStr = ev.target.closest('tr');
-    delStr.remove();
+  const deleteStringOfTable = (ev: Event) => {
+    const delStr = (ev.target as HTMLElement)?.closest('tr');
+    delStr?.remove();
   };
   /**
    * Создание шапки таблицы методов
    */
   const addHeaderOfTable = () => {
     const metTable = document.querySelector('.methods-table');
-    const tBody = metTable.querySelector('tbody');
-    const tHead = metTable.querySelector('thead');
+    const tBody = metTable?.querySelector('tbody');
+    const tHead = metTable?.querySelector('thead');
     if (!tHead) {
       const addTHead = document.createElement('thead');
       addTHead.classList.add('thead-dark');
@@ -40,14 +41,14 @@ const addMethodToClientTable = () => {
                 <th scope="col" style="width: 21%">Зон/Стыков, шт</th>
                 <th scope="col" style="width: 9%"></th>
               </tr>`;
-      tBody.before(addTHead);
+      tBody?.before(addTHead);
     }
   };
 
   if (
-    wooMetod.value &&
+    wooMetod?.value &&
     wooMetod.value !== 'Не выбрано' &&
-    wooTime.value &&
+    wooTime?.value &&
     !wooTimeIsOver()
   ) {
     if (!tHead) {
@@ -57,7 +58,7 @@ const addMethodToClientTable = () => {
     let methStringObj = {
       wooMetod: wooMetod.value,
       wooTime: wooTime.value,
-      wooObjects: wooObjects.value,
+      wooObjects: wooObjects?.value,
       wooZones: wooZones.value,
     };
 
@@ -87,18 +88,18 @@ const addMethodToClientTable = () => {
     </td>
     `;
 
-    tBody.append(trElem);
+    tBody?.append(trElem);
 
-    wooMetod.value = 'Не выбрано';
+    wooMetod.value =  Methods.NOT_SELECTED;
     wooTime.value = '';
     wooObjects.value = '';
     wooZones.value = '';
     wooMetod.classList.remove('is-invalid');
     wooTime.classList.remove('is-invalid');
-  } else if (!wooMetod.value || wooMetod.value === 'Не выбрано') {
+  } else if (!wooMetod.value || wooMetod.value === Methods.NOT_SELECTED) {
     isInvalidElem(wooMetod);
     wooMetod.addEventListener('change', () => {
-      if (wooMetod.value !== 'Не выбрано') {
+      if (wooMetod.value !== Methods.NOT_SELECTED) {
         isValidElem(wooMetod);
       }
     });
@@ -112,8 +113,8 @@ const addMethodToClientTable = () => {
     });
   }
 
-  const strEditBtnArr = [...document.querySelectorAll('.edit-string')];
-  const delStrBtnArr = [...document.querySelectorAll('.delete-string')];
+  const strEditBtnArr = Array.from(document.querySelectorAll('.edit-string'));
+  const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
 
   strEditBtnArr.forEach((item) => {
     item.addEventListener('click', (e) => {
@@ -127,13 +128,13 @@ const addMethodToClientTable = () => {
     });
   });
 
-  const editStringOfTable = (ev) => {
+  const editStringOfTable = (ev: Event) => {
     if (!isEditMode) {
       isEditMode = true;
-      const edString = ev.target.closest('tr');
-      let tdArr = [];
+      const edString = (ev.target as HTMLElement).closest('tr');
+      let tdArr: HTMLElement[] = [];
       if (edString) {
-        tdArr = [...edString.querySelectorAll('td')];
+        tdArr = Array.from(edString.querySelectorAll('td'));
       }
       tdArr.forEach((td) => {
         if (td.classList.contains('ed')) {
@@ -143,7 +144,7 @@ const addMethodToClientTable = () => {
             const newVal = td.innerText;
             const selectElem = wooMetod.innerHTML;
             td.innerHTML = `<select class="form-select" id="wooMetodEdit">${selectElem}</select>`;
-            const editSelMeth = document.querySelector('#wooMetodEdit');
+            const editSelMeth = document.querySelector('#wooMetodEdit') as HTMLSelectElement;
             editSelMeth.value = newVal;
           }
         } else {
@@ -152,19 +153,19 @@ const addMethodToClientTable = () => {
                 </div>`;
         }
       });
-      const saveEditedBtn = document.querySelector('.save-edited');
+      const saveEditedBtn = document.querySelector('.save-edited') as HTMLButtonElement;
       saveEditedBtn.addEventListener('click', (e) => {
-        const editedString = e.target.closest('tr');
+        const editedString = (e.target as HTMLElement)?.closest('tr');
         const metSelTd = editedString?.querySelector('.methods-select');
         const selMetSel = metSelTd?.querySelector('select');
 
-        if (selMetSel && selMetSel.value !== 'Не выбрано') {
+        if (selMetSel && selMetSel.value !== Methods.NOT_SELECTED) {
           switchOffEditMode(e);
         } else {
           // selMetSel?.classList.add('is-invalid');
-          isInvalidElem(selMetSel);
+          isInvalidElem(selMetSel!);
           selMetSel?.addEventListener('change', () => {
-            if (selMetSel && selMetSel.value !== 'Не выбрано') {
+            if (selMetSel && selMetSel.value !== Methods.NOT_SELECTED) {
               isValidElem(selMetSel);
             } else {
               isInvalidElem(selMetSel);
@@ -176,21 +177,23 @@ const addMethodToClientTable = () => {
        * Выключение режима редактирования строки таблицы методов
        * @param {*} ev
        */
-      const switchOffEditMode = (ev) => {
-        const editedString = ev.target.closest('tr');
-        let tdArray = [];
+      const switchOffEditMode = (ev: Event) => {
+        const editedString = (ev.target as HTMLElement)?.closest('tr');
+        let tdArray: HTMLTableCellElement[] = [];
 
         if (editedString) {
-          tdArray = [...editedString.querySelectorAll('td')];
+          tdArray = Array.from(editedString.querySelectorAll('td'));
         }
 
         tdArray.forEach((tdItem) => {
           if (tdItem.classList.contains('ed')) {
             if (tdItem.classList.contains('methods-select')) {
+              const selectElement = tdItem.children[0] as HTMLSelectElement;
               tdItem.innerHTML = `<div class="d-flex align-items-center">
-                            <div class="ms-2">${tdItem.children[0].value}</div></div>`;
+                            <div class="ms-2">${selectElement.value}</div></div>`;
             } else {
-              tdItem.innerText = tdItem.children[0].value;
+              const inputElement = tdItem.children[0] as HTMLInputElement;
+              tdItem.innerText = inputElement.value;
             }
           } else {
             tdItem.innerHTML = `<div class="btn-group btn-group hover-actions methods-table-hover">
@@ -200,8 +203,8 @@ const addMethodToClientTable = () => {
           }
         });
 
-        const editStringBtnArr = [...document.querySelectorAll('.edit-string')];
-        const delStrBtnArr = [...document.querySelectorAll('.delete-string')];
+        const editStringBtnArr = Array.from(document.querySelectorAll('.edit-string'));
+        const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
 
         editStringBtnArr.forEach((item) => {
           item.addEventListener('click', (e) => {

@@ -1,5 +1,5 @@
 export enum TaskType {
-    TechnicalDiagnostic = 'Техническое диагностирование',
-    LaboratoryControl = 'Проведение контроля в лаборатории',
-    NotSelected = 'Не выбрано',
+    TECHNICAL_DIAGNOSTIC = 'Техническое диагностирование',
+    LABORATORY_CONTROL = 'Проведение контроля в лаборатории',
+    NOT_SELECTED = 'Не выбрано',
   }
