@@ -8,6 +8,7 @@ export interface MethStringObj {
 export interface MethodParams {
   duration: string,
   objQuant: string,
+  objects?: string,
   zones: string,
   editID: string
 }

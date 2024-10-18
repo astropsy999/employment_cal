@@ -1,10 +1,13 @@
+import { MethodObj } from "../types/methods";
+
 /**
  * Добавление методов в базу данных
  * @param {*} methodsArr
  * @param {*} delID
  * @param {*} api
  */
-export const addMethodToBase = (methodsArr, delID, api) => {
+export const addMethodToBase = (methodsArr: MethodObj[], delID: string, api: {[key: string]: string}) => {
+  console.log("🚀 ~ addMethodToBase ~ methodsArr:", methodsArr)
   const { srvv, createNodeUrl } = api;
 
   methodsArr.forEach((element, idx) => {
@@ -16,6 +19,7 @@ export const addMethodToBase = (methodsArr, delID, api) => {
     formDataaddMet.append('ObjTypeID', '1149');
     formDataaddMet.append('ParentID', delID);
     formDataaddMet.append('Data[0][name]', '8764');
+    // @ts-ignore
     formDataaddMet.append('Data[0][value]', method);
     formDataaddMet.append('Data[0][isName]', 'true');
     formDataaddMet.append('Data[0][maninp]', 'false');
@@ -26,7 +30,7 @@ export const addMethodToBase = (methodsArr, delID, api) => {
     formDataaddMet.append('Data[1][maninp]', 'false');
     formDataaddMet.append('Data[1][GroupID]', '2549');
     formDataaddMet.append('Data[2][name]', '8766');
-    formDataaddMet.append('Data[2][value]', objects);
+    formDataaddMet.append('Data[2][value]', objects?.toString()!);
     formDataaddMet.append('Data[2][isName]', 'false');
     formDataaddMet.append('Data[2][maninp]', 'false');
     formDataaddMet.append('Data[2][GroupID]', '2549');

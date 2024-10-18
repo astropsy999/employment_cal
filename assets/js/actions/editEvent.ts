@@ -1,29 +1,29 @@
-import {
-  selValidation,
-  notChoosenCleaning,
-  minusThreeHours,
-  convertDateTime,
-  checkAndForbiddenOutOfDay,
-  timeInputsValidation,
-  cleanAndDefaultKindOfSubTaskSelector,
-  changeDirectZero,
-  transformDateTime,
-  addZeroBefore,
-  validateTotalTimeOnObject,
-} from '../utils/mainGlobFunctions';
+import { Modal } from 'bootstrap';
 import * as GDD from '../api/getDropDownData';
+import { settings } from '../api/settings';
 import * as C from '../config';
-import { findParentID } from './eventsActions';
-import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
+import addMethodToBase from '../methods/addMethodToBase';
+import { grabJustAddedArray } from '../methods/grabMethodsDataTable';
 import saveEditedTasks from '../methods/saveEditedTasks';
 import showMethodsTable from '../methods/showMethodsTable';
-import { grabJustAddedArray } from '../methods/grabMethodsDataTable';
-import addMethodToBase from '../methods/addMethodToBase';
+import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
 import { tempLoader } from '../ui/tempLoader';
-import { Modal } from 'bootstrap';
-import { settings } from '../api/settings';
-import { stretchViewDepEvents } from '../ui/stretchViewDepEvents';
+import {
+  changeDirectZero,
+  checkAndForbiddenOutOfDay,
+  cleanAndDefaultKindOfSubTaskSelector,
+  convertDateTime,
+  minusThreeHours,
+  notChoosenCleaning,
+  selValidation,
+  timeInputsValidation,
+  transformDateTime,
+  validateTotalTimeOnObject
+} from '../utils/mainGlobFunctions';
 import { isInvalidElem } from '../utils/toggleElem';
+import { findParentID } from './eventsActions';
+import { Calendar, EventClickArg } from '@fullcalendar/core';
+import { EventImpl } from '@fullcalendar/core/internal';
 
 /**
  * Редактирование задачи
@@ -41,7 +41,7 @@ const api = {
   GetExcelforCalc: C.GetExcelforCalc,
 };
 
-export const editEvent = (info, calendar, modal, editedEvent) => {
+export const editEvent = (info: EventClickArg, calendar: Calendar, modal: Modal, editedEvent: EventImpl) => {
   const eventEditTitle = document.querySelector('#eventEditTitle');
   const taskEditCreator = document.querySelector('#taskEditCreator');
   const taskEditObj = document.querySelector('#taskEditObj');
