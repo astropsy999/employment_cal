@@ -69,13 +69,15 @@ const validateInputs = (
   wooTimeInput: HTMLInputElement,
 ): boolean => {
   let isValid = true;
-    const eventEditSpentTime = document.querySelector(
-      '#eventEditSpentTime',
-    ) as HTMLInputElement;
+  const eventEditSpentTime = document.querySelector(
+    '#eventEditSpentTime',
+  ) as HTMLInputElement;
+
+  const selectedMethod = wooMethodSelect.value;
 
   if (
-    !wooMethodSelect.value ||
-    wooMethodSelect.value === Methods.NOT_SELECTED
+    !selectedMethod ||
+    selectedMethod === Methods.NOT_SELECTED
   ) {
     isInvalidElem(wooMethodSelect);
     wooMethodSelect.addEventListener('change', () => {
@@ -83,6 +85,13 @@ const validateInputs = (
         isValidElem(wooMethodSelect);
       }
     });
+    isValid = false;
+  }
+
+  // Проверка на дубликат
+  if (wooMethodsArray.some((methodObj) => methodObj.wooMethod === selectedMethod)) {
+    isInvalidElem(wooMethodSelect);
+    alert('Этот метод уже добавлен в таблицу.');
     isValid = false;
   }
 
@@ -99,6 +108,7 @@ const validateInputs = (
 
   return isValid;
 };
+
 
 /**
  * Создание заголовка таблицы методов
@@ -227,13 +237,17 @@ const editMethodRow = (e: Event, row: HTMLTableRowElement) => {
 };
 
 /**
- * Создание селекта для выбора метода при редактировании
+ * Создание селектора для выбора метода при редактировании
  */
 const createMethodSelect = (currentValue: string): HTMLSelectElement => {
   const wooMethodSelect = document.querySelector(
     '#wooMethod',
   ) as HTMLSelectElement;
   const selectElement = wooMethodSelect.cloneNode(true) as HTMLSelectElement;
+
+  // Обновляем опции селектора, исключая текущий метод
+  updateMethodSelectOptions(selectElement, currentValue);
+
   selectElement.value = currentValue;
 
   // Обработка валидации при изменении значения
@@ -262,17 +276,59 @@ const saveEditedRow = (row: HTMLTableRowElement) => {
     return;
   }
 
-  row.classList.remove('edit-mode');
+  // Получаем старое название метода
+  const methodCell = row.querySelector('.methods-select') as HTMLTableCellElement;
+  const oldMethodName = methodCell.textContent?.trim() || '';
 
-  // Обновляем значения в ячейках
+  // Получаем новое название метода
+  const newMethodName = selectElement.value;
+
+  // Обновляем массив wooMethodsArray
+  wooMethodsArray = wooMethodsArray.filter(
+    (methodObj) => methodObj.wooMethod !== oldMethodName,
+  );
+
+  const updatedMethodObj: MethStringObj = {
+    wooMethod: newMethodName,
+    wooTime: '',
+    wooObjects: '',
+    wooZones: '',
+  };
+
+  // Получаем значения из полей ввода
   const cells = row.querySelectorAll('td');
   cells.forEach((cell) => {
     if (cell.classList.contains('ed')) {
+      if (!cell.classList.contains('methods-select')) {
+        const inputElement = cell.querySelector('input') as HTMLInputElement;
+        if (cell.classList.contains('wootime')) {
+          updatedMethodObj.wooTime = inputElement.value;
+        } else if (cell.classList.contains('w-auto')) {
+          updatedMethodObj.wooObjects = inputElement.value;
+        } else {
+          updatedMethodObj.wooZones = inputElement.value;
+        }
+      }
+    }
+  });
+
+  // Добавляем обновленный метод в массив
+  wooMethodsArray.push(updatedMethodObj);
+
+  // Обновляем селектор методов
+  const wooMethodSelect = document.querySelector('#wooMethod') as HTMLSelectElement;
+  updateMethodSelectOptions(wooMethodSelect);
+
+  row.classList.remove('edit-mode');
+
+  // Обновляем значения в ячейках
+  const cellsToUpdate = row.querySelectorAll('td');
+  cellsToUpdate.forEach((cell) => {
+    if (cell.classList.contains('ed')) {
       if (cell.classList.contains('methods-select')) {
-        const methodValue = selectElement.value;
         cell.innerHTML = `
           <div class="d-flex align-items-center">
-            <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${methodValue}</div>
+            <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${newMethodName}</div>
           </div>
         `;
       } else {
