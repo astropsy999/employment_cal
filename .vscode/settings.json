@@ -2,10 +2,15 @@
   "liveServer.settings.port": 5500,
   "cSpell.language": "en,ru",
   "cSpell.words": [
+    "Chekbox",
+    "etarget",
     "fullcalendar",
     "iddb",
     "maninp",
     "OBJTYPEID",
-    "srvv"
+    "srvv",
+    "tasksubtaskregion",
+    "typeofsubtask",
+    "typeoftasks"
   ]
 }

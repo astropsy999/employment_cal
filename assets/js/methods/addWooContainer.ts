@@ -1,24 +1,27 @@
 import { getMethodsDropDown } from '../api/getDropDownData';
-import addMethodToClientTable from './addMethodToClientTable';
 import { selRemoveValidation } from '../utils/mainGlobFunctions';
+import addMethodToClientTable from './addMethodToClientTable';
 import { settings } from '../api/settings';
+import { TaskType } from '../enums/taskTypes';
+import { Locations } from '../enums/locations';
+
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
  * @param {*} etarget
  */
-const addWooContainer = (etarget) => {
+const addWooContainer = (etarget: HTMLElement) => {
   const findTaskSubtaskRegion = etarget.querySelector('.tasksubtaskregion');
-  const findTypeOfTasks = etarget.querySelector('.typeoftasks');
-  const findTypeOfSubTask = etarget.querySelector('.typeofsubtask');
-  const wooElem = etarget.querySelector('.woo');
-  const location = etarget.querySelector('.location');
+  const findTypeOfTasks = etarget.querySelector('.typeoftasks') as HTMLSelectElement;
+  const findTypeOfSubTask = etarget.querySelector('.typeofsubtask') as HTMLSelectElement;
+  const wooElem = etarget.querySelector('.woo') as HTMLDivElement;
+  const location = etarget.querySelector('.location') as HTMLInputElement;
   /**
    * Показ галочки КР
    */
   const showCheckMark = () => {
     const checkMarkRow = etarget.querySelector('.check-mark');
-    const checkElem = checkMarkRow.querySelector('.check-elem');
+    const checkElem = checkMarkRow?.querySelector('.check-elem');
 
     if (!checkElem && settings.isKRChekboxAvailable) {
       // Add check mark
@@ -29,15 +32,15 @@ const addWooContainer = (etarget) => {
         <input class="form-control form-check-input" type="checkbox" value="" id="flexCheckDefault">
         </div>`;
 
-      checkMarkRow.append(checkMarkElem);
+      checkMarkRow?.append(checkMarkElem);
     }
   };
   /**
    * Показ таблицы методов в зависимости от наличия их в базе данных
    */
   const showWooElem = () => {
-    const wooElemDiv = document.createElement('div');
-    wooElem.innerHTML = `
+    const wooElemDiv = document.createElement('div') as HTMLDivElement;
+    wooElem!.innerHTML = `
         <h5 class="modal-title woo-title">Методы контроля</h5>
         <div class="row work-on-object m-1">
             <div class="col-md-2 mb-2 p-0 pr-1">
@@ -60,7 +63,7 @@ const addWooContainer = (etarget) => {
             </div>
         </div>
         `;
-    wooElem.append(wooElemDiv);
+    wooElem?.append(wooElemDiv);
 
     const wooMetod = etarget.querySelector('#wooMetod');
 
@@ -76,19 +79,19 @@ const addWooContainer = (etarget) => {
              </table>
         </div>
         `;
-    wooTitle.after(tableElemHeader);
+    wooTitle?.after(tableElemHeader);
 
     document.addEventListener(
       'hidden.bs.modal',
       () => {
-        wooElem.innerHTML = '';
+        wooElem!.innerHTML = '';
       },
-      { ones: true },
+      { once: true },
     );
 
     const addWooMetBtn = document.querySelector('#addWooMet');
 
-    addWooMetBtn.addEventListener('click', (e) => {
+    addWooMetBtn?.addEventListener('click', (e) => {
       e.preventDefault();
       addMethodToClientTable();
     });
@@ -108,15 +111,15 @@ const addWooContainer = (etarget) => {
    * Отслеживание изменений селектора Локация
    */
   const watchForLocationChange = () => {
-    findTaskSubtaskRegion.removeEventListener('change', watchForLocationChange);
-    findTaskSubtaskRegion.addEventListener('change', watchForLocationChange);
+    findTaskSubtaskRegion?.removeEventListener('change', watchForLocationChange);
+    findTaskSubtaskRegion?.addEventListener('change', watchForLocationChange);
     if (
-      findTypeOfTasks.value === 'Техническое диагностирование' ||
-      (findTypeOfTasks.value === 'Общелабораторные работы' &&
-        findTypeOfSubTask.value === 'Проведение контроля в лаборатории')
+      findTypeOfTasks?.value === TaskType.TECHNICAL_DIAGNOSTIC ||
+      (findTypeOfTasks?.value === TaskType.LABORATORY_WORK &&
+        findTypeOfSubTask?.value === TaskType.LABORATORY_CONTROL)
     ) {
       showWooElem();
-      wooElem.style.display = 'block';
+      wooElem!.style.display = 'block';
     } else {
       wooElem.style.display = 'none';
       const relCheckEl = document.querySelector('.check-elem');
@@ -125,7 +128,7 @@ const addWooContainer = (etarget) => {
       }
     }
 
-    if (location?.value === 'В дороге') {
+    if (location?.value === Locations.ON_ROAD) {
       selRemoveValidation(findTypeOfTasks);
     }
   };
@@ -133,19 +136,19 @@ const addWooContainer = (etarget) => {
   if (findTypeOfTasks) {
     const initialFLValue =
       findTypeOfTasks?.options[findTypeOfTasks.selectedIndex]?.value;
-    if (initialFLValue !== 'Техническое диагностирование') {
+    if (initialFLValue !== TaskType.TECHNICAL_DIAGNOSTIC) {
       watchForLocationChange();
-    } else if (initialFLValue === 'Техническое диагностирование') {
+    } else if (initialFLValue === TaskType.TECHNICAL_DIAGNOSTIC) {
       showWooElem();
       watchForLocationChange();
     }
   }
 
-  if (location?.value === 'Заказчик') {
+  if (location?.value === Locations.CLIENT) {
     showCheckMark();
   }
 
-  if (location?.value === 'В дороге') {
+  if (location?.value === Locations.ON_ROAD) {
     selRemoveValidation(findTypeOfTasks);
   }
 };
