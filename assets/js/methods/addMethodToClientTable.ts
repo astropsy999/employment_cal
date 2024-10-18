@@ -301,8 +301,21 @@ const saveEditedRow = (row: HTMLTableRowElement) => {
  * Удаление строки таблицы методов
  */
 const deleteMethodRow = (row: HTMLTableRowElement) => {
+  // Получаем название метода из строки
+  const methodCell = row.querySelector('.methods-select') as HTMLTableCellElement;
+  const methodName = methodCell.textContent?.trim() || '';
+
+  // Удаляем метод из массива wooMethodsArray
+  wooMethodsArray = wooMethodsArray.filter(
+    (methodObj) => methodObj.wooMethod !== methodName,
+  );
+
+  // Удаляем строку из таблицы
   row.remove();
-  // Здесь можно добавить удаление элемента из массива wooMethodsArray, если требуется
+
+  // Обновляем селектор методов
+  const wooMethodSelect = document.querySelector('#wooMethod') as HTMLSelectElement;
+  updateMethodSelectOptions(wooMethodSelect);
 };
 
 export default addMethodToClientTable;
