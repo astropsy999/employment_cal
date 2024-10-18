@@ -17,12 +17,12 @@ const grabMethodsDataTable = (tbody) => {
       grabMethodsArray.push({ method, params: { duration, objects, zones } });
     });
   } else {
-    const wooMetod = document.querySelector('#wooMetod');
+    const wooMethod = document.querySelector('#wooMethod');
     const wooTime = document.querySelector('#wooTime');
     const wooObjects = document.querySelector('#wooObjects');
     const wooZones = document.querySelector('#wooZones');
     grabMethodsArray.push({
-      method: wooMetod.value,
+      method: wooMethod.value,
       params: {
         duration: wooTime.value,
         objects: wooObjects.value,

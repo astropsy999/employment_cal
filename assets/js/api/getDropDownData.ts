@@ -278,54 +278,6 @@ export const generateSubtasksObj = (tasksArr) => {
 };
 
 /**
- * Функция  получает данные о Методах из базы и помещает их в LocalStorage
- */
-
-let methodsDropArray = [];
-
-const getMethodsDropDown = (element) => {
-  const parentID = '';
-
-  let formDataMethods = new FormData();
-
-  formDataMethods.append('ParamID', c.METHODS_DROPDOWN_PARAMID);
-  formDataMethods.append('ObjID', '');
-  formDataMethods.append('Limiter', '');
-  formDataMethods.append('ShowAll', '0');
-  formDataMethods.append('ParentID', parentID);
-  formDataMethods.append('LoadFullHbColumn', '0');
-  formDataMethods.append('LoadFullType', '0');
-  formDataMethods.append('ExactSearch', '0');
-  formDataMethods.append('SkipCalc', '0');
-
-  fetch(c.srvv + c.getEnumsData, {
-    credentials: 'include',
-    method: 'post',
-    body: formDataMethods,
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((response) => {
-      methodsDropArray = response.data;
-
-      if (element.options.length <= 1) {
-        methodsDropArray.forEach((dataline) => {
-          const elemCreation = document.createElement('option');
-          const datalineid = dataline.ID;
-          elemCreation.setAttribute('value', `${dataline.Name}`);
-          elemCreation.setAttribute('methodid', `${datalineid}`);
-          elemCreation.innerText = `${dataline.Name}`;
-          element.append(elemCreation);
-        });
-      }
-    })
-    .catch(function (error) {
-      console.log('Не получилось загрузить список Методов', error);
-    });
-};
-
-/**
  * Функция выполняет запрос для получения данных сотрудников, возвращает объект вида {ФИО: ID сотрудника}
  */
 

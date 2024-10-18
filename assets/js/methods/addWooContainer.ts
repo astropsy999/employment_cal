@@ -1,10 +1,10 @@
-import { getMethodsDropDown } from '../api/getDropDownData';
 import { selRemoveValidation } from '../utils/mainGlobFunctions';
 import addMethodToClientTable from './addMethodToClientTable';
 import { settings } from '../api/settings';
 import { TaskType } from '../enums/taskTypes';
 import { Locations } from '../enums/locations';
 import { removeCheckMark, showCheckMark } from '../utils/uiUtils';
+import getMethodsDropDown from '../api/getMethodsDropDown';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -39,7 +39,7 @@ const addWooContainer = (etarget: HTMLElement) => {
   /**
    * Показ таблицы методов
    */
-  const showWooElem = () => {
+  const showWooElem = async () => {
     if (!wooElem) return;
 
     wooElem.innerHTML = `
@@ -75,7 +75,7 @@ const addWooContainer = (etarget: HTMLElement) => {
     const wooMethodSelect = wooElem.querySelector(
       '#wooMethod',
     ) as HTMLSelectElement;
-    getMethodsDropDown(wooMethodSelect);
+    await getMethodsDropDown(wooMethodSelect);
 
     const wooTimeInput = wooElem.querySelector('#wooTime') as HTMLInputElement;
     const wooObjectsInput = wooElem.querySelector(
