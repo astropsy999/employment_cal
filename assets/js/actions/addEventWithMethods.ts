@@ -1,7 +1,6 @@
 import { Modal } from 'bootstrap';
 import { buttonLoader } from '../ui/buttonLoader';
 import { tempLoader } from '../ui/tempLoader';
-import { getLocalStorageItem } from '../utils/localStorageUtils';
 import {
   convertDateTime,
   refreshBtnAction,
@@ -9,16 +8,17 @@ import {
 } from '../utils/mainGlobFunctions';
 import { MainEventMethods } from '../types/events';
 /**
- * Функция для добавлиния события при наличии в задаче метода или таблицы методов
+ * Функция для добавления события при наличии в задаче метода или таблицы методов
  * @param {*} firstEventObj
  * @param {*} methodsArray
  * @param {*} setViewAndDateToLS
  */
 const addEventWithMethods = (
   firstEventObj: MainEventMethods,
-  methodsArray: any,
-  setViewAndDateToLS: any,
+  methodsArray: any[],
+  setViewAndDateToLS: (calendar: any) => void,
 ) => {
+
   const {
     OBJTYPEID,
     addCalcParamID,
@@ -58,10 +58,12 @@ const addEventWithMethods = (
     taskObjVal,
     kindOfTasksVal,
     kindOfSubTaskVal,
+
   } = firstEventObj;
 
   let formDataMet = new FormData();
-  const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn');
+  const eventTaskModalBtn = document.querySelector('#addTaskToCalBtn') as HTMLButtonElement;
+  const  addEventModal = document.querySelector('#addEventModal') as HTMLFormElement;
 
   formDataMet.append('ObjTypeID', OBJTYPEID);
   formDataMet.append('ParentID', parentID);
@@ -162,8 +164,8 @@ const addEventWithMethods = (
     })
     .then((data) => {
       const { object, parent } = data.results[0];
-      buttonLoader(eventTaskModalBtn);
-      Modal.getInstance(addEventModal).hide();
+      buttonLoader(eventTaskModalBtn, true);
+      Modal.getInstance(addEventModal)!.hide();
 
       // Добавляем Методы
 
@@ -223,7 +225,7 @@ const addEventWithMethods = (
       });
 
       const isRootUser =
-        getLocalStorageItem('managerName') ===
+        localStorage.getItem('managerName') ===
         localStorage.getItem('selectedUserName');
 
       // Добавляем событие без перезагрузки
@@ -240,7 +242,7 @@ const addEventWithMethods = (
           delID: object,
           director: taskCreatorVal,
           factTime: spentTimeVal,
-          fullDescription: longDesc.value,
+          fullDescription: longDeskVal,
           notes: eventNotesVal,
           object: taskObjVal,
           source: eventSourceVal,
@@ -257,7 +259,7 @@ const addEventWithMethods = (
       if (isRootUser) {
         tempLoader(true);
         setTimeout(() => {
-          buttonLoader(eventTaskModalBtn);
+          buttonLoader(eventTaskModalBtn, false);
           refreshBtnAction(calendar);
         }, 999);
       }

@@ -4,7 +4,7 @@ import { addEventToUserApi } from '../api/addEventToUserApi';
 import * as c from '../config';
 import { Locations } from '../enums/locations';
 import { TaskType } from '../enums/taskTypes';
-import addEventWithMethods from '../methods/addEventWithMethods';
+import addEventWithMethods from './addEventWithMethods';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
 import { buttonLoader } from '../ui/buttonLoader';
 import { showError } from '../ui/notification';
@@ -51,7 +51,7 @@ export const addEventToUser = (calendar: Calendar) => {
       function (event) {
         buttonLoader(eventTaskModalBtn, false);
       },
-      { once: true } 
+      { once: true }
     );
 
     buttonLoader(eventTaskModalBtn, true);
