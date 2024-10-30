@@ -3,7 +3,6 @@ import * as c from '../config';
 import { showError } from '../ui/notification';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { notChoosenCleaning } from '../utils/mainGlobFunctions';
-import { getKrState } from '../utils/uiUtils';
 
 interface AddEventParams {
   eventStartDate: HTMLInputElement;

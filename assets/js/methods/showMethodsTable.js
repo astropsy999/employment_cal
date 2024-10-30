@@ -34,7 +34,7 @@ const showMethodsTable = (eventInfo, wooElem, api) => {
             </thead>
             <tbody class="methods-tbody">
             </tbody>
-         </table>
+        </table>
     </div>
     `;
     wooElem.after(tableElemHeader);
