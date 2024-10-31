@@ -8,12 +8,13 @@ export let wooMethodsArray: MethStringObj[] = [];
  * Добавление методов в таблицу на клиенте
  */
 const addMethodToClientTable = () => {
+  let isEditMode = false;
+
   const wooMethod = document.querySelector('#wooMethod') as HTMLSelectElement;
   const wooTime = document.querySelector('#wooTime') as HTMLInputElement;
   const wooObjects = document.querySelector('#wooObjects') as HTMLInputElement;
   const wooZones = document.querySelector('#wooZones') as HTMLInputElement;
-  const tHead = document.querySelector('.thead-dark');
-  let isEditMode = false;
+  const tHead = document.querySelector('.thead-dark') as HTMLElement;
   const eventEditSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
 
   /**
@@ -49,7 +50,7 @@ const addMethodToClientTable = () => {
 
   if (
     wooMethod?.value &&
-    wooMethod.value !== 'Не выбрано' &&
+    wooMethod.value !== Methods.NOT_SELECTED &&
     wooTime?.value &&
     !wooTimeIsOver()
   ) {
@@ -72,22 +73,27 @@ const addMethodToClientTable = () => {
     trElem.classList.add('hover-actions-trigger');
     trElem.classList.add('justadded');
 
-    trElem.innerHTML = `<td class="align-middle text-center text-nowrap ed methods-select">
-    <div class="d-flex align-items-center">
-    <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${wooMethod.value}</div>
-    </div>
-    </td>
-    <td class="align-middle text-nowrap ed wootime">${wooTime.value}</td>
-    <td class="align-middle text-nowrap w-auto ed">
-    ${wooObjects.value}
-    </td>
-    <td class="align-middle text-nowrap ed">${wooZones.value}</td>
-    <td class="align-middle text-nowrap">
-    <div class="btn-group btn-group hover-actions methods-table-hover">
-    <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать"><span class="fas fa-edit" style="color: green;"></span></button>
-    <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить"><span class="fas fa-trash-alt" style="color: red;"></span></button>
-    </div>
-    </td>
+    trElem.innerHTML = `
+      <td class="align-middle text-center text-nowrap ed methods-select">
+        <div class="d-flex align-items-center">
+          <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${wooMethod.value}</div>
+        </div>
+      </td>
+      <td class="align-middle text-nowrap ed wootime">${wooTime.value}</td>
+      <td class="align-middle text-nowrap w-auto ed">
+        ${wooObjects.value}
+      </td>
+      <td class="align-middle text-nowrap ed">${wooZones.value}</td>
+      <td class="align-middle text-nowrap">
+        <div class="btn-group btn-group hover-actions methods-table-hover">
+          <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать">
+            <span class="fas fa-edit" style="color: green;"></span>
+          </button>
+          <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить">
+            <span class="fas fa-trash-alt" style="color: red;"></span>
+          </button>
+        </div>
+      </td>
     `;
 
     tBody?.append(trElem);
