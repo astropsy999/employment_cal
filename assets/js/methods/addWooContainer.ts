@@ -4,6 +4,7 @@ import addMethodToClientTable from './addMethodToClientTable';
 import { settings } from '../api/settings';
 import { TaskType } from '../enums/taskTypes';
 import { Locations } from '../enums/locations';
+import { Methods } from '../enums/methods';
 
 
 /**
@@ -72,11 +73,11 @@ const addWooContainer = (etarget: HTMLElement) => {
     const wooTitle = document.querySelector('.woo-title');
 
     const tableElemHeader = document.createElement('div');
-    tableElemHeader.innerHTML = `<div class="table-responsive scrollbar">
-              <table class="table table-hover table-sm methods-table table-bordered">
-                <tbody class="methods-tbody">
-                </tbody>
-             </table>
+    tableElemHeader.innerHTML = `
+        <div class="table-responsive scrollbar">
+          <table class="table table-hover table-sm methods-table table-bordered">
+            <tbody class="methods-tbody"></tbody>
+          </table>
         </div>
         `;
     wooTitle?.after(tableElemHeader);
@@ -97,7 +98,10 @@ const addWooContainer = (etarget: HTMLElement) => {
     });
   };
 
-  etarget.addEventListener('change', () => {
+  etarget.addEventListener('change', (e) => {
+
+    const target = e.target as HTMLElement;
+    
     if (location?.value === 'Заказчик') {
       showCheckMark();
     } else {
@@ -106,6 +110,19 @@ const addWooContainer = (etarget: HTMLElement) => {
         relCheckEl.remove();
       }
     }
+    // Проверяем, изменился ли элемент с id 'wooMethod'
+    if (target.id === 'wooMethod') {
+      const wooMethodSelect = target as HTMLSelectElement;
+      const selectedOption = wooMethodSelect.options[wooMethodSelect.selectedIndex];
+      const methodID = selectedOption.getAttribute('methodid');
+      const isRK = methodID === Methods.RK_CLASSIC || methodID === Methods.RK_CRG
+      // Проверяем значение methodID и выполняем соответствующие действия
+      if (isRK) {
+        console.log('Выбранный метод:', wooMethodSelect.value);
+        // Здесь можно добавить дополнительную логику при выполнении условия
+      }
+    }
+    
   });
   /**
    * Отслеживание изменений селектора Локация

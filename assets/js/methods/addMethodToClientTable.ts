@@ -8,6 +8,7 @@ export let wooMethodsArray: MethStringObj[] = [];
  * Добавление методов в таблицу на клиенте
  */
 const addMethodToClientTable = () => {
+
   let isEditMode = false;
 
   const wooMethod = document.querySelector('#wooMethod') as HTMLSelectElement;
@@ -35,18 +36,18 @@ const addMethodToClientTable = () => {
     if (!tHead) {
       const addTHead = document.createElement('thead');
       addTHead.classList.add('thead-dark');
-      addTHead.innerHTML = `<tr>
+      addTHead.innerHTML = `
+              <tr>
                 <th scope="col" style="width: 20%">Метод</th>
                 <th class="timeHeaderMeth" scope="col" style="width: 25%">Время, ч</th>
                 <th scope="col" style="width: 25%">Объек&shy;тов, шт</th>
                 <th scope="col" style="width: 21%">Зон/Стыков, шт</th>
                 <th scope="col" style="width: 9%"></th>
-              </tr>`;
+              </tr>
+              `;
       tBody?.before(addTHead);
     }
   };
-
-  
 
   if (
     wooMethod?.value &&

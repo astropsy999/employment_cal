@@ -92,11 +92,8 @@ const employmentCalendar = async () => {
   removeAlarmFromSelectorsInModals();
 
   /* -------------------------------------------------------------------------- */
-
   /*                  ОПРЕДЕЛЕНИЕ ID ПОЛЬЗОВАТЕЛЯ                               */
-
   /* -------------------------------------------------------------------------- */
-
 
   const idDB = await getUserID();
   console.log('idDB: ', idDB);
@@ -111,9 +108,7 @@ const employmentCalendar = async () => {
   localStorage.getItem('iddb') &&
     GDD.getGlobalTasksTypes(localStorage.getItem('iddb'));
   /* -------------------------------------------------------------------------- */
-
   /*                 ПОЛУЧЕНИЕ ДАННЫХ ДЛЯ КАЛЕНДАРЯ                             */
-
   /* -------------------------------------------------------------------------- */
 
   // Определяем текущий месяц
@@ -127,12 +122,9 @@ const employmentCalendar = async () => {
   );
 
   /* -------------------------------------------------------------------------- */
-
   /*                  ПАРСИНГ ПОЛУЧЕННЫХ ДАННЫХ                                 */
-
   /* -------------------------------------------------------------------------- */
-  let { events, parentIdDataArr, lockedDatesArray } =
-    parseResievedDataToCal(data);
+  let { events, parentIdDataArr, lockedDatesArray } = parseResievedDataToCal(data);
 
   sessionStorage.setItem('events', JSON.stringify(events));
   localStorage.setItem('lockedDatesArray', JSON.stringify(lockedDatesArray));

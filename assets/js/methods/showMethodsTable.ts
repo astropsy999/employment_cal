@@ -15,6 +15,7 @@ import { isInvalidElem, isValidElem } from '../utils/toggleElem';
  * @param {*} api
  */
 const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:string]: string}) => {
+
   let isEditMode = false;
   const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn') as HTMLButtonElement;
 

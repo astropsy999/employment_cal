@@ -87,7 +87,7 @@ export const addEventToUser = (calendar: Calendar) => {
     } else {
       if (
         kindOfTasks.value !== TaskType.TECHNICAL_DIAGNOSTIC &&
-        kindOfSubTask.value !== TaskType.TECHNICAL_DIAGNOSTIC
+        kindOfSubTask.value !== TaskType.LABORATORY_CONTROL
       ) {
         e.preventDefault();
 

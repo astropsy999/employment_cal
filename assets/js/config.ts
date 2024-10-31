@@ -62,6 +62,7 @@ const userCol = '8572';
 const METHODS_DROPDOWN_PARAMID = '8764';
 const OBJTYPEID = '1094';
 const ObjTypeID = '871';
+const BRIGADE_PARAM = '9488';
 
 // Объект изменяемых параметров
 
@@ -251,4 +252,5 @@ export {
   BuildWindowForm,
   cacheAddTable,
   cacheSaveTable,
+  BRIGADE_PARAM
 };
