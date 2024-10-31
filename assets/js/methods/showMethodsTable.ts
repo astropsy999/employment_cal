@@ -1,7 +1,8 @@
 import { TaskType } from '../enums/taskTypes';
 import { EventInfo } from '../types/events';
+import { MethodData } from '../types/methods';
 import { wooTimeIsOver } from '../utils/mainGlobFunctions';
-import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
+import { createMethodsTableBody, createMethodsTableHead, sumUneditedMethodsTime } from '../utils/methodsUtils';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
 /**
@@ -33,27 +34,15 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
    * Отправка отредактированных методов в базу данных
    * @param {*} methData
    */
-  const sendEditedMethodToBase = (methData) => {
+  const sendEditedMethodToBase = (methData: MethodData) => {
     const { methVal, durVal, objqVal, zonesVal, editID } = methData;
 
     const editEventModal = document.querySelector('#editEventModal');
-    const delID = editEventModal.getAttribute('delID');
+    const delID = editEventModal?.getAttribute('delID');
 
-    const methodsTbody = editEventModal.querySelector('.methods-tbody');
+    const methodsTbody = editEventModal?.querySelector('.methods-tbody') as HTMLElement;
 
-    function sumUneditedMethodsTime() {
-      let tableRows = methodsTbody.querySelectorAll('tr.hover-actions-trigger');
-      let sum = 0;
-      tableRows.forEach((row) => {
-        let secondColumnValue = parseInt(row.children[1].textContent);
-        if (!isNaN(secondColumnValue)) {
-          sum += secondColumnValue;
-        }
-      });
-      return sum;
-    }
-
-    const allMethodsTimeSum = sumUneditedMethodsTime();
+    const allMethodsTimeSum = sumUneditedMethodsTime(methodsTbody);
     const editedSpentTime = document.querySelector('#eventEditSpentTime');
 
     const editedSpentTimeValue = document.querySelector(

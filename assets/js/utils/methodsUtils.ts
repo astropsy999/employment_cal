@@ -156,3 +156,21 @@ export const createMethodsTableBody = (
     });
     }
 };
+
+
+/**
+ * Расчитывает сумму продолжительности всех нередактируемых в данный момент методов.
+ * @param {HTMLElement} methodsTbody - Элемент тела таблицы
+ * @returns {number} Сумма всех нередактируемых в данный момент методов
+ */
+export function sumUneditedMethodsTime(methodsTbody: HTMLElement): number {
+    let tableRows = methodsTbody?.querySelectorAll('tr.hover-actions-trigger');
+    let sum = 0;
+    tableRows?.forEach((row) => {
+        let secondColumnValue = parseInt(row?.children[1]?.textContent!);
+        if (!isNaN(secondColumnValue)) {
+        sum += secondColumnValue;
+        }
+    });
+    return sum;
+}
