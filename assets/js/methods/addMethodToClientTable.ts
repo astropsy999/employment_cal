@@ -3,12 +3,12 @@ import { MethStringObj } from '../types/methods';
 import { wooTimeIsOver } from '../utils/mainGlobFunctions';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
-export let wooMetodsArray: MethStringObj[] = [];
+export let wooMethodsArray: MethStringObj[] = [];
 /**
  * Добавление методов в таблицу на клиенте
  */
 const addMethodToClientTable = () => {
-  const wooMetod = document.querySelector('#wooMetod') as HTMLSelectElement;
+  const wooMethod = document.querySelector('#wooMethod') as HTMLSelectElement;
   const wooTime = document.querySelector('#wooTime') as HTMLInputElement;
   const wooObjects = document.querySelector('#wooObjects') as HTMLInputElement;
   const wooZones = document.querySelector('#wooZones') as HTMLInputElement;
@@ -45,9 +45,11 @@ const addMethodToClientTable = () => {
     }
   };
 
+  
+
   if (
-    wooMetod?.value &&
-    wooMetod.value !== 'Не выбрано' &&
+    wooMethod?.value &&
+    wooMethod.value !== 'Не выбрано' &&
     wooTime?.value &&
     !wooTimeIsOver()
   ) {
@@ -56,13 +58,13 @@ const addMethodToClientTable = () => {
     }
 
     let methStringObj = {
-      wooMetod: wooMetod.value,
+      wooMethod: wooMethod.value,
       wooTime: wooTime.value,
       wooObjects: wooObjects?.value,
       wooZones: wooZones.value,
     };
 
-    wooMetodsArray.push(methStringObj);
+    wooMethodsArray.push(methStringObj);
 
     let tBody = document.querySelector('.methods-tbody');
 
@@ -72,7 +74,7 @@ const addMethodToClientTable = () => {
 
     trElem.innerHTML = `<td class="align-middle text-center text-nowrap ed methods-select">
     <div class="d-flex align-items-center">
-    <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${wooMetod.value}</div>
+    <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${wooMethod.value}</div>
     </div>
     </td>
     <td class="align-middle text-nowrap ed wootime">${wooTime.value}</td>
@@ -90,17 +92,17 @@ const addMethodToClientTable = () => {
 
     tBody?.append(trElem);
 
-    wooMetod.value =  Methods.NOT_SELECTED;
+    wooMethod.value =  Methods.NOT_SELECTED;
     wooTime.value = '';
     wooObjects.value = '';
     wooZones.value = '';
-    wooMetod.classList.remove('is-invalid');
+    wooMethod.classList.remove('is-invalid');
     wooTime.classList.remove('is-invalid');
-  } else if (!wooMetod.value || wooMetod.value === Methods.NOT_SELECTED) {
-    isInvalidElem(wooMetod);
-    wooMetod.addEventListener('change', () => {
-      if (wooMetod.value !== Methods.NOT_SELECTED) {
-        isValidElem(wooMetod);
+  } else if (!wooMethod.value || wooMethod.value === Methods.NOT_SELECTED) {
+    isInvalidElem(wooMethod);
+    wooMethod.addEventListener('change', () => {
+      if (wooMethod.value !== Methods.NOT_SELECTED) {
+        isValidElem(wooMethod);
       }
     });
   } else if (!wooTime.value || wooTimeIsOver()) {
@@ -142,9 +144,9 @@ const addMethodToClientTable = () => {
             td.innerHTML = `<input class="form-control" type="number" min="1" value="${td.innerText}" onkeyup="if(this.value<0){this.value = this.value * -1}"></input>`;
           } else {
             const newVal = td.innerText;
-            const selectElem = wooMetod.innerHTML;
-            td.innerHTML = `<select class="form-select" id="wooMetodEdit">${selectElem}</select>`;
-            const editSelMeth = document.querySelector('#wooMetodEdit') as HTMLSelectElement;
+            const selectElem = wooMethod.innerHTML;
+            td.innerHTML = `<select class="form-select" id="wooMethodEdit">${selectElem}</select>`;
+            const editSelMeth = document.querySelector('#wooMethodEdit') as HTMLSelectElement;
             editSelMeth.value = newVal;
           }
         } else {

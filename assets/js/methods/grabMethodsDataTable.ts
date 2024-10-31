@@ -17,16 +17,16 @@ const grabMethodsDataTable = (tbody) => {
       grabMethodsArray.push({ method, params: { duration, objects, zones } });
     });
   } else {
-    const wooMetod = document.querySelector('#wooMetod');
-    const wooTime = document.querySelector('#wooTime');
-    const wooObjects = document.querySelector('#wooObjects');
-    const wooZones = document.querySelector('#wooZones');
+    const wooMethod = document.querySelector('#wooMethod') as HTMLSelectElement;
+    const wooTime = document.querySelector('#wooTime') as HTMLInputElement;
+    const wooObjects = document.querySelector('#wooObjects') as HTMLInputElement;
+    const wooZones = document.querySelector('#wooZones') as HTMLInputElement;
     grabMethodsArray.push({
-      method: wooMetod.value,
+      method: wooMethod?.value,
       params: {
-        duration: wooTime.value,
-        objects: wooObjects.value,
-        zones: wooZones.value,
+        duration: wooTime?.value,
+        objects: wooObjects?.value,
+        zones: wooZones?.value,
       },
     });
   }

@@ -44,7 +44,7 @@ const addWooContainer = (etarget: HTMLElement) => {
         <h5 class="modal-title woo-title">Методы контроля</h5>
         <div class="row work-on-object m-1">
             <div class="col-md-2 mb-2 p-0 pr-1">
-                <select class="form-select" id="wooMetod" role="tooltip" title="Метод контроля" data-placement="bottom" >
+                <select class="form-select" id="wooMethod" role="tooltip" title="Метод контроля" data-placement="bottom" >
                         <option value="Не выбрано" selected="selected">Не выбрано</option>
                 </select>
             </div>
@@ -65,9 +65,9 @@ const addWooContainer = (etarget: HTMLElement) => {
         `;
     wooElem?.append(wooElemDiv);
 
-    const wooMetod = etarget.querySelector('#wooMetod');
+    const wooMethod = etarget.querySelector('#wooMethod');
 
-    getMethodsDropDown(wooMetod);
+    getMethodsDropDown(wooMethod);
 
     const wooTitle = document.querySelector('.woo-title');
 

@@ -15,7 +15,6 @@ import { isInvalidElem, isValidElem } from '../utils/toggleElem';
  * @param {*} api
  */
 const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:string]: string}) => {
-  const { srvv, addValueObjTrue, deleteNodeURL } = api;
   let isEditMode = false;
   const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn') as HTMLButtonElement;
 
@@ -55,8 +54,11 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
         const tdItemChildren = tdItem.children[0] as HTMLInputElement | HTMLSelectElement;
 
         if (tdItem.classList.contains('methods-select')) {
-          tdItem.innerHTML = `<div class="d-flex align-items-center">
-                        <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${tdItemChildren.value}</div></div>`;
+          tdItem.innerHTML = `
+            <div class="d-flex align-items-center">
+              <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${tdItemChildren.value}</div>
+            </div>
+            `;
         } else {
           tdItem.innerText = tdItemChildren.value;
         }
