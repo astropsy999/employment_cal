@@ -408,7 +408,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
           krCheck.checked = false;
         }
 
-        let krBase = info.event._def.extendedProps.kr;
+        let krBase = info?.event?._def?.extendedProps?.kr;
 
         if (krCheck && krBase === 'Да') {
           krCheck.checked = true;

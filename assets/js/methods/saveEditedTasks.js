@@ -218,7 +218,7 @@ const saveEditedTasks = (
       }
 
       if (justRemovedMethods && isMethodsAvailable) {
-        const currentMethods = editedEvent._def.extendedProps.methods;
+        const currentMethods = editedEvent?._def?.extendedProps?.methods;
         const updateCurrentMethods = currentMethods?.filter((meth) => {
           const methName = Object.keys(meth)[0];
           return !justRemovedMethods.some(

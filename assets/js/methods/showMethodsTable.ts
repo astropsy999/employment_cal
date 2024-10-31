@@ -1,4 +1,6 @@
+import getMethodsDropDown from '../api/getMethodsDropDown';
 import saveEditedMethodToBaseApi from '../api/saveEditedMethodToBaseApi';
+import { Methods } from '../enums/methods';
 import { TaskType } from '../enums/taskTypes';
 import { EventInfo } from '../types/events';
 import { MethodData } from '../types/methods';
@@ -96,60 +98,72 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
       ) as HTMLInputElement;
     saveEditedMethodToBaseApi({methData: edMetDataObj, editSaveTaskBtn, editedSpentTime});
   };
+
   /**
    * Редактирование строки методов в таблице методов
    * @param {*} ev
    */
-  const editStringOfTableBase = (ev) => {
+  const editStringOfTableBase = (ev: Event) => {
     if (!isEditMode) {
       isEditMode = true;
-      const edString = ev.target.closest('tr');
-      let tdArr = [];
+      const edString = (ev.target as HTMLElement)?.closest('tr');
+      let tdArr: HTMLTableCellElement[] = [];
       if (edString) {
-        tdArr = [...edString.querySelectorAll('td')];
+        tdArr = Array.from(edString.querySelectorAll('td'));
       }
-      tdArr.forEach((td) => {
+      tdArr.forEach(async(td) => {
         if (td.classList.contains('ed')) {
-          // td.append(wooMetod)
-
           if (!td.classList.contains('methods-select')) {
-            td.innerHTML = `<input class="form-control" type="number" min="1" value =${td.innerText} onkeyup="if(this.value<0){this.value = this.value * -1}"></input>`;
+            const value = td.innerText.trim();
+            td.innerHTML = `<input class="form-control" type="number" min="1" value="${value}">`;
           } else {
-            const newVal = td.innerText;
-            const selectElem = wooMetod.innerHTML;
-            td.innerHTML = `<select class="form-select" id="wooMetodEdit">${selectElem}</select>`;
-            const editSelMeth = document.querySelector('#wooMetodEdit');
-            editSelMeth.value = newVal;
+            const newVal = td.innerText.trim();
+            const selectElem = document.createElement('select');
+            selectElem.classList.add('form-select');
+            selectElem.id = 'wooMethodEdit';
+            await getMethodsDropDown(selectElem);
+            td.innerHTML = '';
+            td.appendChild(selectElem);
+            selectElem.value = newVal;
           }
         } else {
-          td.innerHTML = `<div class="btn-group btn-group">
-                <button class="btn btn-light pe-2 save-edited" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Сохранить"><i class="fa fa-check" style="color: green;"></i></button>
-                </div>`;
+          td.innerHTML = `
+            <div class="btn-group btn-group">
+              <button class="btn btn-light pe-2 save-edited" type="button" title="Сохранить">
+                <i class="fa fa-check" style="color: green;"></i>
+              </button>
+            </div>
+            `;
         }
       });
 
-      const saveEditedBtn = document.querySelector('.save-edited');
+      const saveEditedBtn = edString?.querySelector('.save-edited') as HTMLButtonElement;
+      console.log("🚀 ~ editStringOfTableBase ~ edString:", edString)
       saveEditedBtn.addEventListener('click', (e) => {
-        const editedSpentTime = document.querySelector('#eventEditSpentTime');
-        const editedString = e.target.closest('tr');
+        const editedSpentTime = document.querySelector(
+          '#eventEditSpentTime',
+        ) as HTMLInputElement;
+        const editedString = (e.target as HTMLElement)?.closest('tr');
+        console.log("🚀 ~ saveEditedBtn.addEventListener ~ edString:", edString)
 
-        const metSelTd = editedString.querySelector('.methods-select');
-        const selMetSel = metSelTd.querySelector('select');
+        const metSelTd = editedString?.querySelector('.methods-select');
+        console.log("🚀 ~ saveEditedBtn.addEventListener ~ edString:", edString)
+        const selMetSel = metSelTd?.querySelector('select');
 
-        if (selMetSel.value !== 'Не выбрано') {
+        if (selMetSel?.value !== Methods.NOT_SELECTED) {
           const wooTimes = document.querySelectorAll('.wootime');
           let totalWooTime = 0;
 
           wooTimes.forEach((time) => {
             let content = time.innerHTML;
             if (content.includes('<input')) {
-              let value = time.querySelector('input').value;
-              totalWooTime += +value;
+              let value = (time.querySelector('input') as HTMLInputElement)?.value;
+              totalWooTime += parseFloat(value || '0');
             } else {
-              totalWooTime += +content;
+              totalWooTime += parseFloat(content);
             }
           });
-          if (totalWooTime <= editedSpentTime.value) {
+          if (totalWooTime <= parseFloat(editedSpentTime?.value)) {
             switchOffEditModeBase(e);
             isValidElem(editedSpentTime);
           } else {
@@ -158,7 +172,7 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
         } else {
           isInvalidElem(selMetSel);
           selMetSel.addEventListener('change', () => {
-            if (selMetSel.value !== 'Не выбрано') {
+            if (selMetSel.value !== Methods.NOT_SELECTED) {
               isValidElem(selMetSel);
             } else {
               isInvalidElem(selMetSel);
@@ -168,6 +182,7 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
       });
     }
   };
+  
   /**
    * Удаление строки из таблицы методов
    * @param {*} ev
