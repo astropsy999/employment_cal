@@ -1,7 +1,7 @@
 import { TaskType } from '../enums/taskTypes';
 import { EventInfo } from '../types/events';
 import { wooTimeIsOver } from '../utils/mainGlobFunctions';
-import { createMethodsTableHead } from '../utils/methodsUtils';
+import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
 /**
@@ -26,42 +26,9 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
     createMethodsTableHead(wooElem);
   }
 
-  let tBody = document.querySelector('.methods-tbody');
-  if (tBody) {
-    if (methodsArray) {
-      methodsArray.forEach((tablelem) => {
-        const method = Object.keys(tablelem)[0];
-        const methodParams = Object.values(tablelem)[0];
+  let tBody = document.querySelector('.methods-tbody') as HTMLElement;
+  createMethodsTableBody(methodsArray, tBody);
 
-        const trElem = document.createElement('tr');
-        trElem.setAttribute('editid', methodParams['editID']);
-        trElem.classList.add('hover-actions-trigger');
-        trElem.innerHTML = `
-          <td class="align-middle text-center text-nowrap ed methods-select">
-            <div class="d-flex align-items-center">
-              <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${method}</div>
-            </div>
-          </td>
-          <td class="align-middle text-nowrap ed wootime">${methodParams['duration']}</td>
-          <td class="w-auto ed">
-            ${methodParams['objQuant']}
-          </td>
-          <td class="align-middle text-nowrap ed">${methodParams['zones']}</td>
-          <td class="align-middle text-nowrap">
-            <div class="btn-group btn-group hover-actions methods-table-hover">
-              <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать">
-                <span class="fas fa-edit" style="color: green;"></span>
-              </button>
-              <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить">
-                <span class="fas fa-trash-alt" style="color: red;"></span>
-              </button>
-            </div>
-          </td>`;
-
-        tBody.append(trElem);
-      });
-    }
-  }
   /**
    * Отправка отредактированных методов в базу данных
    * @param {*} methData

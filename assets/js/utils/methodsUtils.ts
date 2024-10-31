@@ -1,3 +1,5 @@
+import { MethodObj } from "../types/methods";
+
 /**
  * Функция создает шапку для таблицы с методами
  * @param {HTMLElement} wooElem - Элемент после которого будет вставлена таблица
@@ -41,4 +43,116 @@ export const createMethodsTableHead = (wooElem: HTMLElement): void => {
     tableElemHeader.appendChild(table);
     
     wooElem.after(tableElemHeader);
-  };
+};
+
+/**
+ * Создает тело таблицы методов, добавляя строки для каждого метода.
+ * @param {MethodObject[]} methodsArray - Массив методов.
+ * @param {HTMLElement} tBody - Элемент tbody, в который будут добавлены строки.
+ */
+export const createMethodsTableBody = (
+    methodsArray: MethodObj[],
+    tBody: HTMLElement,
+) => {
+    if (tBody && methodsArray) {
+        methodsArray.forEach((methodObj) => {
+            const methodName = Object.keys(methodObj)[0];
+            const methodParams = methodObj[methodName];
+
+            // Создаем строку таблицы
+            const trElem = document.createElement('tr');
+            trElem.setAttribute('editid', methodParams.editID);
+            trElem.classList.add('hover-actions-trigger');
+
+            // Создаем ячейки таблицы
+            const methodCell = document.createElement('td');
+            methodCell.classList.add(
+                'align-middle',
+                'text-center',
+                'text-nowrap',
+                'ed',
+                'methods-select',
+        );
+
+        const methodDiv = document.createElement('div');
+        methodDiv.classList.add('d-flex', 'align-items-center');
+
+        const methodBadge = document.createElement('div');
+        methodBadge.classList.add(
+            'ms-2',
+            'fw-bold',
+            'badge',
+            'bg-info',
+            'text-wrap',
+            'p-2',
+            'shadow-sm',
+        );
+        methodBadge.textContent = methodName;
+
+        methodDiv.appendChild(methodBadge);
+        methodCell.appendChild(methodDiv);
+
+        const durationCell = document.createElement('td');
+        durationCell.classList.add('align-middle', 'text-nowrap', 'ed', 'wootime');
+        durationCell.textContent = methodParams.duration.toString();
+
+        const objQuantCell = document.createElement('td');
+        objQuantCell.classList.add('w-auto', 'ed');
+        objQuantCell.textContent = methodParams.objQuant.toString();
+
+        const zonesCell = document.createElement('td');
+        zonesCell.classList.add('align-middle', 'text-nowrap', 'ed');
+        zonesCell.textContent = methodParams.zones.toString();
+
+        const actionsCell = document.createElement('td');
+        actionsCell.classList.add('align-middle', 'text-nowrap');
+
+        // Создаем группу кнопок для редактирования и удаления строки
+        const btnGroupDiv = document.createElement('div');
+        btnGroupDiv.classList.add(
+            'btn-group',
+            'btn-group',
+            'hover-actions',
+            'methods-table-hover',
+            );
+
+        const editButton = document.createElement('button');
+        editButton.classList.add('btn', 'btn-light', 'pe-2', 'edit-string');
+        editButton.type = 'button';
+        editButton.title = 'Редактировать';
+
+        const editIcon = document.createElement('span');
+        editIcon.classList.add('fas', 'fa-edit');
+        editIcon.style.color = 'green';
+
+        editButton.appendChild(editIcon);
+
+        // Добавляем кнопки в группу
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('btn', 'btn-light', 'ps-2', 'delete-string');
+        deleteButton.type = 'button';
+        deleteButton.title = 'Удалить';
+
+        const deleteIcon = document.createElement('span');
+        deleteIcon.classList.add('fas', 'fa-trash-alt');
+        deleteIcon.style.color = 'red';
+
+        deleteButton.appendChild(deleteIcon);
+
+        btnGroupDiv.appendChild(editButton);
+        btnGroupDiv.appendChild(deleteButton);
+
+        actionsCell.appendChild(btnGroupDiv);
+
+        // Добавляем ячейки в строку
+        trElem.appendChild(methodCell);
+        trElem.appendChild(durationCell);
+        trElem.appendChild(objQuantCell);
+        trElem.appendChild(zonesCell);
+        trElem.appendChild(actionsCell);
+
+        // Добавляем строку в tbody
+        tBody.appendChild(trElem);
+    });
+    }
+};
