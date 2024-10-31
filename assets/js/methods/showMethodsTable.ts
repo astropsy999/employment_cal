@@ -1,3 +1,4 @@
+import saveEditedMethodToBaseApi from '../api/saveEditedMethodToBaseApi';
 import { TaskType } from '../enums/taskTypes';
 import { EventInfo } from '../types/events';
 import { MethodData } from '../types/methods';
@@ -14,7 +15,7 @@ import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:string]: string}) => {
   const { srvv, addValueObjTrue, deleteNodeURL } = api;
   let isEditMode = false;
-  const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn');
+  const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn') as HTMLButtonElement;
 
   const methodsArray = eventInfo.extendedProps.methods;
   const taskTypeNew = eventInfo.extendedProps.taskTypeNew;
@@ -30,127 +31,55 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
   let tBody = document.querySelector('.methods-tbody') as HTMLElement;
   createMethodsTableBody(methodsArray, tBody);
 
-  /**
-   * Отправка отредактированных методов в базу данных
-   * @param {*} methData
-   */
-  const sendEditedMethodToBase = (methData: MethodData) => {
-    const { methVal, durVal, objqVal, zonesVal, editID } = methData;
 
-    const editEventModal = document.querySelector('#editEventModal');
-    const delID = editEventModal?.getAttribute('delID');
-
-    const methodsTbody = editEventModal?.querySelector('.methods-tbody') as HTMLElement;
-
-    const allMethodsTimeSum = sumUneditedMethodsTime(methodsTbody);
-    const editedSpentTime = document.querySelector('#eventEditSpentTime');
-
-    const editedSpentTimeValue = document.querySelector(
-      '#eventEditSpentTime',
-    ).value;
-
-    if (allMethodsTimeSum > editedSpentTimeValue) {
-      isInvalidElem(editedSpentTime);
-
-      editedSpentTime.addEventListener('change', () => {});
-
-      const timeHeader = document.querySelector(
-        'th[scope="col"]:nth-of-type(2)',
-      );
-      timeHeader.textContent = `Время методов не может быть > ${editedSpentTimeValue}ч`;
-      timeHeader.style.border = '2px solid red';
-      timeHeader.style.color = 'red';
-      editSaveTaskBtn.setAttribute('disabled', 'disabled');
-
-      return;
-    }
-
-    // return;
-
-    let formDataEdMeth = new FormData();
-
-    formDataEdMeth.append('ID', editID);
-    formDataEdMeth.append('TypeID', '1149');
-    formDataEdMeth.append('Data[0][name]', '8764');
-    formDataEdMeth.append('Data[0][value]', methVal);
-    formDataEdMeth.append('Data[0][isName]', 'true');
-    formDataEdMeth.append('Data[0][maninp]', 'false');
-    formDataEdMeth.append('Data[0][GroupID]', '2549');
-    formDataEdMeth.append('Data[1][name]', '8767');
-    formDataEdMeth.append('Data[1][value]', durVal);
-    formDataEdMeth.append('Data[1][isName]', 'false');
-    formDataEdMeth.append('Data[1][maninp]', 'false');
-    formDataEdMeth.append('Data[1][GroupID]', '2549');
-    formDataEdMeth.append('Data[2][name]', '8766');
-    formDataEdMeth.append('Data[2][value]', objqVal);
-    formDataEdMeth.append('Data[2][isName]', 'false');
-    formDataEdMeth.append('Data[2][maninp]', 'false');
-    formDataEdMeth.append('Data[2][GroupID]', '2549');
-    formDataEdMeth.append('Data[3][name]', '8765');
-    formDataEdMeth.append('Data[3][value]', zonesVal);
-    formDataEdMeth.append('Data[3][isName]', 'false');
-    formDataEdMeth.append('Data[3][maninp]', 'false');
-    formDataEdMeth.append('Data[3][GroupID]', '2549');
-    formDataEdMeth.append('ParentObjID', delID);
-    formDataEdMeth.append('CalcParamID', '-1');
-    formDataEdMeth.append('InterfaceID', '1685');
-    formDataEdMeth.append('ImportantInterfaceID', '');
-    formDataEdMeth.append('templ_mode', 'false');
-    formDataEdMeth.append('Ignor39', '1');
-
-    fetch(srvv + addValueObjTrue, {
-      credentials: 'include',
-      method: 'post',
-      body: formDataEdMeth,
-    })
-      .then((response) => {
-        console.log('Данные метода-сохранены');
-
-        return response.json();
-      })
-      .catch(function (error) {
-        console.log('Ошибка отправки данных по методу', error);
-      });
-  };
   /**
    * Отправка отредактированной строки в таблице методов в базу данных
    * @param {*} ev
    */
-  const switchOffEditModeBase = (ev) => {
-    let edMetDataObj = {};
+  const switchOffEditModeBase = (ev: Event) => {
+    let edMetDataObj: MethodData = {} as MethodData;
 
-    const editedString = ev.target.closest('tr');
-    const editID = editedString.getAttribute('editid');
-    edMetDataObj['editID'] = editID;
-    let tdArray = [];
+    const editedString = (ev.target as HTMLElement)?.closest('tr');
+    const editID = editedString?.getAttribute('editid');
+    edMetDataObj['editID'] = editID!;
+    let tdArray: HTMLTableCellElement[] = [];
 
     if (editedString) {
-      tdArray = [...editedString.querySelectorAll('td')];
+      tdArray = Array.from(editedString.querySelectorAll('td'));
     }
 
     tdArray.forEach((tdItem, idx) => {
       if (tdItem.classList.contains('ed')) {
+        const tdItemChildren = tdItem.children[0] as HTMLInputElement | HTMLSelectElement;
+
         if (tdItem.classList.contains('methods-select')) {
           tdItem.innerHTML = `<div class="d-flex align-items-center">
-                        <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${tdItem.children[0].value}</div></div>`;
+                        <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${tdItemChildren.value}</div></div>`;
         } else {
-          tdItem.innerText = tdItem.children[0].value;
+          tdItem.innerText = tdItemChildren.value;
         }
       } else {
-        tdItem.innerHTML = `<div class="btn-group btn-group hover-actions methods-table-hover">
-                <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать"><span class="fas fa-edit" style="color: green;"></span></button>
-                <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить"><span class="fas fa-trash-alt" style="color: red;"></span></button>
-                </div>`;
+        tdItem.innerHTML = `
+        <div class="btn-group btn-group hover-actions methods-table-hover">
+          <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать">
+            <span class="fas fa-edit" style="color: green;"></span>
+          </button>
+          <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить">
+            <span class="fas fa-trash-alt" style="color: red;"></span>
+          </button>
+        </div>
+        `;
       }
-      edMetDataObj['methVal'] = tdArray[0].innerText;
-      edMetDataObj['durVal'] = tdArray[1].innerText;
-      edMetDataObj['objqVal'] = tdArray[2].innerText;
-      edMetDataObj['zonesVal'] = tdArray[3].innerText;
+      edMetDataObj['methVal'] = tdArray[0].innerText.trim();
+      edMetDataObj['durVal'] = tdArray[1].innerText.trim();
+      edMetDataObj['objqVal'] = tdArray[2].innerText.trim();
+      edMetDataObj['zonesVal'] = tdArray[3].innerText.trim();
     });
 
-    const editStringBtnArr = [...document.querySelectorAll('.edit-string')];
-    const delStrBtnArr = [...document.querySelectorAll('.delete-string')];
+    const editStringBtnArr = Array.from(document.querySelectorAll('.edit-string'));
+    const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
 
+    // Добавляем обработчики событий заново
     editStringBtnArr.forEach((item) => {
       item.addEventListener('click', (e) => {
         editStringOfTableBase(e);
@@ -162,7 +91,10 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
       });
     });
     isEditMode = false;
-    sendEditedMethodToBase(edMetDataObj);
+      const editedSpentTime = document.querySelector(
+        '#eventEditSpentTime',
+      ) as HTMLInputElement;
+    saveEditedMethodToBaseApi({methData: edMetDataObj, editSaveTaskBtn, editedSpentTime});
   };
   /**
    * Редактирование строки методов в таблице методов
