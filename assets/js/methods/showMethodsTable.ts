@@ -1,3 +1,4 @@
+import deleteMethodFromTableApi from '../api/deleteMethodFromTableApi';
 import getMethodsDropDown from '../api/getMethodsDropDown';
 import saveEditedMethodToBaseApi from '../api/saveEditedMethodToBaseApi';
 import { Methods } from '../enums/methods';
@@ -182,30 +183,24 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
       });
     }
   };
-  
+
   /**
    * Удаление строки из таблицы методов
    * @param {*} ev
    */
-  const deleteStringOfTableBase = (ev) => {
-    const delStr = ev.target.closest('tr');
-    const methDelID = delStr.getAttribute('editid');
-    delStr.remove();
+const deleteStringOfTableBase = (ev: Event) => {
+    const delStr = (ev.target as HTMLElement)?.closest('tr');
+    const methDelID = delStr?.getAttribute('editid');
+    if (!methDelID) {
+      console.error('Не найден ID метода для удаления');
+      return;
+    }
+  
+    // Удаляем строку из таблицы
+    delStr?.remove();
 
-    fetch(srvv + deleteNodeURL + `?ID=${methDelID}&TypeID=1149&TabID=1685`, {
-      credentials: 'include',
-      method: 'GET',
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Метод удален');
-      })
-
-      .catch(function (error) {
-        console.log('Ошибка отправки удаления метода', error);
-      });
+    // Удаляем метод из базы данных
+    deleteMethodFromTableApi(methDelID);
   };
 
   const strEditBtnArr = [...document.querySelectorAll('.edit-string')];
