@@ -5,8 +5,7 @@ import { Methods } from '../enums/methods';
 import { TaskType } from '../enums/taskTypes';
 import { EventInfo } from '../types/events';
 import { MethodData } from '../types/methods';
-import { wooTimeIsOver } from '../utils/mainGlobFunctions';
-import { createMethodsTableBody, createMethodsTableHead, sumUneditedMethodsTime } from '../utils/methodsUtils';
+import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
 /**
@@ -188,7 +187,7 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
    * Удаление строки из таблицы методов
    * @param {*} ev
    */
-const deleteStringOfTableBase = (ev: Event) => {
+  const deleteStringOfTableBase = (ev: Event) => {
     const delStr = (ev.target as HTMLElement)?.closest('tr');
     const methDelID = delStr?.getAttribute('editid');
     if (!methDelID) {
@@ -203,8 +202,9 @@ const deleteStringOfTableBase = (ev: Event) => {
     deleteMethodFromTableApi(methDelID);
   };
 
-  const strEditBtnArr = [...document.querySelectorAll('.edit-string')];
-  const delStrBtnArr = [...document.querySelectorAll('.delete-string')];
+  // Добавление обработчиков событий к кнопкам редактирования и удаления
+  const strEditBtnArr = Array.from(document.querySelectorAll('.edit-string'));
+  const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
 
   strEditBtnArr.forEach((item) => {
     item.addEventListener('click', (e) => {
