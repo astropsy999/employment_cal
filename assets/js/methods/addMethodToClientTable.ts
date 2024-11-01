@@ -1,5 +1,6 @@
 import { Methods } from '../enums/methods';
 import { MethStringObj } from '../types/methods';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { wooTimeIsOver } from '../utils/mainGlobFunctions';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
@@ -8,6 +9,7 @@ export let wooMethodsArray: MethStringObj[] = [];
  * Добавление методов в таблицу на клиенте
  */
 const addMethodToClientTable = () => {
+  const isRK = getLocalStorageItem('isRK');
 
   let isEditMode = false;
 
@@ -78,6 +80,9 @@ const addMethodToClientTable = () => {
       <td class="align-middle text-center text-nowrap ed methods-select">
         <div class="d-flex align-items-center">
           <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${wooMethod.value}</div>
+          ${isRK ? `<button class="brigade-btn ms-2 border-0 radius-sm color-white" type="button">
+           <i class="fa fa-users color-white" aria-hidden="true"></i>
+          </button>`: ``}
         </div>
       </td>
       <td class="align-middle text-nowrap ed wootime">${wooTime.value}</td>

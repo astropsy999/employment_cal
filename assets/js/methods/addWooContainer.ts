@@ -9,6 +9,7 @@ import getBrigadeWorkers from '../api/getBrigadeWorkers';
 import Choices from 'choices.js';
 import 'choices.js/public/assets/styles/choices.min.css';
 import { initials } from '../utils/textsUtils';
+import { setLocalStorageItem } from '../utils/localStorageUtils';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -108,6 +109,7 @@ const addWooContainer = (etarget: HTMLElement) => {
     addWooMetBtn?.addEventListener('click', (e) => {
       e.preventDefault();
       addMethodToClientTable();
+      removeBrigadirElements();
     });
 
     // Добавляем слушатель изменения для wooMethod после его создания
@@ -139,7 +141,6 @@ const addWooContainer = (etarget: HTMLElement) => {
 
       // Проверяем значение methodID и выполняем соответствующие действия
       if (isRK) {
-        console.log('Выбранный метод:', wooMethodSelect.value);
         addBrigadirElements();
       } else {
         removeBrigadirElements();
@@ -151,6 +152,8 @@ const addWooContainer = (etarget: HTMLElement) => {
    * Добавление чекбокса "Я бригадир" и селектора "бригада"
    */
   const addBrigadirElements = async () => {
+    // Данные о выбранном методе в сторе
+    setLocalStorageItem('isRK', true);
     // Проверяем, не добавлены ли уже элементы
     if (brigadirCheckbox || brigadeSelect) return;
 
@@ -162,7 +165,7 @@ const addWooContainer = (etarget: HTMLElement) => {
     brigadirCheckbox = document.createElement('div');
     brigadirCheckbox.classList.add('col-md-2', 'mb-2', 'p-0', 'pr-1');
     brigadirCheckbox.innerHTML = `
-      <div class="form-check d-flex flex-column align-items-center">
+      <div class="">
         <label class="form-check-label" for="brigadirCheckbox">Я бригадир</label>
         <input class="form-check-input" type="checkbox" id="brigadirCheckbox">
       </div>
@@ -171,7 +174,7 @@ const addWooContainer = (etarget: HTMLElement) => {
 
     // Создание селектора "бригада"
     brigadeSelect = document.createElement('div');
-    brigadeSelect.classList.add('col-md-2', 'mb-2', 'pr-1');
+    brigadeSelect.classList.add('col-md-6', 'mb-2', 'pr-1');
     brigadeSelect.innerHTML = `
       <select class="form-select" id="brigadeSelect" multiple>
         <!-- Опции будут динамически добавлены через TypeScript -->
@@ -199,7 +202,7 @@ const addWooContainer = (etarget: HTMLElement) => {
     searchResultLimit: 100,
     renderChoiceLimit: 100,
     shouldSort: false,
-    placeholderValue: 'Выберите бригаду',
+    placeholderValue: 'Выберите работников бригады',
     noResultsText: 'Ничего не найдено',
     itemSelectText: '',
   });
@@ -219,6 +222,7 @@ const addWooContainer = (etarget: HTMLElement) => {
    * Удаление чекбокса "Я бригадир" и селектора "бригада"
    */
   const removeBrigadirElements = () => {
+    setLocalStorageItem('isRK', false);
     if (brigadirCheckbox) {
       brigadirCheckbox.remove();
       brigadirCheckbox = null;
