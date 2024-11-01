@@ -18,7 +18,11 @@ const addMethodToClientTable = () => {
   const wooObjects = document.querySelector('#wooObjects') as HTMLInputElement;
   const wooZones = document.querySelector('#wooZones') as HTMLInputElement;
   const tHead = document.querySelector('.thead-dark') as HTMLElement;
+  const brigadeSelect = document.querySelector('#brigadeSelect') as HTMLSelectElement;
   const eventEditSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
+
+
+ 
 
   /**
    * Удаление строки в таблице методов

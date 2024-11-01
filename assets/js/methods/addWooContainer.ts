@@ -1,15 +1,15 @@
-import { getMethodsDropDown } from '../api/getDropDownData';
-import { selRemoveValidation } from '../utils/mainGlobFunctions';
-import addMethodToClientTable from './addMethodToClientTable';
-import { settings } from '../api/settings';
-import { TaskType } from '../enums/taskTypes';
-import { Locations } from '../enums/locations';
-import { Methods } from '../enums/methods';
-import getBrigadeWorkers from '../api/getBrigadeWorkers';
 import Choices from 'choices.js';
 import 'choices.js/public/assets/styles/choices.min.css';
-import { initials } from '../utils/textsUtils';
+import getBrigadeWorkers from '../api/getBrigadeWorkers';
+import { getMethodsDropDown } from '../api/getDropDownData';
+import { settings } from '../api/settings';
+import { Locations } from '../enums/locations';
+import { Methods } from '../enums/methods';
+import { TaskType } from '../enums/taskTypes';
 import { setLocalStorageItem } from '../utils/localStorageUtils';
+import { selRemoveValidation } from '../utils/mainGlobFunctions';
+import { initials } from '../utils/textsUtils';
+import addMethodToClientTable from './addMethodToClientTable';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -21,10 +21,15 @@ const addWooContainer = (etarget: HTMLElement) => {
   const findTypeOfSubTask = etarget.querySelector('.typeofsubtask') as HTMLSelectElement;
   const wooElem = etarget.querySelector('.woo') as HTMLDivElement;
   const location = etarget.querySelector('.location') as HTMLInputElement;
+  
 
   // Хранение ссылок на динамически добавленные элементы
   let brigadirCheckbox: HTMLDivElement | null = null;
   let brigadeSelect: HTMLDivElement | null = null;
+
+  // Глобальная переменная для хранения экземпляра Choices.js
+  let brigadeChoicesInstance: Choices | null = null;
+
 
   /**
    * Показ галочки КР
@@ -104,12 +109,54 @@ const addWooContainer = (etarget: HTMLElement) => {
       { once: true },
     );
 
+    /**
+ * Добавляет класс is-invalid к контейнеру Choices.js
+ * @param elem - оригинальный <select> элемент
+ */
+    const isInvalidElem = (elem: HTMLElement) => {
+      // Найти контейнер Choices.js
+      const choicesContainer = elem.parentElement?.querySelector('.choices');
+      if (choicesContainer) {
+        choicesContainer.classList.add('is-invalid');
+      }
+    };
+
+    /**
+     * Удаляет класс is-invalid у контейнера Choices.js
+     * @param elem - оригинальный <select> элемент
+     */
+    const isValidElem = (elem: HTMLElement) => {
+      // Найти контейнер Choices.js
+      const choicesContainer = elem.parentElement?.querySelector('.choices');
+      if (choicesContainer) {
+        choicesContainer.classList.remove('is-invalid');
+      }
+    };
+
     const addWooMetBtn = wooElem?.querySelector('#addWooMet');
 
     addWooMetBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      addMethodToClientTable();
-      removeBrigadirElements();
+        e.preventDefault();
+
+        const brigadeSelect = etarget.querySelector('#brigadeSelect') as HTMLSelectElement; 
+        
+        if (brigadeChoicesInstance) {
+          const selectedValues = brigadeChoicesInstance.getValue(true);
+          console.log("🚀 ~ Selected Brigade Values:", selectedValues);
+          
+          if (selectedValues.length === 0) {
+            alert('Выберите работников бригады');
+            return;
+            
+          } else {
+            isValidElem(brigadeSelect);
+          }
+        }
+        return
+        addMethodToClientTable();
+        removeBrigadirElements();
+      
+
     });
 
     // Добавляем слушатель изменения для wooMethod после его создания
@@ -197,7 +244,7 @@ const addWooContainer = (etarget: HTMLElement) => {
   });
 
   // Инициализируем Choices.js на селекторе "бригада"
-  const choices = new Choices(brigadeSelectElement, {
+  brigadeChoicesInstance = new Choices(brigadeSelectElement, {
     removeItemButton: true,
     searchResultLimit: 100,
     renderChoiceLimit: 100,
