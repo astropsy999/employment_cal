@@ -10,6 +10,7 @@ import { setLocalStorageItem } from '../utils/localStorageUtils';
 import { selRemoveValidation } from '../utils/mainGlobFunctions';
 import { initials } from '../utils/textsUtils';
 import addMethodToClientTable from './addMethodToClientTable';
+import { showToast } from '../utils/toastifyUtil';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -145,11 +146,8 @@ const addWooContainer = (etarget: HTMLElement) => {
           console.log("🚀 ~ Selected Brigade Values:", selectedValues);
           
           if (selectedValues.length === 0) {
-            alert('Выберите работников бригады');
+            showToast('Выберите работников бригады', 'error');
             return;
-            
-          } else {
-            isValidElem(brigadeSelect);
           }
         }
         return
