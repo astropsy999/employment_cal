@@ -2,10 +2,9 @@ import * as c from '../config';
 
 /**
  * Функция получает данные о методах из базы и заполняет селект элемент.
- * @param {HTMLSelectElement} element - Селект элемент, который нужно заполнить опциями.
  * @returns {Promise<void>} - Промис, который резолвится после загрузки данных.
  */
-const getBrigadeDropDown = async (element: HTMLSelectElement): Promise<void> => {
+const getBrigadeWorkers = async (): Promise<{ID: string, Name: string}[] | undefined> => {
     const parentID = '';
   
     const formDataBrigade = new FormData();
@@ -28,21 +27,12 @@ const getBrigadeDropDown = async (element: HTMLSelectElement): Promise<void> => 
       });
   
       const data = await response.json();
-      const brigadeDropArray = data.data;
+      return data.data;
   
-      if (element.options.length <= 1) {
-        brigadeDropArray.forEach((dataline: any) => {
-          const optionElem = document.createElement('option');
-          const datalineid = dataline.ID;
-          optionElem.setAttribute('value', `${dataline.Name}`);
-          optionElem.setAttribute('brigadeid', `${datalineid}`);
-          optionElem.innerText = `${dataline.Name}`;
-          element.append(optionElem);
-        });
-      }
+   
     } catch (error) {
       console.error('Не получилось загрузить список членов бригады', error);
     }
   };
   
-  export default getBrigadeDropDown;
+  export default getBrigadeWorkers;

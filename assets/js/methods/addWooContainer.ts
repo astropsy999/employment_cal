@@ -5,6 +5,9 @@ import { settings } from '../api/settings';
 import { TaskType } from '../enums/taskTypes';
 import { Locations } from '../enums/locations';
 import { Methods } from '../enums/methods';
+import getBrigadeWorkers from '../api/getBrigadeWorkers';
+import Choices from 'choices.js';
+import 'choices.js/public/assets/styles/choices.min.css';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -146,7 +149,7 @@ const addWooContainer = (etarget: HTMLElement) => {
   /**
    * Добавление чекбокса "Я бригадир" и селектора "бригада"
    */
-  const addBrigadirElements = () => {
+  const addBrigadirElements = async () => {
     // Проверяем, не добавлены ли уже элементы
     if (brigadirCheckbox || brigadeSelect) return;
 
@@ -158,24 +161,50 @@ const addWooContainer = (etarget: HTMLElement) => {
     brigadirCheckbox = document.createElement('div');
     brigadirCheckbox.classList.add('col-md-2', 'mb-2', 'p-0', 'pr-1');
     brigadirCheckbox.innerHTML = `
-      <div class="">
+      <div class="form-check d-flex flex-column align-items-center">
         <label class="form-check-label" for="brigadirCheckbox">Я бригадир</label>
         <input class="form-check-input" type="checkbox" id="brigadirCheckbox">
       </div>
+
     `;
 
     // Создание селектора "бригада"
     brigadeSelect = document.createElement('div');
-    brigadeSelect.classList.add('col-sd-6', 'mb-2', 'pr-1');
+    brigadeSelect.classList.add('col-md-2', 'mb-2', 'pr-1');
     brigadeSelect.innerHTML = `
-      <select class="form-select" id="brigadeSelect" aria-label="Выбор бригады">
-        <option value="" selected>Выберите бригаду</option>
-        <option value="бригада1">Бригада 1</option>
-        <option value="бригада2">Бригада 2</option>
-        <option value="бригада3">Бригада 3</option>
-        <!-- Добавьте другие опции по необходимости -->
+      <select class="form-select" id="brigadeSelect" multiple>
+        <!-- Опции будут динамически добавлены через TypeScript -->
       </select>
     `;
+
+     // Получаем список работников бригады
+  const brigadeWorkers = await getBrigadeWorkers();
+
+  const brigadeSelectElement = brigadeSelect.querySelector('#brigadeSelect') as HTMLSelectElement;
+
+   // Заполняем селектор работниками бригады
+   brigadeWorkers?.forEach((worker) => {
+    const {ID: id, Name: name} = worker;
+    const option = document.createElement('option');
+    option.value = id;
+    option.text = name;
+    option.selected = true; // Изначально все выбраны
+    brigadeSelectElement.appendChild(option);
+  });
+
+  // Инициализируем Choices.js на селекторе "бригада"
+  const choices = new Choices(brigadeSelectElement, {
+    removeItemButton: true,
+    searchResultLimit: 100,
+    renderChoiceLimit: 100,
+    shouldSort: false,
+    placeholderValue: 'Выберите бригаду',
+    noResultsText: 'Ничего не найдено',
+    itemSelectText: '',
+  });
+
+  // Хранение экземпляра Choices для последующей очистки при удалении
+  brigadeSelect.dataset.choices = 'true'; // Маркируем, что Choices инициализирован
 
     // Вставляем элементы после селектора 'wooMethod' (первый дочерний элемент строки)
     const children = Array.from(workOnObjectRow.children);
