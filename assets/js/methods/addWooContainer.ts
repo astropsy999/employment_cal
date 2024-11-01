@@ -7,10 +7,11 @@ import { Locations } from '../enums/locations';
 import { Methods } from '../enums/methods';
 import { TaskType } from '../enums/taskTypes';
 import { setLocalStorageItem } from '../utils/localStorageUtils';
-import { selRemoveValidation } from '../utils/mainGlobFunctions';
+import { selRemoveValidation, wooTimeIsOver } from '../utils/mainGlobFunctions';
 import { initials } from '../utils/textsUtils';
 import addMethodToClientTable from './addMethodToClientTable';
 import { showToast } from '../utils/toastifyUtil';
+import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -110,50 +111,58 @@ const addWooContainer = (etarget: HTMLElement) => {
       { once: true },
     );
 
-    /**
- * Добавляет класс is-invalid к контейнеру Choices.js
- * @param elem - оригинальный <select> элемент
- */
-    const isInvalidElem = (elem: HTMLElement) => {
-      // Найти контейнер Choices.js
-      const choicesContainer = elem.parentElement?.querySelector('.choices');
-      if (choicesContainer) {
-        choicesContainer.classList.add('is-invalid');
-      }
-    };
-
-    /**
-     * Удаляет класс is-invalid у контейнера Choices.js
-     * @param elem - оригинальный <select> элемент
-     */
-    const isValidElem = (elem: HTMLElement) => {
-      // Найти контейнер Choices.js
-      const choicesContainer = elem.parentElement?.querySelector('.choices');
-      if (choicesContainer) {
-        choicesContainer.classList.remove('is-invalid');
-      }
-    };
 
     const addWooMetBtn = wooElem?.querySelector('#addWooMet');
 
     addWooMetBtn?.addEventListener('click', (e) => {
         e.preventDefault();
 
-        const brigadeSelect = etarget.querySelector('#brigadeSelect') as HTMLSelectElement; 
+        const wooTime = etarget.querySelector('#wooTime') as HTMLInputElement;
+        const wooMethod = etarget.querySelector('#wooMethod') as HTMLSelectElement;
+
+          // Получение выбранного метода контроля
+          const selectedOption = wooMethod.options[wooMethod.selectedIndex];
+          const methodID = selectedOption.getAttribute('methodid');
+          const isRK = methodID === Methods.RK_CLASSIC || methodID === Methods.RK_CRG;
+
+          // Валидация формы
+          let isValid = true;
+
+          // Валидация метода контроля
+          if (!wooMethod.value || wooMethod.value === Methods.NOT_SELECTED) {
+            isInvalidElem(wooMethod);
+            showToast('Выберите метод контроля', 'error');
+            isValid = false;
+          } else {
+            isValidElem(wooMethod);
+          }
+
+         // Валидация времени
+          if (!wooTime.value || wooTimeIsOver()) {
+            isInvalidElem(wooTime);
+            showToast('Некорректное время', 'error');
+            isValid = false;
+            return;
+          } else {
+            isValidElem(wooTime);
+          }
+
         
         if (brigadeChoicesInstance) {
           const selectedValues = brigadeChoicesInstance.getValue(true);
-          console.log("🚀 ~ Selected Brigade Values:", selectedValues);
+          const isEmptyBrigade = selectedValues.length === 0
           
-          if (selectedValues.length === 0) {
+          if (isEmptyBrigade) {
             showToast('Выберите работников бригады', 'error');
             return;
+          } else {
+            isValid = true
           }
+          
         }
-        return
+
         addMethodToClientTable();
-        removeBrigadirElements();
-      
+        isValid && isRK && removeBrigadirElements();
 
     });
 
@@ -229,7 +238,7 @@ const addWooContainer = (etarget: HTMLElement) => {
      // Получаем список работников бригады
   const brigadeWorkers = await getBrigadeWorkers();
 
-  const brigadeSelectElement = brigadeSelect.querySelector('#brigadeSelect') as HTMLSelectElement;
+  const brigadeSelectElement = brigadeSelect?.querySelector('#brigadeSelect') as HTMLSelectElement;
 
    // Заполняем селектор работниками бригады
    brigadeWorkers?.forEach((worker) => {
@@ -237,7 +246,6 @@ const addWooContainer = (etarget: HTMLElement) => {
     const option = document.createElement('option');
     option.value = id;
     option.text = initials(name);
-    option.selected = true; // Изначально все выбраны
     brigadeSelectElement.appendChild(option);
   });
 

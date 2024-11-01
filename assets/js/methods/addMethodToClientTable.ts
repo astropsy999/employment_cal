@@ -2,6 +2,7 @@ import { Methods } from '../enums/methods';
 import { MethStringObj } from '../types/methods';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { wooTimeIsOver } from '../utils/mainGlobFunctions';
+import { showToast } from '../utils/toastifyUtil';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
 export let wooMethodsArray: MethStringObj[] = [];
@@ -116,6 +117,7 @@ const addMethodToClientTable = () => {
     wooTime.classList.remove('is-invalid');
   } else if (!wooMethod.value || wooMethod.value === Methods.NOT_SELECTED) {
     isInvalidElem(wooMethod);
+    showToast('Выберите метод', 'error');
     wooMethod.addEventListener('change', () => {
       if (wooMethod.value !== Methods.NOT_SELECTED) {
         isValidElem(wooMethod);
