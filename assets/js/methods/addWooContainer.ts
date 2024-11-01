@@ -8,6 +8,7 @@ import { Methods } from '../enums/methods';
 import getBrigadeWorkers from '../api/getBrigadeWorkers';
 import Choices from 'choices.js';
 import 'choices.js/public/assets/styles/choices.min.css';
+import { initials } from '../utils/textsUtils';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -187,7 +188,7 @@ const addWooContainer = (etarget: HTMLElement) => {
     const {ID: id, Name: name} = worker;
     const option = document.createElement('option');
     option.value = id;
-    option.text = name;
+    option.text = initials(name);
     option.selected = true; // Изначально все выбраны
     brigadeSelectElement.appendChild(option);
   });

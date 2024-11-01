@@ -1,5 +1,6 @@
 // @ts-ignore
 import * as c from '../config';
+import { initials } from '../utils/textsUtils';
 
 /**
  * Проверка на Руководителя, параметром подставляется ID пользователя
@@ -42,14 +43,7 @@ export const isManager = async (userID: string) => {
     Object.values(item).includes('Уровень рук-ля'),
   ).Value;
 
-  function initials(str: string) {
-    const firstInit = str
-      .split(/\s+/)
-      .map((w: string, i: any) => (i ? w.substring(0, 1).toUpperCase() + '.' : w))
-      .join(' ');
-    const secondInit = firstInit.split(' ');
-    return `${secondInit[0]} ${secondInit[1]}${secondInit[2]}`;
-  }
+
 
   const managerName = res?.Name !== undefined ? initials(res.Name) : '';
 
