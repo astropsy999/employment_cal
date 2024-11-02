@@ -248,7 +248,7 @@ export const addEventToUser = (calendar: Calendar) => {
 
           // Формируем объект методов, для передачи со вторым запросом
 
-          const methodsTable = document.querySelector('.methods-tbody');
+          const methodsTable = document.querySelector('.methods-tbody') as HTMLTableSectionElement;
           addEventWithMethods(
             mainEventObject,
             grabMethodsDataTable(methodsTable),

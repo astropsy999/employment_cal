@@ -24,7 +24,7 @@ const addEventWithMethods = (
   setViewAndDateToLS: (calendar: any) => void,
 ) => {
   console.log("🚀 ~ methodsArray:", methodsArray)
-console.log("🚀 ~ addEventWithMethods!!!")
+  console.log("🚀 ~ addEventWithMethods!!!")
 
   const {
     OBJTYPEID,
