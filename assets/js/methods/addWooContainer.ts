@@ -119,6 +119,7 @@ const addWooContainer = (etarget: HTMLElement) => {
 
         const wooTime = etarget.querySelector('#wooTime') as HTMLInputElement;
         const wooMethod = etarget.querySelector('#wooMethod') as HTMLSelectElement;
+        const brigadierCheckbox = etarget.querySelector('#brigadirCheckbox') as HTMLInputElement;
 
           // Получение выбранного метода контроля
           const selectedOption = wooMethod.options[wooMethod.selectedIndex];
@@ -161,12 +162,13 @@ const addWooContainer = (etarget: HTMLElement) => {
           
         }
 
-        addMethodToClientTable(brigadeChoicesInstance?.getValue(true));
+        addMethodToClientTable(brigadeChoicesInstance?.getValue(true), brigadierCheckbox?.checked);
         isValid && isRK && removeBrigadirElements();
 
     });
 
     // Добавляем слушатель изменения для wooMethod после его создания
+    wooMethod?.removeEventListener('change', handleChangeEvent);
     wooMethod?.addEventListener('change', handleChangeEvent);
   };
 
@@ -338,6 +340,7 @@ const addWooContainer = (etarget: HTMLElement) => {
    * Основной обработчик события изменения
    * Добавляем его только после создания элементов
    */
+  etarget.removeEventListener('change', handleChangeEvent);
   etarget.addEventListener('change', handleChangeEvent);
 };
 
