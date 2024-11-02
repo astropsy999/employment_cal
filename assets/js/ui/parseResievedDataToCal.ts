@@ -72,6 +72,10 @@ export const parseResievedDataToCal = (data: string[]) => {
     const isLocked = htmItem?.querySelector('.c_i-25')?.textContent;
     const isLockedElem = htmItem?.querySelector('.c_i-25');
     const lockedID = isLockedElem?.getAttribute('o');
+    // Список сотрудников в бригаде
+    const teamList = htmItem?.querySelector('.c_i-26')?.textContent;
+    // Бригадир
+    const isBrigadier = htmItem?.querySelector('.c_i-27')?.textContent;
 
     // Method editID
     const editID = htmItem?.querySelector('.c_i-16')?.getAttribute('o');
@@ -155,7 +159,6 @@ export const parseResievedDataToCal = (data: string[]) => {
           isApproved: isApproved ?? '',
           isLocked: isLocked ?? '',
         }
-       
       });
     } else if (delID && method) {
       eventMethodsArr.push({
@@ -194,6 +197,8 @@ export const parseResievedDataToCal = (data: string[]) => {
         delID,
         method,
         params: { duration: duration ?? '', objQuant: objQuant ?? '', zones: zones ?? '', editID: editID ?? '' },
+        teamList: teamList ?? '', 
+        isBrigadier: isBrigadier ?? ''
       });
     }
   });

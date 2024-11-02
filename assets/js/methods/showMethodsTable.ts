@@ -31,7 +31,7 @@ const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:
   }
 
   let tBody = document.querySelector('.methods-tbody') as HTMLElement;
-  createMethodsTableBody(methodsArray, tBody);
+  createMethodsTableBody(methodsArray!, tBody);
 
 
   /**

@@ -28,5 +28,7 @@ export interface MethodData {
 export interface MethodsArr {
   delID: string,
   method: string,
-  params: MethodParams
+  params: MethodParams,
+  teamList: string,
+  isBrigadier: string
 }
