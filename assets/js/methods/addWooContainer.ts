@@ -152,7 +152,7 @@ const addWooContainer = (etarget: HTMLElement) => {
           const selectedValues = brigadeChoicesInstance.getValue(true);
           const isEmptyBrigade = selectedValues.length === 0
           
-          if (isEmptyBrigade) {
+          if (isRK && isEmptyBrigade) {
             showToast('Выберите работников бригады', 'error');
             return;
           } else {
