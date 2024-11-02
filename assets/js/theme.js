@@ -66,6 +66,8 @@ import {
 } from './utils/mainGlobFunctions';
 import { toggleElem } from './utils/toggleElem';
 import {checkWeekLockStatus} from './utils/lockUnlockUtils';
+import flatpickr from 'flatpickr';
+import { Russian } from 'flatpickr/dist/l10n/ru.js';
 
 export const api = {
   srvv,
@@ -725,7 +727,7 @@ const employmentCalendar = async () => {
                   enableTime: true,
                   position: 'above',
                   allowInput: true,
-                  locale: 'ru',
+                  locale: Russian,
                   minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
                   maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
                 });
@@ -736,7 +738,7 @@ const employmentCalendar = async () => {
                   enableTime: true,
                   position: 'above',
                   allowInput: true,
-                  locale: 'ru',
+                  locale: Russian,
                   minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
                   maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
                 });
@@ -748,7 +750,7 @@ const employmentCalendar = async () => {
                   enableTime: true,
                   position: 'above',
                   allowInput: true,
-                  locale: 'ru',
+                  locale: Russian,
                   minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
                   maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
                 });
@@ -759,7 +761,7 @@ const employmentCalendar = async () => {
                   enableTime: true,
                   position: 'above',
                   allowInput: true,
-                  locale: 'ru',
+                  locale: Russian,
                   minDate: transformDateTime(info.start).slice(0, -5) + '00:00',
                   maxDate: transformDateTime(info.start).slice(0, -5) + '23:59',
                 });
@@ -1128,7 +1130,7 @@ const employmentCalendar = async () => {
           enableTime: true,
           position: 'above',
           allowInput: true,
-          locale: 'ru',
+          locale: Russian,
           disable: lockedDates,
         });
 
@@ -1137,7 +1139,7 @@ const employmentCalendar = async () => {
           enableTime: true,
           position: 'above',
           allowInput: true,
-          locale: 'ru',
+          locale: Russian,
           disable: lockedDates,
         });
 
@@ -1419,11 +1421,10 @@ const employmentCalendar = async () => {
                         let period;
 
                         flatpickr(reportPeriodInput, {
-                          locale: 'ru',
+                          locale: Russian,
                           mode: 'range',
                           dateFormat: 'd.m.Y',
                           enableTime: false,
-                          locale: 'ru',
                           onClose: function (selectedDates, dateStr) {
                             period = dateStr?.split('—');
                           },
