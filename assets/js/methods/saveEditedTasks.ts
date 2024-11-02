@@ -1,19 +1,21 @@
+import { EventImpl } from '@fullcalendar/core/internal';
 import * as C from '../config';
-import { stretchViewDepEvents } from '../ui/stretchViewDepEvents';
 import {
-  addZeroBefore,
   refreshBtnAction,
-  transformToMethods,
+  transformToMethods
 } from '../utils/mainGlobFunctions';
+import { EventEditObj } from '../types/events';
+import { MethodObj } from '../types/methods';
+
 /**
  * Сохранение отредактированных данных в таблице методов
  * @param {*} eventEditObj
  */
 const saveEditedTasks = (
-  eventEditObj,
-  editedEvent,
-  updatedMethods,
-  justRemovedMethods,
+  eventEditObj: EventEditObj,
+  editedEvent: EventImpl,
+  updatedMethods: any,
+  justRemovedMethods: any,
 ) => {
   const {
     delID,
@@ -65,11 +67,12 @@ const saveEditedTasks = (
    * @param {*} methodsFromServer
    */
 
-  const deleteAllMethodsIfChangedType = (methodsFromServer) => {
-    const methDelIDArr = [];
+  const deleteAllMethodsIfChangedType = (methodsFromServer: MethodObj[]) => {
+    const methDelIDArr: string[] = [];
     methodsFromServer.forEach((delId) => {
       methDelIDArr.push(Object.values(delId)[0]['editID']);
     });
+    console.log("🚀 ~ deleteAllMethodsIfChangedType ~ methDelIDArr:", methDelIDArr)
 
     methDelIDArr.forEach((methDelID) => {
       fetch(
@@ -219,10 +222,10 @@ const saveEditedTasks = (
 
       if (justRemovedMethods && isMethodsAvailable) {
         const currentMethods = editedEvent?._def?.extendedProps?.methods;
-        const updateCurrentMethods = currentMethods?.filter((meth) => {
+        const updateCurrentMethods = currentMethods?.filter((meth: any) => {
           const methName = Object.keys(meth)[0];
           return !justRemovedMethods.some(
-            (removedMeth) => removedMeth.method === methName,
+            (removedMeth: any) => removedMeth.method === methName,
           );
         });
 
@@ -242,26 +245,26 @@ const saveEditedTasks = (
       }
 
       // Функция для преобразования даты в формат, подходящий для создания объекта Date
-      function convertDate(dateString) {
+      function convertDate(dateString: string) {
         let parts = dateString.split(' ');
         let dateParts = parts[0].split('.');
         let timeParts = parts[1].split(':');
         return new Date(
-          dateParts[2],
-          dateParts[1] - 1,
-          dateParts[0],
-          timeParts[0],
-          timeParts[1],
+          parseInt(dateParts[2]),
+          parseInt(dateParts[1]) - 1,
+          parseInt(dateParts[0]),
+          parseInt(timeParts[0]),
+          parseInt(timeParts[1]),
         );
       }
       let newStartDate = convertDate(startEditDate);
       let newStartDateHours = newStartDate.getHours();
-      if (newStartDateHours < parseInt(minViewTime)) {
+      if (newStartDateHours < parseInt(minViewTime as string)) {
         calendar.setOption('slotMinTime', `${newStartDateHours}:00:00`);
       }
       let newEndDate = convertDate(endEditDate);
       let newEndDateHours = newEndDate.getHours();
-      if (newEndDateHours > parseInt(maxViewTime)) {
+      if (newEndDateHours > parseInt(maxViewTime as string)) {
         calendar.setOption('slotMaxTime', `${newEndDateHours}:59:00`);
       }
 
