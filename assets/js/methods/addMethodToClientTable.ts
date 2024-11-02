@@ -2,6 +2,7 @@ import { Methods } from '../enums/methods';
 import { MethStringObj } from '../types/methods';
 import { getLocalStorageItem } from '../utils/localStorageUtils';
 import { wooTimeIsOver } from '../utils/mainGlobFunctions';
+import { generateTeamListTitle } from '../utils/textsUtils';
 import { showToast } from '../utils/toastifyUtil';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 
@@ -21,8 +22,6 @@ const addMethodToClientTable = (selectedTeam: string | string[] | undefined, isB
   const wooObjects = document.querySelector('#wooObjects') as HTMLInputElement;
   const wooZones = document.querySelector('#wooZones') as HTMLInputElement;
   const tHead = document.querySelector('.thead-dark') as HTMLElement;
-  const brigadeSelect = document.querySelector('#brigadeSelect') as HTMLSelectElement;
-  console.log("🚀 ~ addMethodToClientTable ~ brigadeSelect:", brigadeSelect)
   const eventEditSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
 
   /**
@@ -81,11 +80,13 @@ const addMethodToClientTable = (selectedTeam: string | string[] | undefined, isB
     trElem.classList.add('hover-actions-trigger');
     trElem.classList.add('justadded');
 
+    const title = generateTeamListTitle(selectedTeam as string[]);
+
     trElem.innerHTML = `
       <td class="align-middle text-center text-nowrap ed methods-select">
         <div class="d-flex align-items-center">
           <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${wooMethod.value}</div>
-          ${isRK ? `<button class="brigade-btn ms-2 border-0 radius-sm color-white" type="button">
+          ${isRK ? `<button class="brigade-btn ms-2 border-0 radius-sm color-white" type="button" title="${title}">
            <i class="fa fa-users color-white" aria-hidden="true"></i>
           </button>`: ``}
         </div>
