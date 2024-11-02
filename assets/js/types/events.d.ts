@@ -98,7 +98,7 @@ export interface EventInfo
     hasEnd?: boolean,
     ui?: EventInfoUI ,
     extendedProps: ExtendedProps,
-    methods?: MethodsArr[]
+    methods?: MethodsArr[],
 }
 
 export interface EventInfoUI {

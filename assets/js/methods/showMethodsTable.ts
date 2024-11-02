@@ -1,3 +1,4 @@
+import { EventDef } from '@fullcalendar/core/internal';
 import deleteMethodFromTableApi from '../api/deleteMethodFromTableApi';
 import getMethodsDropDown from '../api/getMethodsDropDown';
 import saveEditedMethodToBaseApi from '../api/saveEditedMethodToBaseApi';
@@ -14,7 +15,7 @@ import { isInvalidElem, isValidElem } from '../utils/toggleElem';
  * @param {*} wooElem
  * @param {*} api
  */
-const showMethodsTable = (eventInfo: EventInfo, wooElem: HTMLElement, api:{[key:string]: string}) => {
+const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:string]: string}) => {
 
   let isEditMode = false;
   const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn') as HTMLButtonElement;

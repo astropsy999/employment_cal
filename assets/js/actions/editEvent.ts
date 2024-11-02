@@ -1,12 +1,20 @@
+import { Calendar, EventClickArg } from '@fullcalendar/core';
+import { EventImpl } from '@fullcalendar/core/internal';
 import { Modal } from 'bootstrap';
+import flatpickr from 'flatpickr';
 import * as GDD from '../api/getDropDownData';
 import { settings } from '../api/settings';
 import * as C from '../config';
+import { Employment } from '../enums/employment';
+import { Locations } from '../enums/locations';
+import { TaskType } from '../enums/taskTypes';
 import addMethodToBase from '../methods/addMethodToBase';
 import { grabJustAddedArray } from '../methods/grabMethodsDataTable';
+import saveEditedTasks from '../methods/saveEditedTasks';
 import showMethodsTable from '../methods/showMethodsTable';
 import { setViewAndDateToLS } from '../ui/setViewAndDateToLS';
 import { tempLoader } from '../ui/tempLoader';
+import { getLocalStorageItem } from '../utils/localStorageUtils';
 import {
   changeDirectZero,
   checkAndForbiddenOutOfDay,
@@ -21,7 +29,7 @@ import {
 } from '../utils/mainGlobFunctions';
 import { isInvalidElem } from '../utils/toggleElem';
 import { findParentID } from './eventsActions';
-import saveEditedTasks from '../methods/saveEditedTasks';
+import { Russian } from "flatpickr/dist/l10n/ru.js"
 
 
 /**
@@ -40,34 +48,34 @@ const api = {
   GetExcelforCalc: C.GetExcelforCalc,
 };
 
-export const editEvent = (info, calendar, modal, editedEvent) => {
-  const eventEditTitle = document.querySelector('#eventEditTitle');
-  const taskEditCreator = document.querySelector('#taskEditCreator');
-  const taskEditObj = document.querySelector('#taskEditObj');
-  const longEditDesc = document.querySelector('#longEditDesc');
-  const kindOfEditTasks = document.querySelector('#kindOfEditTasks');
-  const kindOfSubEditTask = document.querySelector('#kindOfSubEditTask');
-  const eventEditStartDate = document.querySelector('#eventEditStartDate');
-  const eventEditEndDate = document.querySelector('#eventEditEndDate');
-  const eventEditSpentTime = document.querySelector('#eventEditSpentTime');
-  const eventEditSource = document.querySelector('#eventEditSource');
-  const eventEditNotes = document.querySelector('#eventEditNotes');
-  const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn');
-  const locEditObj = document.querySelector('#locEditObj');
-  const employmentEdit = document.querySelector('#employmentEdit');
-  const editEventBtn = document.querySelector('#editEventBtn');
-  const kindOfSubTask = document.querySelector('#kindOfSubTask');
+export const editEvent = (info: EventClickArg, calendar: Calendar, modal: Modal, editedEvent: EventImpl | string) => {
+  const eventEditTitle = document.querySelector('#eventEditTitle') as HTMLInputElement;
+  const taskEditCreator = document.querySelector('#taskEditCreator') as HTMLInputElement;
+  const taskEditObj = document.querySelector('#taskEditObj') as HTMLSelectElement;
+  const longEditDesc = document.querySelector('#longEditDesc') as HTMLTextAreaElement;
+  const kindOfEditTasks = document.querySelector('#kindOfEditTasks') as HTMLSelectElement;
+  const kindOfSubEditTask = document.querySelector('#kindOfSubEditTask') as HTMLSelectElement;
+  const eventEditStartDate = document.querySelector('#eventEditStartDate') as HTMLInputElement;
+  const eventEditEndDate = document.querySelector('#eventEditEndDate') as HTMLInputElement;
+  const eventEditSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
+  const eventEditSource = document.querySelector('#eventEditSource') as HTMLSelectElement;
+  const eventEditNotes = document.querySelector('#eventEditNotes') as HTMLTextAreaElement;
+  const editSaveTaskBtn = document.querySelector('#editSaveTaskBtn') as HTMLButtonElement;
+  const locEditObj = document.querySelector('#locEditObj') as HTMLSelectElement;
+  const employmentEdit = document.querySelector('#employmentEdit') as HTMLSelectElement;
+  const editEventBtn = document.querySelector('#editEventBtn') as HTMLButtonElement;
+  const kindOfSubTask = document.querySelector('#kindOfSubTask') as HTMLSelectElement;
   let kindOfSubTaskList = [];
-  const dataObj = JSON.parse(sessionStorage.getItem('dataObj'));
-  const dataCreator = JSON.parse(sessionStorage.getItem('dataCreator'));
-  const locObj = JSON.parse(sessionStorage.getItem('locObj'));
-  const emplObj = JSON.parse(sessionStorage.getItem('emplObj'));
-  const globalTasksTypes = JSON.parse(localStorage.getItem('globalTasksTypes'));
+  const dataObj = JSON.parse(sessionStorage.getItem('dataObj')!);
+  const dataCreator = JSON.parse(sessionStorage.getItem('dataCreator')!);
+  const locObj = JSON.parse(sessionStorage.getItem('locObj')!);
+  const emplObj = JSON.parse(sessionStorage.getItem('emplObj')!);
+  const globalTasksTypes = JSON.parse(localStorage.getItem('globalTasksTypes')!);
   const methodsFromServer = info.event._def.extendedProps.methods;
   const savedTaskFromServer = info.event._def.extendedProps.taskTypeNew;
   const taskTypeNew = info.event._def.extendedProps.taskTypeNew;
   const locObject = info.event._def.extendedProps.location;
-  const eventEditModal = document.querySelector('#editEventModal');
+  const eventEditModal = document.querySelector('#editEventModal') as HTMLDivElement;
 
   selValidation(locEditObj);
   selValidation(kindOfEditTasks);
@@ -87,8 +95,8 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
    */
   const checkAndShowCheckMark = () => {
     if (locObject === 'Заказчик' && settings.isKRChekboxAvailable) {
-      const checkMarkRow = eventEditModal.querySelector('.check-mark');
-      const checkElem = checkMarkRow.querySelector('.check-elem');
+      const checkMarkRow = eventEditModal?.querySelector('.check-mark');
+      const checkElem = checkMarkRow?.querySelector('.check-elem');
 
       if (!checkElem) {
         // Add check mark
@@ -99,18 +107,18 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
         <input class="form-control form-check-input" type="checkbox" value="" id="flexCheckDefault">
         </div>`;
 
-        checkMarkRow.append(checkMarkElem);
+        checkMarkRow?.append(checkMarkElem);
       }
     }
   };
 
   checkAndShowCheckMark();
 
-  const startDateTime = info.event._instance.range.start;
-  const endDateTime = info.event._instance.range.end;
+  const startDateTime = info?.event?._instance?.range.start;
+  const endDateTime = info?.event?._instance?.range.end;
 
-  const startTime = startDateTime.getTime();
-  const endTime = endDateTime.getTime();
+  const startTime = startDateTime?.getTime();
+  const endTime = endDateTime?.getTime();
 
   eventEditTitle.value = info.event._def.title;
   longEditDesc.value = info.event._def.extendedProps.fullDescription;
@@ -125,7 +133,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       allowInput: false,
       position: 'above',
       noCalendar: true,
-      locale: 'ru',
+      locale: Russian,
     });
 
     flatpickrEnd = flatpickr('#eventEditEndDate', {
@@ -134,7 +142,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       position: 'above',
       allowInput: false,
       noCalendar: true,
-      locale: 'ru',
+      locale: Russian,
     });
   } else {
     flatpickrStart = flatpickr('#eventEditStartDate', {
@@ -144,7 +152,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       position: 'above',
       allowInput: false,
       noCalendar: true,
-      locale: 'ru',
+      locale: Russian,
     });
     flatpickrEnd = flatpickr('#eventEditEndDate', {
       static: true,
@@ -153,28 +161,37 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       allowInput: false,
       position: 'above',
       noCalendar: true,
-      locale: 'ru',
+      locale: Russian,
     });
   }
 
-  flatpickrStart.setDate(minusThreeHours(info.event._instance.range.start));
-  flatpickrEnd.setDate(minusThreeHours(info.event._instance.range.end));
+  if (Array.isArray(flatpickrStart)) {
+    flatpickrStart[0].setDate(minusThreeHours(info.event._instance?.range.start));
+  } else {
+    flatpickrStart.setDate(minusThreeHours(info.event._instance?.range.start));
+  }
 
-  eventEditSpentTime.value = (endTime - startTime) / (1000 * 60 * 60);
+  if (Array.isArray(flatpickrEnd)) {
+    flatpickrEnd[0].setDate(minusThreeHours(info.event._instance?.range.end));
+  } else {
+    flatpickrEnd.setDate(minusThreeHours(info.event._instance?.range.end));
+  }
+
+  eventEditSpentTime.value = (((endTime ?? 0) - (startTime ?? 0)) / (1000 * 60 * 60)).toString();
   eventEditSource.value = info.event._def.extendedProps.source;
   eventEditNotes.value = info.event._def.extendedProps.notes;
-  locEditObj.value = info.event._def.extendedProps.location || 'Не выбрано';
-  taskEditObj.value = info.event._def.extendedProps.object || 'Не выбрано';
+  locEditObj.value = info.event._def.extendedProps.location || Locations.NOT_SELECTED;
+  taskEditObj.value = info.event._def.extendedProps.object || TaskType.NOT_SELECTED;
   taskEditCreator.value =
-    info.event._def.extendedProps.director || 'Не выбрано';
+    info.event._def.extendedProps.director || TaskType.NOT_SELECTED;
 
   /**
    * При изменении Вида Работ подгружает соответствующие Подвиды работ
    */
   const updateKindOfEditSubtaskListOnChange = () => {
-    const kindOfEditTasks = document.querySelector('#kindOfEditTasks');
-    const kindOfSubEditTask = document.querySelector('#kindOfSubEditTask');
-    const dataTasksID = JSON.parse(localStorage.getItem('dataTasksID'));
+    const kindOfEditTasks = document.querySelector('#kindOfEditTasks') as HTMLSelectElement;
+    const kindOfSubEditTask = document.querySelector('#kindOfSubEditTask') as HTMLSelectElement;
+    const dataTasksID = getLocalStorageItem('dataTasksID');
 
     if (
       kindOfEditTasks &&
@@ -213,18 +230,18 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
           if (kindOfSubTaskList.length > 0) {
             cleanAndDefaultKindOfSubTaskSelector(kindOfSubEditTask);
 
-            kindOfSubTaskList.forEach((subtask) => {
+            kindOfSubTaskList.forEach((subtask: { Name: { replaceAll: (arg0: string, arg1: string) => any; }; ID: any; }) => {
               const subTaskOption = document.createElement('option');
               const noQuoteSubTaskName = subtask.Name.replaceAll('&quot;', '"');
               const subtaskid = subtask.ID;
               subTaskOption.setAttribute('value', `${noQuoteSubTaskName}`);
               subTaskOption.setAttribute('subtaskid', `${subtaskid}`);
               subTaskOption.innerText = `${noQuoteSubTaskName}`;
-              kindOfSubEditTask.append(subTaskOption);
+              kindOfSubEditTask?.append(subTaskOption);
             });
             kindOfSubEditTask.value =
-              'Не выбрано' || info.event._def.extendedProps.subTaskTypeNew;
-            kindOfSubEditTask.value = 'Не выбрано';
+              TaskType.NOT_SELECTED || info.event._def.extendedProps.subTaskTypeNew;
+            kindOfSubEditTask.value = TaskType.NOT_SELECTED;
           }
         })
         .catch(function (error) {
@@ -251,24 +268,24 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
       modal.hide();
       updateKindOfEditSubtaskListOnChange();
-      let jAmethodsTable;
-      let justRemovedMethods = [];
+      let jAmethodsTable: HTMLTableElement;
+      let justRemovedMethods: any = [];
 
       document.addEventListener('shown.bs.modal', (e) => {
         const openedModal = e.target;
 
-        const woo = openedModal.querySelector('.woo');
+        const woo = (openedModal as HTMLElement)?.querySelector('.woo');
 
         woo?.addEventListener('click', (e) => {
           const isDeleteBtnClicked =
-            e.target.classList.contains('delete-string');
+            (e.target as HTMLElement).classList.contains('delete-string');
 
           if (isDeleteBtnClicked) {
-            const deletedString = e.target.closest('tr');
-            const methName = deletedString.querySelector('.bg-info').innerText;
-            const duration = deletedString.children[1].innerText;
-            const objects = deletedString.children[2].innerText.trim();
-            const zones = deletedString.children[3].innerText;
+            const deletedString = (e.target as HTMLElement).closest('tr');
+            const methName = (deletedString?.querySelector('.bg-info') as HTMLElement)?.innerText;
+            const duration = (deletedString?.children[1] as HTMLElement)?.innerText;
+            const objects = (deletedString?.children[2] as HTMLElement)?.innerText.trim();
+            const zones = (deletedString?.children[3] as HTMLElement)?.innerText;
             const deletedMethodObj = {
               method: methName,
               params: { duration, objects, zones },
@@ -286,24 +303,26 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
             kindOfSubEditTask.value === 'Проведение контроля в лаборатории')
         ) {
           addWooMetBtn.addEventListener('click', () => {
-            jAmethodsTable = document.querySelector('.methods-tbody');
+            jAmethodsTable = document.querySelector('.methods-tbody') as HTMLTableElement;
           });
         }
       });
 
       // let selectedTaskID;
 
+      const editEventModal = document.querySelector('#editEventModal') as HTMLDivElement;
+
       modal = new Modal(editEventModal);
       editEventModal.setAttribute('delID', delID);
 
-      const dataTasksID = JSON.parse(localStorage.getItem('dataTasksID'));
+      const dataTasksID = getLocalStorageItem('dataTasksID');
 
-      const handleKindOfEditTasksChange = (selectedTaskID) => {
+      const handleKindOfEditTasksChange = (selectedTaskID: string | Blob) => {
         kindOfEditTasks.value =
           info.event._def.extendedProps.taskTypeNew || 'Не выбрано';
 
         const foundString = globalTasksTypes.find(
-          (str) => str.Name === info.event._def.extendedProps.taskTypeNew,
+          (str: { Name: string; }) => str.Name === info.event._def.extendedProps.taskTypeNew,
         );
         if (taskTypeNew !== '') {
           selectedTaskID = foundString.ID;
@@ -342,7 +361,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
             kindOfEditSubTaskList = response.data;
             tempLoader(false);
             cleanAndDefaultKindOfSubTaskSelector(kindOfSubEditTask);
-            kindOfEditSubTaskList.forEach((subtask) => {
+            kindOfEditSubTaskList.forEach((subtask: { Name: { replaceAll: (arg0: string, arg1: string) => any; }; ID: any; }) => {
               const subTaskOption = document.createElement('option');
               const noQuoteSubTaskName = subtask.Name.replaceAll('&quot;', '"');
               const subtaskid = subtask.ID;
@@ -383,7 +402,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       }
 
       const showTableOnModal = () => {
-        const wooElem = document.querySelector('.woo-title');
+        const wooElem = document.querySelector('.woo-title') as HTMLDivElement;
         const wooTableElem = document.querySelector('.woo');
 
         showMethodsTable(info.event._def, wooElem, api);
@@ -391,9 +410,9 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
       if (
         info.event._def.extendedProps.taskTypeNew ===
-          'Техническое диагностирование' ||
+          TaskType.TECHNICAL_DIAGNOSTIC ||
         info.event._def.extendedProps.subTaskTypeNew ===
-          'Проведение контроля в лаборатории'
+          TaskType.LABORATORY_CONTROL
       ) {
         document.addEventListener('shown.bs.modal', showTableOnModal, {
           once: true,
@@ -402,7 +421,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       document.removeEventListener('hidden.bs.modal', showTableOnModal);
 
       document.addEventListener('shown.bs.modal', (e) => {
-        let krCheck = document.querySelector('#flexCheckDefault');
+        let krCheck = document.querySelector('#flexCheckDefault') as HTMLInputElement;
         if (krCheck) {
           krCheck.checked = false;
         }
@@ -431,14 +450,14 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
         const parsedStart = new Date(convStrt);
         const parsedEnd = new Date(convEnd);
 
-        const diffDates = parsedEnd - parsedStart;
+        const diffDates = parsedEnd.getTime() - parsedStart.getTime();
         const diffDays = Math.ceil(diffDates / (1000 * 60 * 60 * 24));
         const diffHours = diffDates / (1000 * 60 * 60);
 
         if (diffHours.toString().length > 4) {
-          eventEditSpentTime.value = Math.ceil(diffHours);
+          eventEditSpentTime.value = Math.ceil(diffHours).toString();
         } else {
-          eventEditSpentTime.value = diffHours;
+          eventEditSpentTime.value = diffHours.toString();
         }
 
         checkAndForbiddenOutOfDay(
@@ -479,7 +498,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
         // Переводим часы из инпута Время в миллисекунды
 
-        const milliSpentTime = eventEditSpentTime.value * (60000 * 60);
+        const milliSpentTime = +eventEditSpentTime.value * (60000 * 60);
 
         // Складываем время начала в миллисек и фактическое время в миллисек, получаем время окончания в миллисек
 
@@ -487,7 +506,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
         // Преобразовываем миллисекунды в дату окончания в нужном формате
 
-        const convertMillisecToEndDateValue = (endMilliSecondsDate) => {
+        const convertMillisecToEndDateValue = (endMilliSecondsDate: string | number | Date) => {
           const endDate = new Date(endMilliSecondsDate);
           return endDate;
         };
@@ -510,22 +529,22 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
       });
 
       editSaveTaskBtn.addEventListener('click', (e) => {
-        if (!validateTotalTimeOnObject()) {
+        if (!validateTotalTimeOnObject(false)) {
           e.preventDefault();
           isInvalidElem(eventEditSpentTime);
           return;
         }
         if (
-          (locEditObj.value === 'Не выбрано' ||
-            kindOfEditTasks.value === 'Не выбрано' ||
+          (locEditObj.value === Locations.NOT_SELECTED ||
+            kindOfEditTasks.value === TaskType.NOT_SELECTED ||
             eventEditSpentTime.classList.contains('is-invalid')) &&
-          employmentEdit.value === 'Работа'
+          employmentEdit.value === Employment.WORK
         ) {
-          if (locEditObj.value === 'Не выбрано') {
+          if (locEditObj.value === Locations.NOT_SELECTED) {
             locEditObj.classList.add('is-invalid');
           }
 
-          if (kindOfEditTasks.value === 'Не выбрано') {
+          if (kindOfEditTasks.value === TaskType.NOT_SELECTED) {
             kindOfEditTasks.classList.add('is-invalid');
           }
           e.preventDefault();
@@ -535,21 +554,15 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
           // Формируем объект для передачи данных на сервер
 
           const parentID = findParentID(
-            JSON.parse(localStorage.getItem('parentIdDataArr')),
+            getLocalStorageItem('parentIdDataArr'),
             eventEditStartDate.value,
           );
           const cleanTodayDate = eventEditStartDate.value.slice(0, 10);
 
-          const dataObjectsID = JSON.parse(
-            localStorage.getItem('dataObjectsID'),
-          );
-          const dataCreatorsID = JSON.parse(
-            localStorage.getItem('dataCreatorsID'),
-          );
-          const dataTasksID = JSON.parse(localStorage.getItem('dataTasksID'));
-          const dataSubTasksID = JSON.parse(
-            localStorage.getItem('dataSubTasksID'),
-          );
+          const dataObjectsID = getLocalStorageItem('dataObjectsID');
+          const dataCreatorsID = getLocalStorageItem('dataCreatorsID');
+          const dataTasksID = getLocalStorageItem('dataTasksID');
+          const dataSubTasksID = getLocalStorageItem('dataSubTasksID');
 
           const neededIDsObj = {
             ...dataObjectsID,
@@ -558,9 +571,9 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
             ...dataSubTasksID,
           };
 
-          const kr = document.querySelector('#flexCheckDefault');
+          const kr = document.querySelector('#flexCheckDefault') as HTMLInputElement;
           const krCheckBase = info.event._def.extendedProps.kr;
-          const krState = (krelem) => {
+          const krState = (krelem: HTMLInputElement) => {
             if (krelem && krelem.checked) {
               return 'Да';
             } else if (krCheckBase !== 'Нет') {
@@ -596,7 +609,6 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
               ].getAttribute('subtaskid') ||
               '',
             kindOfSubEditTaskVal: kindOfSubEditTask.value,
-            fourthCol: C.fourthCol,
             titleEditVal: eventEditTitle.value,
             longEditDeskVal: longEditDesc.value,
             ninthCol: C.ninthCol,
@@ -608,7 +620,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
             eventEditSourceVal: eventEditSource.value,
             eventEditNotesVal: eventEditNotes.value,
             userCol: C.userCol,
-            idDB: localStorage.getItem('iddb'),
+            idDB: getLocalStorageItem('iddb') ?? '',
             thirteenthCol: C.thirteenthCol,
             startEditDate: eventEditStartDate.value,
             fourteenthCol: C.fourteenthCol,
@@ -639,7 +651,7 @@ export const editEvent = (info, calendar, modal, editedEvent) => {
 
           saveEditedTasks(
             mainEventEditObject,
-            editedEvent,
+            editedEvent as EventImpl,
             updatedMethods,
             justRemovedMethods,
           );
