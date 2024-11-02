@@ -23,6 +23,9 @@ const addEventWithMethods = (
   methodsArray: MethodsArr[],
   setViewAndDateToLS: (calendar: any) => void,
 ) => {
+  console.log("🚀 ~ methodsArray:", methodsArray)
+console.log("🚀 ~ addEventWithMethods!!!")
+
   const {
     OBJTYPEID,
     addCalcParamID,

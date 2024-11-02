@@ -9,7 +9,8 @@ export let wooMethodsArray: MethStringObj[] = [];
 /**
  * Добавление методов в таблицу на клиенте
  */
-const addMethodToClientTable = () => {
+const addMethodToClientTable = (selectedTeam: string | string[] | undefined) => {
+  console.log("🚀 ~ addMethodToClientTable ~ selectedValues:", selectedTeam)
   const isRK = getLocalStorageItem('isRK');
 
   let isEditMode = false;
@@ -20,10 +21,8 @@ const addMethodToClientTable = () => {
   const wooZones = document.querySelector('#wooZones') as HTMLInputElement;
   const tHead = document.querySelector('.thead-dark') as HTMLElement;
   const brigadeSelect = document.querySelector('#brigadeSelect') as HTMLSelectElement;
+  console.log("🚀 ~ addMethodToClientTable ~ brigadeSelect:", brigadeSelect)
   const eventEditSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
-
-
- 
 
   /**
    * Удаление строки в таблице методов

@@ -161,7 +161,7 @@ const addWooContainer = (etarget: HTMLElement) => {
           
         }
 
-        addMethodToClientTable();
+        addMethodToClientTable(brigadeChoicesInstance?.getValue(true));
         isValid && isRK && removeBrigadirElements();
 
     });
@@ -244,7 +244,7 @@ const addWooContainer = (etarget: HTMLElement) => {
    brigadeWorkers?.forEach((worker) => {
     const {ID: id, Name: name} = worker;
     const option = document.createElement('option');
-    option.value = id;
+    option.value = `{${id}:${name}`;
     option.text = initials(name);
     brigadeSelectElement.appendChild(option);
   });
