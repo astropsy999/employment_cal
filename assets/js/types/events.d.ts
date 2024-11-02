@@ -74,6 +74,7 @@ type MethodsParams = {
   duration: string;
   objects: string;
   zones: string;
+  
 }
 
 export interface MethodsArr {

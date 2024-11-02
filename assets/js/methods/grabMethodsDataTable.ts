@@ -36,6 +36,8 @@ const grabMethodsDataTable = (tbody: HTMLTableSectionElement) => {
       },
     });
   }
+  console.log("🚀 ~ grabMethodsDataTable ~ grabMethodsArray:", grabMethodsArray)
+
   return grabMethodsArray;
 };
 /**

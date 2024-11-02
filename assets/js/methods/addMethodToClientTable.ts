@@ -83,7 +83,7 @@ const addMethodToClientTable = (selectedTeam: string | string[] | undefined, isB
     const title = isRK && generateTeamListTitle(selectedTeam as string[]);
 
     trElem.innerHTML = `
-      <td class="align-middle text-center text-nowrap ed methods-select" ${isRK && `data-team="${selectedTeam}" data-brigadir="${isBrigadier}"`}>
+      <td class="align-middle text-center text-nowrap ed methods-select" ${isRK ? `data-team='${JSON.stringify(selectedTeam)}' data-brigadir='${isBrigadier}'` : ''}>
         <div class="d-flex align-items-center">
           <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${wooMethod.value}</div>
           ${isRK ? `<button class="brigade-btn ms-2 border-0 radius-sm color-white" type="button" title="${title}">

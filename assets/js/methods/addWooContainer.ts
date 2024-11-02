@@ -246,7 +246,7 @@ const addWooContainer = (etarget: HTMLElement) => {
    brigadeWorkers?.forEach((worker) => {
     const {ID: id, Name: name} = worker;
     const option = document.createElement('option');
-    option.value = `{${id}:${name}`;
+    option.value = `{${id}:${name}}`;
     option.text = initials(name);
     brigadeSelectElement.appendChild(option);
   });
