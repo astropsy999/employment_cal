@@ -24,3 +24,9 @@ export interface MethodData {
   objqVal: string,
   zonesVal: string
 }
+
+export interface MethodsArr {
+  delID: string,
+  method: string,
+  params: MethodParams
+}

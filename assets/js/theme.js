@@ -34,7 +34,7 @@ import {
 import { checkCurrentEventsAndBlockApproveBtn } from './ui/checkCurrentEvents';
 import { eventContent } from './ui/eventContent.js';
 import { eventDrop } from './ui/eventDrop.js';
-import { parseResievedDataToCal } from './ui/parseResievedDataToCal.js';
+import { parseResievedDataToCal } from './ui/parseResievedDataToCal';
 import { saveHighlightedReg } from './ui/saveHighlightedReg.js';
 import { stretchViewDepEvents } from './ui/stretchViewDepEvents.js';
 import {

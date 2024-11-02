@@ -84,16 +84,21 @@ export interface MethodsArr {
 export interface EventInfo 
   {
     title: string,
-    groupId: string,
-    publicId: string,
-    url: string,
-    recurringDef: any,
-    defId: string,
-    sourceId: string,
+    start?: Date | string,
+    end?: Date | string,
+    eventInteractive?: boolean,
+    classNames: string,
+    groupId?: string,
+    publicId?: string,
+    url?: string,
+    recurringDef?: any,
+    defId?: string,
+    sourceId?: string,
     allDay: boolean,
-    hasEnd: boolean,
-    ui: EventInfoUI ,
-    extendedProps: ExtendedProps
+    hasEnd?: boolean,
+    ui?: EventInfoUI ,
+    extendedProps: ExtendedProps,
+    methods?: MethodsArr[]
 }
 
 export interface EventInfoUI {
@@ -133,6 +138,6 @@ interface ExtendedProps {
   subTaskTypeNew: string,
   isApproved: string,
   isLocked: string,
-  eventInteractive: boolean,
-  methods: MethodObj[],
+  eventInteractive?: boolean,
+  methods?: MethodObj[],
 }
