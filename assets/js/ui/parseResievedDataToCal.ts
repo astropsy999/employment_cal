@@ -196,7 +196,7 @@ export const parseResievedDataToCal = (data: string[]) => {
       methodsArr.push({
         delID,
         method,
-        params: { duration: duration ?? '', objQuant: objQuant ?? '', zones: zones ?? '', editID: editID ?? '' },
+        params: { duration: duration ?? '', objQuant: objQuant ?? '', zones: zones ?? '', editID: editID ?? '', teamList: teamList ?? '', isBrigadier: isBrigadier ?? '' },
         teamList: teamList ?? '', 
         isBrigadier: isBrigadier ?? ''
       });

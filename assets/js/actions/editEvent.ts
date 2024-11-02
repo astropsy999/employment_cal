@@ -299,8 +299,8 @@ export const editEvent = (info: EventClickArg, calendar: Calendar, modal: Modal,
 
         if (
           addWooMetBtn &&
-          (kindOfEditTasks.value === 'Техническое диагностирование' ||
-            kindOfSubEditTask.value === 'Проведение контроля в лаборатории')
+          (kindOfEditTasks.value === TaskType.TECHNICAL_DIAGNOSTIC ||
+            kindOfSubEditTask.value === TaskType.LABORATORY_CONTROL)
         ) {
           addWooMetBtn.addEventListener('click', () => {
             jAmethodsTable = document.querySelector('.methods-tbody') as HTMLTableElement;

@@ -1,3 +1,4 @@
+import { method } from "lodash";
 import { MethodObj } from "../types/methods";
 
 /**
@@ -54,10 +55,13 @@ export const createMethodsTableBody = (
     methodsArray: MethodObj[],
     tBody: HTMLElement,
 ) => {
+    console.log("🚀 ~ methodsArray:", methodsArray)
     if (tBody && methodsArray) {
         methodsArray.forEach((methodObj) => {
             const methodName = Object.keys(methodObj)[0];
             const methodParams = methodObj[methodName];
+
+            const {isBrigadier, teamList} = methodParams
 
             // Создаем строку таблицы
             const trElem = document.createElement('tr');
@@ -89,7 +93,26 @@ export const createMethodsTableBody = (
         );
         methodBadge.textContent = methodName;
 
+        const teamBadge = document.createElement('button');
+        teamBadge.classList.add(
+            'brigade-btn',
+            'ms-2',
+            'border-0',
+            'radius-sm',
+            'color-white',
+        )
+        teamBadge.setAttribute('type', 'button')
+
+        const teamIcon = document.createElement('i');
+        teamIcon.classList.add('fa', 'fa-users', 'color-white');
+        teamIcon.setAttribute('aria-hidden', 'true');
+        teamBadge.appendChild(teamIcon);
+
         methodDiv.appendChild(methodBadge);
+        
+        if(teamList) {
+            methodDiv.appendChild(teamBadge);
+        }
         methodCell.appendChild(methodDiv);
 
         const durationCell = document.createElement('td');
