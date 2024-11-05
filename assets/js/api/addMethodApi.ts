@@ -60,9 +60,8 @@ const addMethodApi = (
         .then((data) => {
           console.log("🚀 ~ .then ~ data:", data)
           if (teamList) {
-            addTeamToMethod(teamList, isBrigadier!, data.results[0]);
+            addTeamToMethod(teamList, data.results[0]);
           }
-          // Обработка успешного ответа, если необходимо
           resolve();
         })
         .catch((error) => {

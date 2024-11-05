@@ -63,6 +63,9 @@ const METHODS_DROPDOWN_PARAMID = '8764';
 const OBJTYPEID = '1094';
 const ObjTypeID = '871';
 const BRIGADE_PARAM = '9488';
+const OBJECT_TYPE_ID = '1149';
+const BRIGADE_COL_NAME = 'Бригада';
+const DATA_TYPE = 'Строка';
 
 // Объект изменяемых параметров
 
@@ -252,5 +255,8 @@ export {
   BuildWindowForm,
   cacheAddTable,
   cacheSaveTable,
-  BRIGADE_PARAM
+  BRIGADE_PARAM,
+  OBJECT_TYPE_ID,
+  BRIGADE_COL_NAME,
+  DATA_TYPE
 };
