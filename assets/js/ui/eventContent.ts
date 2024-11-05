@@ -1,5 +1,5 @@
 import { EventClickArg } from "@fullcalendar/core";
-import { MethodParams } from "../types/methods";
+import { MethodDetails, MethodParams } from "../types/methods";
 import { initialsStr } from "../utils/textsUtils";
 
 export const eventContent = function (info: EventClickArg) {
@@ -28,14 +28,8 @@ export const eventContent = function (info: EventClickArg) {
     eventMethodsWrapper: document.createElement('div'),
     fullDescription: document.createElement('div'),
     
-  };interface MethodDetails {
-    objQuant?: number;
-    zones?: number;
-    duration: number;
-    teamList?: string;
-    isBrigadier?: boolean;
-}
-
+  };
+  
 type MethodParams = Record<string, MethodDetails>;
 
 /**
@@ -62,7 +56,7 @@ const formatEventMethods = (methodsArr: MethodParams[]): string => {
           const initials = initialsStr(teamList);
           if (isBrigadier) {
               // Иконка бригадира (используем fa-star из FontAwesome 4) и серый цвет для списка
-              teamListText = `<span style="color: grey;"><i class="fa fa-star" aria-hidden="true"></i> [${initials}]</span>`;
+              teamListText = `<i class="fa fa-star" aria-hidden="true"></i> [${initials}]`;
           } else {
               teamListText = `[${initials}]`;
           }
@@ -83,7 +77,7 @@ const formatEventMethods = (methodsArr: MethodParams[]): string => {
                   ${isUnselected ? '' : methodText} 
                   <span style="font-size: 10px;">
                       ${zonesText !== '(-)' ? zonesText : ''} 
-                      ${teamListText}
+                      <span style="color: grey;">${teamListText}</span>
                   </span>
               </span>`;
   }).join('<br>');

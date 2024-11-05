@@ -1,17 +1,22 @@
+import { EventInfo } from "../types/events";
+import { MethodDetails } from "../types/methods";
+
+
 /**
  * Добавление методов в модальное окно описания задачи
  * @param {*} methodsArr
  * @returns
  */
 
-const addMethodsToEventUI = (methodsArr) => {
-  const methNamesArr = [];
+
+const addMethodsToEventUI = (methodsArr: MethodDetails[]) => {
+  const methNamesArr: string[] = [];
   if (methodsArr) {
     methodsArr.forEach((meth, index) => {
       const objQuant = Object.values(meth)[0].objQuant;
       const zones = Object.values(meth)[0].zones;
       const time = Object.values(meth)[0]['duration'];
-      const objZones = (objQuant, zones) => {
+      const objZones = (objQuant: string, zones: string) => {
         if (objQuant && zones) {
           return `(об-${objQuant},зон-${zones})`;
         } else if (objQuant && !zones) {
@@ -42,10 +47,10 @@ const addMethodsToEventUI = (methodsArr) => {
  * @param {*} transform
  * @returns
  */
-let getStackIcon = function getStackIcon(icon, transform) {
+let getStackIcon = function getStackIcon(icon: string, transform?: string ) {
   return '\n  <span class="fa-stack ms-n1 me-3">\n    <i class="fas fa-circle fa-stack-2x text-200"></i>\n    <i class="'
     .concat(icon, ' fa-stack-1x text-primary" data-fa-transform=')
-    .concat(transform, '></i>\n  </span>\n');
+    .concat(transform || '', '></i>\n  </span>\n');
 };
 
 /**
@@ -53,7 +58,7 @@ let getStackIcon = function getStackIcon(icon, transform) {
  * @param {*} event
  * @returns
  */
-export function getTemplate(event) {
+export function getTemplate(event: EventInfo) {
   const KR = event.extendedProps.kr === 'Да' ? ` (КР)` : '';
   const methods = event.extendedProps.methods
     ? `<div style="margin-left:5px;"><span style="font-weight:600; ">методы: </span>${addMethodsToEventUI(
@@ -133,7 +138,7 @@ export function getTemplate(event) {
  * @param {*} event
  * @returns
  */
-export function getTemplateNoFooter(event) {
+export function getTemplateNoFooter(event: EventInfo) {
   const KR = event.extendedProps.kr === 'Да' ? ` (КР)` : '';
   const methods = event.extendedProps.methods
     ? `<div style="margin-left:5px;"><span style="font-weight:600;">методы: </span>${addMethodsToEventUI(
@@ -213,7 +218,7 @@ export function getTemplateNoFooter(event) {
  * @param {*} event
  * @returns
  */
-export function getTemplateNoFooterNoDelete(event) {
+export function getTemplateNoFooterNoDelete(event: EventInfo) {
   const KR = event.extendedProps.kr === 'Да' ? ` (КР)` : '';
   const methods = event.extendedProps.methods
     ? `<div style="margin-left:5px;"><span style="font-weight:600;">методы: </span>${addMethodsToEventUI(
@@ -274,6 +279,6 @@ export function getTemplateNoFooterNoDelete(event) {
     getStackIcon('fas fa-sticky-note') +
       '<div class="flex-1"><b>Примечания: </b><p class="mb-1">' +
       event.extendedProps.notes || ''
-  }</p></div></div></div>${deleteAvailable}
+  }</p></div></div></div>
 `;
 }

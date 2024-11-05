@@ -41,7 +41,7 @@ import {
   getTemplate,
   getTemplateNoFooter,
   getTemplateNoFooterNoDelete,
-} from './ui/templates.js';
+} from './ui/templates';
 import { tempLoader } from './ui/tempLoader';
 import { docReady, utils } from './utils/docReady.js';
 import { fullCalendarInit, renderCalendar } from './utils/fullcalendar';

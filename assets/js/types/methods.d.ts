@@ -34,3 +34,13 @@ export interface MethodsArr {
   teamList?: string,
   isBrigadier?: string
 }
+
+
+
+export interface MethodDetails {
+  objQuant?: number;
+  zones?: number;
+  duration?: number;
+  teamList?: string;
+  isBrigadier?: boolean;
+}
