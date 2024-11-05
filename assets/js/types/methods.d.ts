@@ -31,6 +31,6 @@ export interface MethodsArr {
   delID: string,
   method: string,
   params: MethodParams,
-  teamList: string,
-  isBrigadier: string
+  teamList?: string,
+  isBrigadier?: string
 }

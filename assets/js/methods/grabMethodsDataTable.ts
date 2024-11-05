@@ -1,10 +1,12 @@
+import { MethodsArr } from "../types/events";
+
 /**
  * Сбор методов из таблицы методов, при наличии и подготовка для отправки в базу
  * @param {*} tbody
  * @returns
  */
-const grabMethodsDataTable = (tbody: HTMLTableSectionElement) => {
-  let grabMethodsArray = [];
+const grabMethodsDataTable = (tbody: HTMLTableSectionElement): MethodsArr[] => {
+  let grabMethodsArray: MethodsArr[] = [];
   const methodsArr = Array.from(tbody.querySelectorAll('tr'));
 
   if (methodsArr && methodsArr.length > 0) {

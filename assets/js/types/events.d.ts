@@ -74,8 +74,8 @@ type MethodsParams = {
   duration: string;
   objects: string;
   zones: string;
-  teamList?: string;
-  isBrigadier?: string;
+  teamList?: string | undefined | null;
+  isBrigadier?: string | undefined| null;
 }
 
 export interface MethodsArr {
