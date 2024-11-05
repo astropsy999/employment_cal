@@ -27,7 +27,7 @@ export function generateTeamListTitle(teamArray: string[]): string {
       // Проверяем, есть ли в результате разделения хотя бы два элемента
       if (parts.length >= 2) {
         // Возвращаем вторую часть (имя)
-        return parts[1].trim();
+        return parts[1].replace('}', '').trim();
       }
       // Если формат строки неверный, возвращаем пустую строку
       return '';
