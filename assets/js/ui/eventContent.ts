@@ -1,4 +1,7 @@
-export const eventContent = function (info) {
+import { EventClickArg } from "@fullcalendar/core";
+import { MethodParams } from "../types/methods";
+
+export const eventContent = function (info: EventClickArg) {
 
   const {
     methods, 
@@ -25,7 +28,7 @@ export const eventContent = function (info) {
     fullDescription: document.createElement('div'),
     
   };
-  const formatEventMethods = (methodsArr) => {
+  const formatEventMethods = (methodsArr: MethodParams[]) => {
     if (!methodsArr) return '';
   
     return methodsArr.map((meth) => {

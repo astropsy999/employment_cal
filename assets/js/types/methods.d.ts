@@ -10,7 +10,7 @@ export interface MethodParams {
   objQuant: string,
   objects?: string,
   zones: string,
-  editID: string,
+  editID?: string,
   teamList?: string,
   isBrigadier?: string
 }

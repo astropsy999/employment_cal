@@ -32,7 +32,7 @@ import {
   toggleIcon,
 } from './ui/checkBlockedDays';
 import { checkCurrentEventsAndBlockApproveBtn } from './ui/checkCurrentEvents';
-import { eventContent } from './ui/eventContent.js';
+import { eventContent } from './ui/eventContent';
 import { eventDrop } from './ui/eventDrop.js';
 import { parseResievedDataToCal } from './ui/parseResievedDataToCal';
 import { saveHighlightedReg } from './ui/saveHighlightedReg.js';
