@@ -1,5 +1,6 @@
 import { EventClickArg } from "@fullcalendar/core";
 import { MethodParams } from "../types/methods";
+import { initialsStr } from "../utils/textsUtils";
 
 export const eventContent = function (info: EventClickArg) {
 
@@ -27,21 +28,67 @@ export const eventContent = function (info: EventClickArg) {
     eventMethodsWrapper: document.createElement('div'),
     fullDescription: document.createElement('div'),
     
-  };
-  const formatEventMethods = (methodsArr: MethodParams[]) => {
-    if (!methodsArr) return '';
-  
-    return methodsArr.map((meth) => {
-      const { objQuant, zones, duration } = Object.values(meth)[0];
-      const methodText = `${Object.keys(meth)[0]}-${duration}ч`;
-      const zonesText = objQuant && zones ? `(об-${objQuant},зон-${zones})` :
-                        objQuant ? `(об-${objQuant})` :
-                        zones ? `(зон-${zones})` : '(-)';
-      const isUnselected = methodText === 'Не выбрано-ч';
-      const noZones = zonesText === '(-)';
-      return `<span>${isUnselected ? '' : methodText} <span style="font-size: 10px;">${noZones ? '' : zonesText}</span></span>`;
-    }).join('<br>');
-  };
+  };interface MethodDetails {
+    objQuant?: number;
+    zones?: number;
+    duration: number;
+    teamList?: string;
+    isBrigadier?: boolean;
+}
+
+type MethodParams = Record<string, MethodDetails>;
+
+/**
+ * Форматирует массив методов в HTML строку с отображением деталей.
+ * Добавляет иконку бригадира и делает список команды серым, если isBrigadier === true.
+ * @param methodsArr Массив методов с их параметрами.
+ * @returns Отформатированная HTML строка.
+ */
+const formatEventMethods = (methodsArr: MethodParams[]): string => {
+  if (!methodsArr || methodsArr.length === 0) return '';
+
+  return methodsArr.map(method => {
+      const methodName = Object.keys(method)[0];
+      const details = method[methodName];
+
+      const { objQuant, zones, duration, teamList, isBrigadier } = details;
+
+      // Формирование текста метода
+      const methodText = `${methodName}-${duration}ч`;
+
+      // Формирование текста списка команды с инициалами
+      let teamListText = '';
+      if (teamList) {
+          const initials = initialsStr(teamList);
+          if (isBrigadier) {
+              // Иконка бригадира (используем fa-star из FontAwesome 4) и серый цвет для списка
+              teamListText = `<span style="color: grey;"><i class="fa fa-star" aria-hidden="true"></i> [${initials}]</span>`;
+          } else {
+              teamListText = `[${initials}]`;
+          }
+      }
+
+      // Формирование текста зон и объектов
+      let zonesText = '(-)';
+      const zonesParts: string[] = [];
+      if (objQuant) zonesParts.push(`об-${objQuant}`);
+      if (zones) zonesParts.push(`зон-${zones}`);
+      if (zonesParts.length > 0) zonesText = `(${zonesParts.join(',')})`;
+
+      // Проверка на выбор "Не выбрано"
+      const isUnselected = methodText.startsWith('Не выбрано');
+
+      // Формирование окончательного HTML блока
+      return `<span>
+                  ${isUnselected ? '' : methodText} 
+                  <span style="font-size: 10px;">
+                      ${zonesText !== '(-)' ? zonesText : ''} 
+                      ${teamListText}
+                  </span>
+              </span>`;
+  }).join('<br>');
+};
+
 
   // Добавляем классы к элементам для отображения
   elements.eventTimeNameWrapper.classList.add('eventTimeNameWrapper');

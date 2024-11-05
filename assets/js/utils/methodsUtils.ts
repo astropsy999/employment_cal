@@ -65,7 +65,7 @@ export const createMethodsTableBody = (
 
             // Создаем строку таблицы
             const trElem = document.createElement('tr');
-            trElem.setAttribute('editid', methodParams.editID);
+            trElem.setAttribute('editid', methodParams.editID!);
             trElem.classList.add('hover-actions-trigger');
 
             // Создаем ячейки таблицы
