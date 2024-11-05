@@ -108,12 +108,34 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
    * @param {*} ev
    */
   const editStringOfTableBase = (ev: Event) => {
+
     if (!isEditMode) {
       isEditMode = true;
       const edString = (ev.target as HTMLElement)?.closest('tr');
       let tdArr: HTMLTableCellElement[] = [];
       if (edString) {
         tdArr = Array.from(edString.querySelectorAll('td'));
+        const methodsTD = tdArr[0];
+        const selectedTeamList = methodsTD.querySelector('button')?.getAttribute('title');
+        console.log("🚀 ~ editStringOfTableBase ~ selectedTeamList:", selectedTeamList)
+
+        if(selectedTeamList?.length){
+          const brigadeEditTD = document.createElement('td');
+
+          let brigadeSelect: HTMLDivElement | null = null;
+           // Создание селектора "бригада"
+          brigadeSelect = document.createElement('div');
+          brigadeSelect.classList.add('col-md-6', 'mb-2', 'pr-1');
+          brigadeSelect.innerHTML = `
+            <select class="form-select" id="brigadeSelect" multiple>
+              <!-- Опции будут динамически добавлены через TypeScript -->
+            </select>
+          `;
+          brigadeEditTD.append(brigadeSelect);
+
+          methodsTD.insertAdjacentElement('afterend', brigadeEditTD);
+
+        }
       }
       tdArr.forEach(async(td) => {
         if (td.classList.contains('ed')) {
@@ -142,7 +164,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
       });
 
       const saveEditedBtn = edString?.querySelector('.save-edited') as HTMLButtonElement;
-      console.log("🚀 ~ editStringOfTableBase ~ edString:", edString)
+      
       saveEditedBtn.addEventListener('click', (e) => {
         const editedSpentTime = document.querySelector(
           '#eventEditSpentTime',

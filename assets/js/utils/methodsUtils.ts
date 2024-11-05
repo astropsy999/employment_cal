@@ -103,10 +103,14 @@ export const createMethodsTableBody = (
         )
         teamBadge.setAttribute('type', 'button')
 
+
+
         const teamIcon = document.createElement('i');
         teamIcon.classList.add('fa', 'fa-users', 'color-white');
+
         teamIcon.setAttribute('aria-hidden', 'true');
         teamBadge.appendChild(teamIcon);
+        teamBadge.setAttribute('title', `${teamList}`)
 
         methodDiv.appendChild(methodBadge);
         
