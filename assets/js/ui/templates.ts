@@ -1,5 +1,6 @@
 import { EventInfo } from "../types/events";
-import { MethodDetails } from "../types/methods";
+import { MethodDetails, MethodObj } from "../types/methods";
+import { initialsStr } from "../utils/textsUtils";
 
 
 /**
@@ -9,34 +10,60 @@ import { MethodDetails } from "../types/methods";
  */
 
 
-const addMethodsToEventUI = (methodsArr: MethodDetails[]) => {
-  const methNamesArr: string[] = [];
-  if (methodsArr) {
-    methodsArr.forEach((meth, index) => {
-      const objQuant = Object.values(meth)[0].objQuant;
-      const zones = Object.values(meth)[0].zones;
-      const time = Object.values(meth)[0]['duration'];
-      const objZones = (objQuant: string, zones: string) => {
-        if (objQuant && zones) {
-          return `(об-${objQuant},зон-${zones})`;
-        } else if (objQuant && !zones) {
-          return `(об-${objQuant})`;
-        } else if (!objQuant && zones) {
-          return `(зон-${zones})`;
-        } else {
-          return '(-)';
+type MethodParams = Record<string, MethodDetails>;
+
+/**
+ * Добавление методов в модальное окно описания задачи.
+ * Включает список команды с инициалами и иконку бригадира, если необходимо.
+ * @param methodsArr Массив методов с их параметрами.
+ * @returns Отформатированная строка HTML.
+ */
+const addMethodsToEventUI = (methodsArr: MethodParams[] | MethodObj[]): string => {
+    if (!methodsArr || methodsArr.length === 0) return '';
+
+    const methNamesArr: string[] = [];
+
+    methodsArr.forEach(meth => {
+        const methodName = Object.keys(meth)[0];
+        const details = meth[methodName];
+        const { objQuant, zones, duration, teamList, isBrigadier } = details;
+
+        // Формирование текста метода
+        const methodText = `${methodName}-${duration}ч`;
+
+        // Формирование текста зон и объектов
+        let zonesText = '(-)';
+        const zonesParts: string[] = [];
+        if (objQuant) zonesParts.push(`об-${objQuant}`);
+        if (zones) zonesParts.push(`зон-${zones}`);
+        if (zonesParts.length > 0) zonesText = `(${zonesParts.join(',')})`;
+
+        // Формирование текста списка команды с инициалами
+        let teamListText = '';
+        if (teamList) {
+            const initials = initialsStr(teamList);
+            if (isBrigadier) {
+                // Иконка бригадира (используем fa-star из FontAwesome 4) и серый цвет для списка
+                teamListText = `<span style="color: grey;"><i class="fa fa-star" aria-hidden="true"></i> [${initials}]</span>`;
+            } else {
+                teamListText = `[${initials}]`;
+            }
         }
-      };
-      const methodText = `${Object.keys(meth)[0]}-${time}ч`;
-      const zonesText = objZones(objQuant, zones);
 
-      const formattedMethod = `<span>${methodText} <span style="font-size: 12px;">${zonesText}</span></span>`;
-      methNamesArr.push(formattedMethod);
+        // Формирование окончательного HTML блока для метода
+        const formattedMethod = `<span>
+                                    ${methodText} 
+                                    <span style="font-size: 12px;">
+                                        ${zonesText !== '(-)' ? zonesText : ''} 
+                                        ${teamListText}
+                                    </span>
+                                </span>`;
+        methNamesArr.push(formattedMethod);
     });
-  }
 
-  return methNamesArr.join(', ');
+    return methNamesArr.join(', ');
 };
+
 
 /**
  * Возвращает строку с HTML-кодом иконки Font Awesome, обернутой в элемент <span> с классом fa-stack и с некоторыми
@@ -68,11 +95,16 @@ export function getTemplate(event: EventInfo) {
 
   const editDeleteAvilable =
     event.extendedProps.isApproved === '' || process.env.NODE_ENV === 'development'
-      ? `<div class="modal-footer d-flex justify-content-end bg-light px-card border-top-0">
-      <button class="btn btn-falcon-default btn-sm" id="editEventBtn" data-idx="${event.extendedProps.idx}">
-      <span class="fas fa-pencil-alt fs--2 mr-2"></span> Редактировать</button>
-      <button class="btn btn-falcon-primary btn-sm" id="delEventBtn" data-delID="${event.extendedProps.delID}" data-typeID="${event.extendedProps.typeID}"><i class="bi bi-trash-fill align-content-center"></i>Удалить <span class="fas fa-angle-right fs--2 ml-1"></span></button>
-      </div>`
+      ? `
+        <div class="modal-footer d-flex justify-content-end bg-light px-card border-top-0">
+          <button class="btn btn-falcon-default btn-sm" id="editEventBtn" data-idx="${event.extendedProps.idx}">
+            <span class="fas fa-pencil-alt fs--2 mr-2"></span> Редактировать
+          </button>
+          <button class="btn btn-falcon-primary btn-sm" id="delEventBtn" data-delID="${event.extendedProps.delID}" data-typeID="${event.extendedProps.typeID}">
+            <i class="bi bi-trash-fill align-content-center"></i>Удалить <span class="fas fa-angle-right fs--2 ml-1"></span>
+          </button>
+        </div>
+        `
       : '';
 
   return `<div class="modal-header bg-light ps-card pe-5 border-bottom-0" tabindex="-1"><div>
@@ -149,10 +181,11 @@ export function getTemplateNoFooter(event: EventInfo) {
   const deleteAvailable =
     event.extendedProps.isApproved === '' || process.env.NODE_ENV === 'development'
       ? `<div class="modal-footer d-flex justify-content-end bg-light px-card border-top-0">
-<button class="btn btn-falcon-primary btn-sm" id="delEventBtn" data-delID="${event.extendedProps.delID}" data-typeID="${event.extendedProps.typeID}"><i class="bi bi-trash-fill align-content-center"></i>Удалить <span class="fas fa-angle-right fs--2 ml-1">
-  </span>
-  </button>
-  </div>`
+          <button class="btn btn-falcon-primary btn-sm" id="delEventBtn" data-delID="${event.extendedProps.delID}" data-typeID="${event.extendedProps.typeID}">
+            <i class="bi bi-trash-fill align-content-center"></i>Удалить <span class="fas fa-angle-right fs--2 ml-1"></span>
+          </button>
+          </div>
+        `
       : '';
 
   return `<div class="modal-header bg-light ps-card pe-5 border-bottom-0" tabindex="-1"><div>
