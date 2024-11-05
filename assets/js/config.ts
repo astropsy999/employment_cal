@@ -66,6 +66,8 @@ const BRIGADE_PARAM = '9488';
 const OBJECT_TYPE_ID = '1149';
 const BRIGADE_COL_NAME = 'Бригада';
 const DATA_TYPE = 'Строка';
+const IS_BRIGADIER_PARAM = '9487';
+const IS_BRIGADIER_COL_NAME = 'Я бригадир';
 
 // Объект изменяемых параметров
 
@@ -258,5 +260,7 @@ export {
   BRIGADE_PARAM,
   OBJECT_TYPE_ID,
   BRIGADE_COL_NAME,
-  DATA_TYPE
+  DATA_TYPE,
+  IS_BRIGADIER_PARAM,
+  IS_BRIGADIER_COL_NAME,
 };

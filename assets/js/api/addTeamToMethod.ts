@@ -2,6 +2,8 @@ import * as config from "../config";
 
 import { getLocalStorageItem } from "../utils/localStorageUtils"
 import { generateTeamListId, generateTeamListTitle } from "../utils/textsUtils"
+import { showToast } from "../utils/toastifyUtil";
+import { isBrigadierApi } from "./isBrigadierApi";
 
 type AnswerParams = {
     result: number,
@@ -17,7 +19,7 @@ interface AddedMethodAnswer {
     result: 1
 }
 
-export const addTeamToMethod = async (teamList: string, addedMethodAnswer: AddedMethodAnswer) => {
+export const addTeamToMethod = async (teamList: string, isBrigadier: string | null | undefined, addedMethodAnswer: AddedMethodAnswer) => {
 
         const teamListArr = JSON.parse(teamList);
         const value = generateTeamListTitle(teamListArr);
@@ -71,7 +73,10 @@ export const addTeamToMethod = async (teamList: string, addedMethodAnswer: Added
                 })
                 .then((response) => response.json())
                 .then((data) => {
-                    console.log("🚀 ~ addTeamToMethod ~ data:", data)
+                    showToast("Список работников успешно сохранен", "success");
+                    if(isBrigadier) {
+                        isBrigadierApi(isBrigadier, addedMethodAnswer.object);
+                    }
                 })
             }
         })
