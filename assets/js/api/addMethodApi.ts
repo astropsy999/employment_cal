@@ -1,6 +1,7 @@
 // addMethodApi.ts
 import { MethodsArr } from '../types/events';
 import * as c from '../config';
+import { addTeamToMethod } from './addTeamToMethod';
 
 /**
  * Функция для добавления метода через API.
@@ -14,7 +15,9 @@ const addMethodApi = (
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     const { method, params } = element;
-    const { duration, objects, zones } = params;
+    const { duration, objects, zones, teamList, isBrigadier } = params;
+    console.log("🚀 ~ returnnewPromise ~ isBrigadier:", isBrigadier)
+    console.log("🚀 ~ returnnewPromise ~ teamList:", teamList)
 
     if (method !== 'Не выбрано' && duration !== '') {
       let formDataaddMet = new FormData();
@@ -55,6 +58,10 @@ const addMethodApi = (
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log("🚀 ~ .then ~ data:", data)
+          if (teamList) {
+            addTeamToMethod(teamList, isBrigadier!, data.results[0]);
+          }
           // Обработка успешного ответа, если необходимо
           resolve();
         })

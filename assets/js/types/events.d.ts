@@ -74,7 +74,8 @@ type MethodsParams = {
   duration: string;
   objects: string;
   zones: string;
-  
+  teamList?: string;
+  isBrigadier?: string;
 }
 
 export interface MethodsArr {
