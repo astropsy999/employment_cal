@@ -25,8 +25,8 @@ export const addTeamToMethod = async (teamList: string, addedMethodAnswer: Added
         let formData = new FormData();
 
         const dataObject = {
-            "Value": value.replace(", ", ","),
-            "rv":value.replace(", ", "\n"),
+            "Value": value.replaceAll(", ", ","),
+            "rv":value.replaceAll(", ", "\n"),
             "rid": generateTeamListId(teamListArr),
             "UserTabID":null,
             "UnitID":"",
@@ -47,4 +47,33 @@ export const addTeamToMethod = async (teamList: string, addedMethodAnswer: Added
 
         console.log("🚀 ~ addTeamToMethod ~ dataObject:", dataObject)
 
+        formData.append('data', JSON.stringify(dataObject));
+
+        fetch(config.srvv + config.cacheAddTable, {
+            credentials: 'include',
+            method: 'POST',
+            body: formData
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.result === 1) {
+                let formData = new FormData();
+
+                formData.append('InterfaceID', config.InterfaceID);
+                formData.append('ParrentObjHighTab', getLocalStorageItem('iddb'));
+                formData.append('RapidCalc', '0');
+                formData.append('Ignore39', '0');
+
+                fetch(config.srvv + config.cacheSaveTable, {
+                    credentials: 'include',
+                    method: 'POST',
+                    body: formData
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log("🚀 ~ addTeamToMethod ~ data:", data)
+                })
+            }
+        })
 }
+
