@@ -111,6 +111,7 @@ export const createMethodsTableBody = (
         teamIcon.setAttribute('aria-hidden', 'true');
         teamBadge.appendChild(teamIcon);
         teamBadge.setAttribute('title', `${teamList}`)
+        teamBadge.setAttribute('data-is-brigadier', `${isBrigadier}`)
 
         methodDiv.appendChild(methodBadge);
         

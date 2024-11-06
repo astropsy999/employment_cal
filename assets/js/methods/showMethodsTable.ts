@@ -115,27 +115,50 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
     if (!isEditMode) {
       isEditMode = true;
       const edString = (ev.target as HTMLElement)?.closest('tr');
+    
       let tdArr: HTMLTableCellElement[] = [];
       if (edString) {
         tdArr = Array.from(edString.querySelectorAll('td'));
         const methodsTD = tdArr[0];
+    
         const selectedTeamList = methodsTD.querySelector('button')?.getAttribute('title');
+        const isBrigadier = methodsTD.querySelector('button')?.getAttribute('data-is-brigadier');
     
         if (selectedTeamList?.length) {
           const brigadeEditTD = document.createElement('td');
     
-          // Создаём контейнер для селектора бригады
-          const brigadeSelectContainer = document.createElement('div');
-          brigadeSelectContainer.classList.add('mb-2', 'pr-1', 'w-100');
+          // Создаем общий контейнер для чекбокса и селектора бригады
+          const brigadeContainer = document.createElement('div');
+          brigadeContainer.classList.add('brigade-container', 'd-flex', 'align-items-center', 'mb-2', 'pr-1', 'w-100');
     
-          // Создаём селектор "бригада"
+          // Создаем контейнер для чекбокса "Я бригадир"
+          const isBrigadierContainer = document.createElement('div');
+          isBrigadierContainer.classList.add('form-check', 'mr-2'); // Добавляем отступ справа
+    
+          isBrigadierContainer.innerHTML = `
+            <input class="form-check-input" type="checkbox" id="brigadirEditCheckbox">
+            <label class="form-check-label" for="brigadirEditCheckbox">Я бригадир</label>
+          `;
+    
+          // Устанавливаем состояние чекбокса на основе isBrigadier
+          const brigadirEditCheckbox = isBrigadierContainer.querySelector('#brigadirEditCheckbox') as HTMLInputElement;
+          brigadirEditCheckbox.checked = isBrigadier === 'Да';
+    
+          // Создаем контейнер для селектора бригады
+          const brigadeSelectContainer = document.createElement('div');
+          brigadeSelectContainer.classList.add('w-100'); // Занимает всю оставшуюся ширину
+    
           brigadeSelectContainer.innerHTML = `
             <select class="form-select" id="brigadeSelectEdit" multiple>
               <!-- Опции будут динамически добавлены через TypeScript -->
             </select>
           `;
     
-          brigadeEditTD.append(brigadeSelectContainer);
+          // Добавляем чекбокс и селектор в общий контейнер
+          brigadeContainer.appendChild(isBrigadierContainer);
+          brigadeContainer.appendChild(brigadeSelectContainer);
+    
+          brigadeEditTD.append(brigadeContainer);
     
           // Вставляем новый <td> после первого <td>
           methodsTD.insertAdjacentElement('afterend', brigadeEditTD);
@@ -144,10 +167,8 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
     
           // Получаем список работников бригады и добавляем их в селектор
           getBrigadeWorkers().then((brigadeWorkersList) => {
-            console.log("🚀 ~ editStringOfTableBase ~ brigadeWorkersList:", brigadeWorkersList);
-    
             if (brigadeWorkersList) {
-              // Создаём карту соответствия имён и ID
+              // Создаем карту соответствия имен и ID
               const nameToIDMap = new Map<string, string>();
     
               // Заполняем селектор опциями
@@ -174,7 +195,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
     
               // Предварительно выбираем уже выбранные значения
               if (selectedTeamList) {
-                // Разбиваем selectedTeamList на массив имён
+                // Разбиваем selectedTeamList на массив имен
                 const selectedNames = selectedTeamList.split(',').map((name) => name.trim());
     
                 // Получаем соответствующие ID выбранных пользователей
@@ -189,8 +210,6 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
           });
         }
       }
-    
-    
       tdArr.forEach(async(td) => {
         if (td.classList.contains('ed')) {
           if (!td.classList.contains('methods-select')) {
