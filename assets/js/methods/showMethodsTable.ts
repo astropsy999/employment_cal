@@ -4,10 +4,10 @@ import getMethodsDropDown from '../api/getMethodsDropDown';
 import saveEditedMethodToBaseApi from '../api/saveEditedMethodToBaseApi';
 import { Methods } from '../enums/methods';
 import { TaskType } from '../enums/taskTypes';
-import { EventInfo } from '../types/events';
 import { MethodData } from '../types/methods';
 import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
+import getBrigadeWorkers from '../api/getBrigadeWorkers';
 
 /**
  * Показ/скрытие таблицы с методами
@@ -134,6 +134,12 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
           brigadeEditTD.append(brigadeSelect);
 
           methodsTD.insertAdjacentElement('afterend', brigadeEditTD);
+
+             // Получаем список работников бригады и добавляем их в селектор
+           getBrigadeWorkers().then((brigadeWorkersList) => {
+              console.log("🚀 ~ editStringOfTableBase ~ brigadeWorkersList:", brigadeWorkersList)
+              
+            })
 
         }
       }

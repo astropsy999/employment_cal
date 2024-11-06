@@ -12,6 +12,7 @@ import { initials } from '../utils/textsUtils';
 import addMethodToClientTable from './addMethodToClientTable';
 import { showToast } from '../utils/toastifyUtil';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
+import { populateBrigadeSelect } from '../utils/populateBrigadeSelect';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -243,13 +244,7 @@ const addWooContainer = (etarget: HTMLElement) => {
   const brigadeSelectElement = brigadeSelect?.querySelector('#brigadeSelect') as HTMLSelectElement;
 
    // Заполняем селектор работниками бригады
-   brigadeWorkers?.forEach((worker) => {
-    const {ID: id, Name: name} = worker;
-    const option = document.createElement('option');
-    option.value = `{${id}:${name}}`;
-    option.text = initials(name);
-    brigadeSelectElement.appendChild(option);
-  });
+  brigadeWorkers && brigadeSelectElement && populateBrigadeSelect(brigadeSelectElement, brigadeWorkers);
 
   // Инициализируем Choices.js на селекторе "бригада"
   brigadeChoicesInstance = new Choices(brigadeSelectElement, {
