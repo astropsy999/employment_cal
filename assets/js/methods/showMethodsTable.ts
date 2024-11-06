@@ -6,11 +6,6 @@ import { Methods } from '../enums/methods';
 import { TaskType } from '../enums/taskTypes';
 import { MethodData } from '../types/methods';
 import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
-import { isInvalidElem, isValidElem } from '../utils/toggleElem';
-import getBrigadeWorkers from '../api/getBrigadeWorkers';
-import { populateBrigadeSelect } from '../utils/populateBrigadeSelect';
-import Choices from 'choices.js';
-import { initials, initialsStr } from '../utils/textsUtils';
 import { hideBrigadeColumn, showBrigadeColumn } from './editModeUtils';
 
 /**
@@ -150,7 +145,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
 
       const editedSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
       saveEditedMethodToBaseApi({ methData: edMetDataObj, editSaveTaskBtn, editedSpentTime });
-  };
+   };
 
   /**
    * Редактирование строки методов в таблице методов
@@ -193,13 +188,9 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
               const selectedOption = selectElem.options[selectElem.selectedIndex];
               // Проверяем, требуется ли бригада для выбранного метода
               const selectedMethodID = selectedOption?.getAttribute('methodid')!;
-              console.log("🚀 ~ tdArr.forEach ~ selectedMethodID:", selectedMethodID)
 
               const isRK = selectedMethodID === Methods.RK_CRG || selectedMethodID === Methods.RK_CLASSIC;
 
-              console.log("🚀 ~ tdArr.forEach ~ isRK:", isRK)
-
-  
               if (isRK) {
                 showBrigadeColumn(edHeaderRow, methodsTD, edString, selectedTeamList!, isBrigadier!);
               }
