@@ -65,56 +65,91 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         existingBrigadeHeader.remove();
       }
 
+        // Collect brigade data if the brigade column exists
+      let brigadeData = {
+        isBrigadier: '',
+        teamList: '',
+      };
+
+       // Check if the brigade column exists in the row
+      const brigadeEditTD = editedString?.querySelector('.brigade-edit-td') as HTMLTableCellElement;
+      if (brigadeEditTD) {
+        const brigadirEditCheckbox = brigadeEditTD.querySelector('#brigadirEditCheckbox') as HTMLInputElement;
+        const isBrigadierChecked = brigadirEditCheckbox?.checked ? 'Да' : '';
+
+        // Get selected brigade members
+        const brigadeSelect = brigadeEditTD.querySelector('#brigadeSelectEdit') as HTMLSelectElement;
+        const selectedOptions = Array.from(brigadeSelect.selectedOptions);
+        const teamList = selectedOptions.map((option) => option.text).join(', ');
+
+        brigadeData = {
+          isBrigadier: isBrigadierChecked,
+          teamList,
+        };
+      }
+
     tdArray.forEach((tdItem, idx) => {
       if (tdItem.classList.contains('ed')) {
-        const tdItemChildren = tdItem.children[0] as HTMLInputElement | HTMLSelectElement;
+        const tdItemChildren = tdItem.children[0] as HTMLSelectElement;
 
         if (tdItem.classList.contains('methods-select')) {
+          const selectedMethodText = tdItemChildren.options[tdItemChildren.selectedIndex].text;
           tdItem.innerHTML = `
             <div class="d-flex align-items-center">
-              <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${tdItemChildren.value}</div>
+              <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${selectedMethodText}</div>
+              <button class="btn btn-light" data-is-brigadier="${brigadeData.isBrigadier}" title="${brigadeData.teamList}">
+                <i class="fas fa-users"></i>
+              </button>
             </div>
-            `;
-        } else {
-          tdItem.innerText = tdItemChildren.value;
+          `;
+          edMetDataObj['methVal'] = selectedMethodText;
+          edMetDataObj['teamList'] = brigadeData.teamList;
+          edMetDataObj['isBrigadier'] = brigadeData.isBrigadier;
+        } else if (tdItem.innerText = tdItemChildren.value) 
+        {
+            if (tdItem.classList.contains('duration-cell')) {
+              edMetDataObj['durVal'] = tdItemChildren.value;
+            } else if (tdItem.classList.contains('objects-cell')) {
+              edMetDataObj['objqVal'] = tdItemChildren.value;
+            } else if (tdItem.classList.contains('zones-cell')) {
+              edMetDataObj['zonesVal'] = tdItemChildren.value;
+            }
         }
-      } else {
-        tdItem.innerHTML = `
-        <div class="btn-group btn-group hover-actions methods-table-hover">
-          <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать">
-            <span class="fas fa-edit" style="color: green;"></span>
-          </button>
-          <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить">
-            <span class="fas fa-trash-alt" style="color: red;"></span>
-          </button>
-        </div>
-        `;
-      }
-      edMetDataObj['methVal'] = tdArray[0].innerText.trim();
-      edMetDataObj['durVal'] = tdArray[1].innerText.trim();
-      edMetDataObj['objqVal'] = tdArray[2].innerText.trim();
-      edMetDataObj['zonesVal'] = tdArray[3].innerText.trim();
+        } else if (tdItem.classList.contains('brigade-edit-td')) {
+          tdItem.remove();
+        } else {
+          tdItem.innerHTML = `
+            <div class="btn-group btn-group hover-actions methods-table-hover">
+              <button class="btn btn-light pe-2 edit-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Редактировать">
+                <span class="fas fa-edit" style="color: green;"></span>
+              </button>
+              <button class="btn btn-light ps-2 delete-string" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить">
+                <span class="fas fa-trash-alt" style="color: red;"></span>
+              </button>
+            </div>
+          `;
+        }
     });
 
-    const editStringBtnArr = Array.from(document.querySelectorAll('.edit-string'));
-    const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
+      // Re-add event listeners to edit and delete buttons
+      const editStringBtnArr = Array.from(document.querySelectorAll('.edit-string'));
+      const delStrBtnArr = Array.from(document.querySelectorAll('.delete-string'));
 
-    // Добавляем обработчики событий заново
-    editStringBtnArr.forEach((item) => {
-      item.addEventListener('click', (e) => {
-        editStringOfTableBase(e);
+      editStringBtnArr.forEach((item) => {
+        item.addEventListener('click', (e) => {
+          editStringOfTableBase(e);
+        });
       });
-    });
-    delStrBtnArr.forEach((item) => {
-      item.addEventListener('click', (e) => {
-        deleteStringOfTableBase(e);
+      delStrBtnArr.forEach((item) => {
+        item.addEventListener('click', (e) => {
+          deleteStringOfTableBase(e);
+        });
       });
-    });
-    isEditMode = false;
-      const editedSpentTime = document.querySelector(
-        '#eventEditSpentTime',
-      ) as HTMLInputElement;
-    saveEditedMethodToBaseApi({methData: edMetDataObj, editSaveTaskBtn, editedSpentTime});
+
+      isEditMode = false;
+
+      const editedSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
+      saveEditedMethodToBaseApi({ methData: edMetDataObj, editSaveTaskBtn, editedSpentTime });
   };
 
   /**

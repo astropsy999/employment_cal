@@ -125,7 +125,7 @@ export const createMethodsTableBody = (
         durationCell.textContent = methodParams.duration.toString();
 
         const objQuantCell = document.createElement('td');
-        objQuantCell.classList.add('w-auto', 'ed');
+        objQuantCell.classList.add('align-middle', 'ed');
         objQuantCell.textContent = methodParams.objQuant.toString();
 
         const zonesCell = document.createElement('td');

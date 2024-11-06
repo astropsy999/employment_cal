@@ -24,7 +24,9 @@ export interface MethodData {
   methVal: string,
   durVal: string,
   objqVal: string,
-  zonesVal: string
+  zonesVal: string,
+  teamList?: string,
+  isBrigadier?: string
 }
 
 export interface MethodsArr {

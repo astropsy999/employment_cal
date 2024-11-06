@@ -92,7 +92,7 @@ const addMethodToClientTable = (selectedTeam: string | string[] | undefined, isB
         </div>
       </td>
       <td class="align-middle text-nowrap ed wootime">${wooTime.value}</td>
-      <td class="align-middle text-nowrap w-auto ed">
+      <td class="align-middle text-nowrap ed">
         ${wooObjects.value}
       </td>
       <td class="align-middle text-nowrap ed">${wooZones.value}</td>
