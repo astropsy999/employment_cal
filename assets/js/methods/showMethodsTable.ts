@@ -8,6 +8,9 @@ import { MethodData } from '../types/methods';
 import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 import getBrigadeWorkers from '../api/getBrigadeWorkers';
+import { populateBrigadeSelect } from '../utils/populateBrigadeSelect';
+import Choices from 'choices.js';
+import { initials, initialsStr } from '../utils/textsUtils';
 
 /**
  * Показ/скрытие таблицы с методами
@@ -117,32 +120,77 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         tdArr = Array.from(edString.querySelectorAll('td'));
         const methodsTD = tdArr[0];
         const selectedTeamList = methodsTD.querySelector('button')?.getAttribute('title');
-        console.log("🚀 ~ editStringOfTableBase ~ selectedTeamList:", selectedTeamList)
-
-        if(selectedTeamList?.length){
+    
+        if (selectedTeamList?.length) {
           const brigadeEditTD = document.createElement('td');
-
-          let brigadeSelect: HTMLDivElement | null = null;
-           // Создание селектора "бригада"
-          brigadeSelect = document.createElement('div');
-          brigadeSelect.classList.add('col-md-6', 'mb-2', 'pr-1');
-          brigadeSelect.innerHTML = `
-            <select class="form-select" id="brigadeSelect" multiple>
+    
+          // Создаём контейнер для селектора бригады
+          const brigadeSelectContainer = document.createElement('div');
+          brigadeSelectContainer.classList.add('mb-2', 'pr-1', 'w-100');
+    
+          // Создаём селектор "бригада"
+          brigadeSelectContainer.innerHTML = `
+            <select class="form-select" id="brigadeSelectEdit" multiple>
               <!-- Опции будут динамически добавлены через TypeScript -->
             </select>
           `;
-          brigadeEditTD.append(brigadeSelect);
-
+    
+          brigadeEditTD.append(brigadeSelectContainer);
+    
+          // Вставляем новый <td> после первого <td>
           methodsTD.insertAdjacentElement('afterend', brigadeEditTD);
-
-             // Получаем список работников бригады и добавляем их в селектор
-           getBrigadeWorkers().then((brigadeWorkersList) => {
-              console.log("🚀 ~ editStringOfTableBase ~ brigadeWorkersList:", brigadeWorkersList)
-              
-            })
-
+    
+          const selectElement = brigadeSelectContainer.querySelector('select') as HTMLSelectElement;
+    
+          // Получаем список работников бригады и добавляем их в селектор
+          getBrigadeWorkers().then((brigadeWorkersList) => {
+            console.log("🚀 ~ editStringOfTableBase ~ brigadeWorkersList:", brigadeWorkersList);
+    
+            if (brigadeWorkersList) {
+              // Создаём карту соответствия имён и ID
+              const nameToIDMap = new Map<string, string>();
+    
+              // Заполняем селектор опциями
+              brigadeWorkersList.forEach((worker) => {
+                const { ID: id, Name: name } = worker;
+                nameToIDMap.set(name, id);
+    
+                const option = document.createElement('option');
+                option.value = id; // Используем ID в качестве value
+                option.text = initials(name); // Отображаем инициалы имени
+                selectElement.appendChild(option);
+              });
+    
+              // Инициализируем Choices.js на селекторе "бригада"
+              const brigadeChoicesInstanceEdit = new Choices(selectElement, {
+                removeItemButton: true,
+                searchResultLimit: 100,
+                renderChoiceLimit: 100,
+                shouldSort: false,
+                placeholderValue: 'Отредактируйте список работников бригады',
+                noResultsText: 'Ничего не найдено',
+                itemSelectText: '',
+              });
+    
+              // Предварительно выбираем уже выбранные значения
+              if (selectedTeamList) {
+                // Разбиваем selectedTeamList на массив имён
+                const selectedNames = selectedTeamList.split(',').map((name) => name.trim());
+    
+                // Получаем соответствующие ID выбранных пользователей
+                const selectedIDs: string[] = selectedNames
+                  .map((name) => nameToIDMap.get(name))
+                  .filter((id): id is string => id !== undefined);
+    
+                // Устанавливаем выбранные значения в Choices.js
+                brigadeChoicesInstanceEdit.setChoiceByValue(selectedIDs);
+              }
+            }
+          });
         }
       }
+    
+    
       tdArr.forEach(async(td) => {
         if (td.classList.contains('ed')) {
           if (!td.classList.contains('methods-select')) {
