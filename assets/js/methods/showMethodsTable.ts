@@ -115,6 +115,10 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
     if (!isEditMode) {
       isEditMode = true;
       const edString = (ev.target as HTMLElement)?.closest('tr');
+      // Получаем ссылку на <thead>
+      const edTableHead = document?.querySelector('.thead-dark') as HTMLTableSectionElement;
+      // Получаем ссылку на строку заголовков <tr>
+      const edHeaderRow = edTableHead?.querySelector('tr') as HTMLTableRowElement;
     
       let tdArr: HTMLTableCellElement[] = [];
       if (edString) {
@@ -125,19 +129,33 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         const isBrigadier = methodsTD.querySelector('button')?.getAttribute('data-is-brigadier');
     
         if (selectedTeamList?.length) {
+          // Проверяем, есть ли уже заголовок "Бригада", чтобы не добавить его дважды
+            const existingBrigadeHeader = edHeaderRow.querySelector('.brigade-header');
+            if (!existingBrigadeHeader) {
+              const brigadeHeaderTH = document.createElement('th');
+              brigadeHeaderTH.scope = 'col';
+              brigadeHeaderTH.style.width = '15%';
+              brigadeHeaderTH.classList.add('brigade-header');
+              brigadeHeaderTH.textContent = 'Бригада';
+
+              // Вставляем новый <th> после первого <th>
+              const methodTH = edHeaderRow.querySelector('th:first-child');
+              methodTH?.insertAdjacentElement('afterend', brigadeHeaderTH);
+            }
+
           const brigadeEditTD = document.createElement('td');
     
           // Создаем общий контейнер для чекбокса и селектора бригады
           const brigadeContainer = document.createElement('div');
-          brigadeContainer.classList.add('brigade-container', 'd-flex', 'align-items-center', 'mb-2', 'pr-1', 'w-100');
+          brigadeContainer.classList.add('brigade-container', 'd-flex', 'align-items-center', 'mb-2', 'p-1', 'w-90');
     
           // Создаем контейнер для чекбокса "Я бригадир"
           const isBrigadierContainer = document.createElement('div');
-          isBrigadierContainer.classList.add('form-check', 'mr-2'); // Добавляем отступ справа
+          isBrigadierContainer.classList.add('form-check', 'mr-2', 'd-flex', 'align-items-center', 'flex-column', 'p-1'); 
     
           isBrigadierContainer.innerHTML = `
+            <label class="form-check-label fs-small" for="brigadirEditCheckbox">Я бригадир</label>
             <input class="form-check-input" type="checkbox" id="brigadirEditCheckbox">
-            <label class="form-check-label" for="brigadirEditCheckbox">Я бригадир</label>
           `;
     
           // Устанавливаем состояние чекбокса на основе isBrigadier
