@@ -55,6 +55,16 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
       tdArray = Array.from(editedString.querySelectorAll('td'));
     }
 
+      // Reference to the table header row
+      const edTableHead = document.querySelector('.thead-dark') as HTMLTableSectionElement;
+      const edHeaderRow = edTableHead?.querySelector('tr') as HTMLTableRowElement;
+
+       // Remove the brigade header if it exists
+      const existingBrigadeHeader = edHeaderRow.querySelector('.brigade-header');
+      if (existingBrigadeHeader) {
+        existingBrigadeHeader.remove();
+      }
+
     tdArray.forEach((tdItem, idx) => {
       if (tdItem.classList.contains('ed')) {
         const tdItemChildren = tdItem.children[0] as HTMLInputElement | HTMLSelectElement;
