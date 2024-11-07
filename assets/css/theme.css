@@ -27921,3 +27921,12 @@ div[data-collapse] + .kanban-item {
 .scrollbar {
   overflow: visible;
 }
+
+.choices__list--dropdown .choices__item--selectable.is-highlighted, .choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
+  background-color: #27bcfd !important;
+}
+
+.choices .choices__list--multiple .choices__item {
+  background-color: #bbd2f1 !important;
+  color: #47576b !important;
+}

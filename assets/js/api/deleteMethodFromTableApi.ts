@@ -1,4 +1,5 @@
 import { deleteNodeURL, srvv } from "../config";
+import { showToast } from "../utils/toastifyUtil";
 
 /**
  * Удаляет метод с сервера по заданному ID
@@ -22,9 +23,9 @@ const deleteMethodFromTableApi = async (
       }
   
       const data = await response.json();
-      console.log('Метод удален с сервера:', data);
+      showToast('Метод удален', 'success');
     } catch (error) {
-      console.error('Ошибка при удалении метода с сервера:', error);
+      showToast('Ошибка при удалении метод', 'error');
     }
   };
   

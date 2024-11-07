@@ -73,6 +73,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
       let brigadeData = {
         isBrigadier: '',
         teamList: '',
+        teamTitles: ''
       };
 
        // Check if the brigade column exists in the row
@@ -85,10 +86,12 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         const brigadeSelect = brigadeEditTD.querySelector('#brigadeSelectEdit') as HTMLSelectElement;
         const selectedOptions = Array.from(brigadeSelect.selectedOptions);
         const teamList = selectedOptions.map((option) => option.value).join(', ');
+        const teamTitles = selectedOptions.map((option) => option.text).join(', ');
 
         brigadeData = {
           isBrigadier: isBrigadierChecked,
           teamList,
+          teamTitles
         };
       }
 
@@ -102,7 +105,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
             <div class="d-flex align-items-center">
               <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${selectedMethodText}</div>
               ${brigadeData.isBrigadier === 'Да' ? `<span style="color: blue; margin-left: 1em;" title="Я бригадир"><i class="fa fa-user" aria-hidden="true" ></i></span>`: ``}
-              ${brigadeData.teamList.length > 0 ? `<button class="brigade-btn ms-2 border-0 radius-lg color-white" type="button" title="${brigadeData.teamList}">
+              ${brigadeData.teamList.length > 0 ? `<button class="brigade-btn ms-2 border-0 radius-lg color-white" type="button" title="${brigadeData.teamTitles}">
                 <i class="fa fa-users color-white" aria-hidden="true"></i>
               </button>`: ``}
             </div>
