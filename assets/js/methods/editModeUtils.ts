@@ -12,11 +12,15 @@ export function createBrigadeEditTD(selectedTeamList?: string, isBrigadier?: str
   
     // Создаем контейнер для чекбокса "Я бригадир"
     const isBrigadierContainer = document.createElement('div');
-    isBrigadierContainer.classList.add('form-check', 'mr-2', 'd-flex', 'align-items-center', 'flex-column', 'p-1');
+    isBrigadierContainer.classList.add('form-check', 'd-flex', 'flex-column', 'align-items-center');
+
+    isBrigadierContainer.setAttribute('title', 'Я бригадир');
   
     isBrigadierContainer.innerHTML = `
-      <label class="form-check-label fs-small" for="brigadirEditCheckbox">Я бригадир</label>
-      <input class="form-check-input" type="checkbox" id="brigadirEditCheckbox">
+      <label class="form-check-label fs-middle" for="brigadirEditCheckbox">
+        <span style="font-size: 2em; color: Blue;"><i class="fa fa-user" style="margin-right: 1.3rem;" aria-hidden="true"></i></span>
+      </label>
+      <input class="form-check-input fs-middle" type="checkbox" id="brigadirEditCheckbox">
     `;
   
     // Устанавливаем состояние чекбокса на основе isBrigadier
@@ -83,6 +87,7 @@ export function createBrigadeEditTD(selectedTeamList?: string, isBrigadier?: str
           brigadeChoicesInstanceEdit.setChoiceByValue(selectedIDs);
         }
       }
+
     });
   
     return brigadeEditTD;

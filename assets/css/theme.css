@@ -27905,3 +27905,19 @@ div[data-collapse] + .kanban-item {
   max-height: 200px; 
   overflow-y: auto; 
 }
+
+.brigade-container * {
+  cursor: pointer;
+}
+
+.choices__list--dropdown {
+  z-index: 100000;
+}
+
+.table-responsive {
+  overflow-x: visible;
+}
+
+.scrollbar {
+  overflow: visible;
+}
