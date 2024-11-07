@@ -2,6 +2,7 @@ import { addValueObjTrue, srvv } from '../config';
 import { getWorkersFullNames } from '../methods/editModeUtils';
 import { MethodData } from '../types/methods';
 import { sumUneditedMethodsTime } from '../utils/methodsUtils';
+import { showToast } from '../utils/toastifyUtil';
 import { isInvalidElem } from '../utils/toggleElem';
 import { addTeamToMethod } from './addTeamToMethod';
 
@@ -84,11 +85,12 @@ const saveEditedMethodToBaseApi = ({
     body: formDataEdMeth,
   })
     .then((response) => {
-      console.log('Данные метода сохранены');
+      showToast('Данные метода сохранены','success')
       if(isBrigadeMode) {
         if(teamList?.length) {
           const workersFullNames = getWorkersFullNames(teamList);
-          addTeamToMethod(workersFullNames, isBrigadierValue, editID);
+          const methodObj = {object: editID}
+          addTeamToMethod(workersFullNames, isBrigadierValue, methodObj);
         }
       } 
       return response.json();

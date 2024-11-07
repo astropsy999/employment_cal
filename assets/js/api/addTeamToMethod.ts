@@ -11,19 +11,21 @@ type AnswerParams = {
 }
 
 interface AddedMethodAnswer {
-    calcs: any[],
-    name: string,
+    calcs?: any[],
+    name?: string,
     object: string,
-    params: AnswerParams[],
-    parent: string,
-    result: 1
+    params?: AnswerParams[],
+    parent?: string,
+    result?: 1
 }
 
-export const addTeamToMethod = async (teamList: string, isBrigadier: string | null | undefined, objID: string) => {
+export const addTeamToMethod = async (teamList: string, isBrigadier: string | null | undefined, addedMethodAnswer: AddedMethodAnswer) => {
         console.log("🚀 ~ addTeamToMethod ~ teamList:", teamList)
 
         const teamListArr = JSON.parse(teamList);
         const value = generateTeamListTitle(teamListArr);
+
+        const objID = addedMethodAnswer.object
         
         let formData = new FormData();
 

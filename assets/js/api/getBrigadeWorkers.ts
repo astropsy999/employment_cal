@@ -1,5 +1,5 @@
 import * as c from '../config';
-import { setLocalStorageItem } from '../utils/localStorageUtils';
+import { getLocalStorageItem, setLocalStorageItem } from '../utils/localStorageUtils';
 
 /**
  * Функция получает данные о методах из базы и заполняет селект элемент.
@@ -21,6 +21,9 @@ const getBrigadeWorkers = async (): Promise<{ID: string, Name: string}[] | undef
     formDataBrigade.append('SkipCalc', '0');
   
     try {
+
+      if(getLocalStorageItem('brigadeWorkers')) return getLocalStorageItem('brigadeWorkers');
+      
       const response = await fetch(c.srvv + c.getEnumsData, {
         credentials: 'include',
         method: 'post',
@@ -31,7 +34,7 @@ const getBrigadeWorkers = async (): Promise<{ID: string, Name: string}[] | undef
       setLocalStorageItem('brigadeWorkers', data.data);
       return data.data;
   
-   
+
     } catch (error) {
       console.error('Не получилось загрузить список членов бригады', error);
     }

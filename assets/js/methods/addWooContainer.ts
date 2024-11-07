@@ -1,3 +1,4 @@
+import { getLocalStorageItem } from './../utils/localStorageUtils';
 import Choices from 'choices.js';
 import 'choices.js/public/assets/styles/choices.min.css';
 import getBrigadeWorkers from '../api/getBrigadeWorkers';
@@ -211,12 +212,18 @@ const addWooContainer = (etarget: HTMLElement) => {
   const addBrigadirElements = async () => {
     // Данные о выбранном методе в сторе
     setLocalStorageItem('isRK', true);
-    // Проверяем, не добавлены ли уже элементы
-    if (brigadirCheckbox || brigadeSelect) return;
 
     const workOnObjectRow = wooElem?.querySelector('.work-on-object');
-    console.log('workOnObjectRow: ', workOnObjectRow);
     if (!workOnObjectRow) return;
+
+     // Проверяем, не добавлены ли уже элементы по наличию их ID в DOM
+    const existingBrigadirCheckbox = document.querySelector('#brigadirCheckbox');
+    const existingBrigadeSelect = document.querySelector('#brigadeSelect');
+
+    // Если элементы уже есть, выходим из функции
+    if (existingBrigadirCheckbox || existingBrigadeSelect) {
+      return;
+    }
 
     // Создание чекбокса "Я бригадир"
     brigadirCheckbox = document.createElement('div');
@@ -239,26 +246,34 @@ const addWooContainer = (etarget: HTMLElement) => {
     `;
 
      // Получаем список работников бригады
-  const brigadeWorkers = await getBrigadeWorkers();
+    const brigadeWorkers = getLocalStorageItem('brigadeWorkers') || await getBrigadeWorkers();
 
-  const brigadeSelectElement = brigadeSelect?.querySelector('#brigadeSelect') as HTMLSelectElement;
+    const brigadeSelectElement = brigadeSelect?.querySelector('#brigadeSelect') as HTMLSelectElement;
 
-   // Заполняем селектор работниками бригады
-  brigadeWorkers && brigadeSelectElement && populateBrigadeSelect(brigadeSelectElement, brigadeWorkers);
+    // Заполняем селектор работниками бригады
+    if (brigadeWorkers && brigadeSelectElement) {
+      populateBrigadeSelect(brigadeSelectElement, brigadeWorkers);
+    }
 
-  // Инициализируем Choices.js на селекторе "бригада"
-  brigadeChoicesInstance = new Choices(brigadeSelectElement, {
-    removeItemButton: true,
-    searchResultLimit: 100,
-    renderChoiceLimit: 100,
-    shouldSort: false,
-    placeholderValue: 'Выберите работников бригады',
-    noResultsText: 'Ничего не найдено',
-    itemSelectText: '',
-  });
+    // Проверяем, не инициализирован ли уже Choices.js на этом элементе
+      if (!brigadeSelectElement.dataset.choices) {
+        // Инициализируем Choices.js на селекторе "бригада"
+        brigadeChoicesInstance = new Choices(brigadeSelectElement, {
+          removeItemButton: true,
+          searchResultLimit: 100,
+          renderChoiceLimit: 100,
+          shouldSort: false,
+          placeholderValue: 'Выберите работников бригады',
+          noResultsText: 'Ничего не найдено',
+          itemSelectText: '',
+        });
 
-  // Хранение экземпляра Choices для последующей очистки при удалении
-  brigadeSelect.dataset.choices = 'true'; // Маркируем, что Choices инициализирован
+        // Маркируем, что Choices.js инициализирован
+        brigadeSelectElement.dataset.choices = 'true';
+      }
+
+    // Хранение экземпляра Choices для последующей очистки при удалении
+    brigadeSelect.dataset.choices = 'true'; // Маркируем, что Choices инициализирован
 
     // Вставляем элементы после селектора 'wooMethod' (первый дочерний элемент строки)
     const children = Array.from(workOnObjectRow.children);
