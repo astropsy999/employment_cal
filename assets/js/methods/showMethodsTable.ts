@@ -92,10 +92,12 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
           tdItem.innerHTML = `
             <div class="d-flex align-items-center">
               <div class="ms-2 fw-bold badge bg-info text-wrap p-2 shadow-sm">${selectedMethodText}</div>
-              <button class="btn btn-light" data-is-brigadier="${brigadeData.isBrigadier}" title="${brigadeData.teamList}">
-                <i class="fas fa-users"></i>
-              </button>
+              ${brigadeData.isBrigadier === 'Да' ? `<span style="color: blue; margin-left: 1em;" title="Я бригадир"><i class="fa fa-user" aria-hidden="true" ></i></span>`: ``}
+              ${brigadeData.teamList.length > 0 ? `<button class="brigade-btn ms-2 border-0 radius-lg color-white" type="button" title="${brigadeData.teamList}">
+                <i class="fa fa-users color-white" aria-hidden="true"></i>
+              </button>`: ``}
             </div>
+
           `;
           edMetDataObj['methVal'] = selectedMethodText;
           edMetDataObj['teamList'] = brigadeData.teamList;
