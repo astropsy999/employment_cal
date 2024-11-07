@@ -14,6 +14,7 @@ const saveEditedMethodToBaseApi = ({
   editSaveTaskBtn,
   editedSpentTime,
 }: SaveEditedMethodApiParams): void => {
+  console.log("🚀 ~ methData:", methData)
   const { methVal, durVal, objqVal, zonesVal, editID } = methData;
 
   const editEventModal = document.querySelector('#editEventModal');

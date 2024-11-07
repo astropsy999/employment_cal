@@ -22,6 +22,9 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
   const methodsArray = eventInfo.extendedProps.methods;
   const taskTypeNew = eventInfo.extendedProps.taskTypeNew;
   const subTaskTypeNew = eventInfo.extendedProps.subTaskTypeNew;
+
+  let initialEditingMethodName: string = '';
+  
   if (
     methodsArray &&
     (taskTypeNew === TaskType.TECHNICAL_DIAGNOSTIC ||
@@ -38,10 +41,15 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
    * Отправка отредактированной строки в таблице методов в базу данных
    * @param {*} ev
    */
-  const switchOffEditModeBase = (ev: Event) => {
+  const switchOffEditModeBase = (ev: Event, initialEditedMethodName: string) => {
+    console.log("🚀 ~ switchOffEditModeBase ~ initialEditedMethodName:", initialEditedMethodName)
     let edMetDataObj: MethodData = {} as MethodData;
 
+    // Проверяем редактируется ли РК метод
+    const isInitialRK = initialEditedMethodName === Methods.RK_CRG_NAME || initialEditedMethodName === Methods.RK_CLASSIC_NAME
+
     const editedString = (ev.target as HTMLElement)?.closest('tr');
+    console.log("🚀 ~ switchOffEditModeBase ~ editedString:", editedString)
     const editID = editedString?.getAttribute('editid');
     edMetDataObj['editID'] = editID!;
     let tdArray: HTMLTableCellElement[] = [];
@@ -146,6 +154,17 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
       isEditMode = false;
 
       const editedSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
+
+      // Проверяем не редактируется ли метода РК и не изменили ли сам метод на другой, если да, тогда очищаем данные о бригаде и бригадире
+
+      const currentMethodName = edMetDataObj.methVal;
+
+      const currentMethodIsNotRK = currentMethodName !== Methods.RK_CLASSIC_NAME && currentMethodName !== Methods.RK_CRG_NAME;
+
+      if(isInitialRK && currentMethodIsNotRK) {
+        console.warn('Запускаем функцию очистки данных о бригаде и бригадире');
+      }
+      
       saveEditedMethodToBaseApi({ methData: edMetDataObj, editSaveTaskBtn, editedSpentTime });
    };
 
@@ -168,7 +187,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         const methodsTD = tdArr[0];
   
         // Получаем текущий метод
-        const methodText = methodsTD.querySelector('.badge')?.textContent?.trim() || '';
+        const methodText = initialEditingMethodName = methodsTD.querySelector('.badge')?.textContent?.trim() || '';
         const selectedTeamList = methodsTD.querySelector('button')?.getAttribute('title');
         const isBrigadier = methodsTD.querySelector('button')?.getAttribute('data-is-brigadier');
   
@@ -225,7 +244,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
   
         saveEditedBtn.addEventListener('click', (e) => {
           // Ваш существующий код сохранения
-          switchOffEditModeBase(e);
+          switchOffEditModeBase(e, initialEditingMethodName);
         });
       }
     }
