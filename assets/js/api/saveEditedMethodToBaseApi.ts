@@ -2,6 +2,7 @@ import { addValueObjTrue, srvv } from '../config';
 import { MethodData } from '../types/methods';
 import { sumUneditedMethodsTime } from '../utils/methodsUtils';
 import { isInvalidElem } from '../utils/toggleElem';
+import { isBrigadierApi } from './isBrigadierApi';
 
 interface SaveEditedMethodApiParams {
   methData: MethodData;
@@ -15,7 +16,11 @@ const saveEditedMethodToBaseApi = ({
   editedSpentTime,
 }: SaveEditedMethodApiParams): void => {
   console.log("🚀 ~ methData:", methData)
-  const { methVal, durVal, objqVal, zonesVal, editID } = methData;
+  const { methVal, durVal, objqVal, zonesVal, editID, teamList, isBrigadier } = methData;
+
+  const isBrigadeMode = teamList?.length! > 0 || isBrigadier?.length! > 0
+
+  const isBrigadierValue = isBrigadier === 'Да' ? 'true' : 'false'
 
   const editEventModal = document.querySelector('#editEventModal');
   const delID = editEventModal?.getAttribute('delID') as string;
@@ -77,6 +82,9 @@ const saveEditedMethodToBaseApi = ({
   })
     .then((response) => {
       console.log('Данные метода сохранены');
+      if(isBrigadeMode) {
+        isBrigadierApi(isBrigadierValue, editID);
+      } 
       return response.json();
     })
     .catch((error) => {
