@@ -19,7 +19,8 @@ interface AddedMethodAnswer {
     result: 1
 }
 
-export const addTeamToMethod = async (teamList: string, isBrigadier: string | null | undefined, addedMethodAnswer: AddedMethodAnswer) => {
+export const addTeamToMethod = async (teamList: string, isBrigadier: string | null | undefined, objID: string) => {
+        console.log("🚀 ~ addTeamToMethod ~ teamList:", teamList)
 
         const teamListArr = JSON.parse(teamList);
         const value = generateTeamListTitle(teamListArr);
@@ -36,7 +37,7 @@ export const addTeamToMethod = async (teamList: string, isBrigadier: string | nu
             "isOnlyYear":false,
             "OrigValue":"",
             "ParamID": Number(config.BRIGADE_PARAM),
-            "ObjID": addedMethodAnswer.object,
+            "ObjID": objID,
             "InterfaceID": config.InterfaceID,
             "GroupID":Number(config.GroupID),
             "ObjTypeID": Number(config.OBJECT_TYPE_ID),
@@ -75,7 +76,7 @@ export const addTeamToMethod = async (teamList: string, isBrigadier: string | nu
                 .then((data) => {
                     showToast("Список работников успешно сохранен", "success");
                     if(isBrigadier) {
-                        isBrigadierApi(isBrigadier, addedMethodAnswer.object);
+                        isBrigadierApi(isBrigadier, objID);
                     }
                 })
             }

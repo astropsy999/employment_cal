@@ -1,6 +1,7 @@
 import Choices from "choices.js";
 import getBrigadeWorkers from "../api/getBrigadeWorkers";
 import { initials } from "../utils/textsUtils";
+import { getLocalStorageItem } from "../utils/localStorageUtils";
 
 export function createBrigadeEditTD(selectedTeamList?: string, isBrigadier?: string) {
     const brigadeEditTD = document.createElement('td');
@@ -94,7 +95,7 @@ export function createBrigadeEditTD(selectedTeamList?: string, isBrigadier?: str
   }
   
 
-export function showBrigadeColumn(
+  export function showBrigadeColumn(
     edHeaderRow: HTMLTableRowElement,
     methodsTD: HTMLTableCellElement,
     edString: HTMLTableRowElement,
@@ -134,5 +135,26 @@ export function showBrigadeColumn(
     // Удаляем колонку "Бригада" из строки редактирования
     const brigadeEditTD = edString.querySelector('.brigade-edit-td') as HTMLTableCellElement;
     brigadeEditTD?.remove();
+  }
+
+  export function getWorkersFullNames(workersId: string): string {
+    // Получаем данные работников из локального хранилища
+    const workersData = getLocalStorageItem('brigadeWorkers') as { ID: string; Name: string }[];
+  
+    // Разбиваем строку ID на массив
+    const workersIdArr = workersId.split(',').map(id => id.trim());
+  
+    // Формируем массив строк в требуемом формате
+    const resultArr = workersIdArr.map(id => {
+      const worker = workersData.find(worker => worker.ID === id);
+      if (worker) {
+        return `{${worker.ID}:${worker.Name}}`;
+      } else {
+        return `{${id}:Неизвестно}`;
+      }
+    });
+  
+    // Преобразуем массив в строку формата ["{ID:Name}","{ID:Name}",...]
+    return JSON.stringify(resultArr);
   }
   

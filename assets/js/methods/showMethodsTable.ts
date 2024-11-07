@@ -84,7 +84,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         // Get selected brigade members
         const brigadeSelect = brigadeEditTD.querySelector('#brigadeSelectEdit') as HTMLSelectElement;
         const selectedOptions = Array.from(brigadeSelect.selectedOptions);
-        const teamList = selectedOptions.map((option) => option.text).join(', ');
+        const teamList = selectedOptions.map((option) => option.value).join(', ');
 
         brigadeData = {
           isBrigadier: isBrigadierChecked,
@@ -167,7 +167,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
       }
       
       saveEditedMethodToBaseApi({ methData: edMetDataObj, editSaveTaskBtn, editedSpentTime });
-   };
+  };
 
   /**
    * Редактирование строки методов в таблице методов

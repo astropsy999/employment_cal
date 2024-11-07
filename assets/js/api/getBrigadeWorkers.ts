@@ -1,4 +1,5 @@
 import * as c from '../config';
+import { setLocalStorageItem } from '../utils/localStorageUtils';
 
 /**
  * Функция получает данные о методах из базы и заполняет селект элемент.
@@ -27,6 +28,7 @@ const getBrigadeWorkers = async (): Promise<{ID: string, Name: string}[] | undef
       });
   
       const data = await response.json();
+      setLocalStorageItem('brigadeWorkers', data.data);
       return data.data;
   
    

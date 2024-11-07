@@ -1,8 +1,9 @@
 import { addValueObjTrue, srvv } from '../config';
+import { getWorkersFullNames } from '../methods/editModeUtils';
 import { MethodData } from '../types/methods';
 import { sumUneditedMethodsTime } from '../utils/methodsUtils';
 import { isInvalidElem } from '../utils/toggleElem';
-import { isBrigadierApi } from './isBrigadierApi';
+import { addTeamToMethod } from './addTeamToMethod';
 
 interface SaveEditedMethodApiParams {
   methData: MethodData;
@@ -21,6 +22,8 @@ const saveEditedMethodToBaseApi = ({
   const isBrigadeMode = teamList?.length! > 0 || isBrigadier?.length! > 0
 
   const isBrigadierValue = isBrigadier === 'Да' ? 'true' : 'false'
+
+  
 
   const editEventModal = document.querySelector('#editEventModal');
   const delID = editEventModal?.getAttribute('delID') as string;
@@ -83,7 +86,10 @@ const saveEditedMethodToBaseApi = ({
     .then((response) => {
       console.log('Данные метода сохранены');
       if(isBrigadeMode) {
-        isBrigadierApi(isBrigadierValue, editID);
+        if(teamList?.length) {
+          const workersFullNames = getWorkersFullNames(teamList);
+          addTeamToMethod(workersFullNames, isBrigadierValue, editID);
+        }
       } 
       return response.json();
     })
