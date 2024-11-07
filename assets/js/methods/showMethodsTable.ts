@@ -7,6 +7,7 @@ import { TaskType } from '../enums/taskTypes';
 import { MethodData } from '../types/methods';
 import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
 import { hideBrigadeColumn, showBrigadeColumn } from './editModeUtils';
+import { cleanBregadeDataApi } from '../api/cleanBregadeDataApi';
 
 /**
  * Показ/скрытие таблицы с методами
@@ -162,7 +163,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
       const currentMethodIsNotRK = currentMethodName !== Methods.RK_CLASSIC_NAME && currentMethodName !== Methods.RK_CRG_NAME;
 
       if(isInitialRK && currentMethodIsNotRK) {
-        console.warn('Запускаем функцию очистки данных о бригаде и бригадире');
+        cleanBregadeDataApi(edMetDataObj.editID)
       }
       
       saveEditedMethodToBaseApi({ methData: edMetDataObj, editSaveTaskBtn, editedSpentTime });
@@ -288,3 +289,5 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
 };
 
 export default showMethodsTable;
+
+
