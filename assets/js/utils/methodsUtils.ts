@@ -107,11 +107,24 @@ export const createMethodsTableBody = (
 
         const teamIcon = document.createElement('i');
         teamIcon.classList.add('fa', 'fa-users', 'color-white');
+        const brigadeColorSpan = document.createElement('span');
+        brigadeColorSpan.style.color = 'blue';
+        const brigadierIcon = document.createElement('i');
+
+        brigadierIcon.classList.add('fa', 'fa-user', 'pr-1');
+
 
         teamIcon.setAttribute('aria-hidden', 'true');
+        brigadierIcon.setAttribute('aria-hidden', 'true');
+        brigadeColorSpan.appendChild(brigadierIcon)
+
+        isBrigadier === 'Да' && teamBadge.appendChild(brigadeColorSpan);
         teamBadge.appendChild(teamIcon);
+        
         teamBadge.setAttribute('title', `${teamList}`)
         teamBadge.setAttribute('data-is-brigadier', `${isBrigadier}`)
+
+        
 
         methodDiv.appendChild(methodBadge);
         

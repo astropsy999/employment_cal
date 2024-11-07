@@ -55,8 +55,7 @@ const formatEventMethods = (methodsArr: MethodParams[]): string => {
       if (teamList) {
           const initials = initialsStr(teamList);
           if (isBrigadier) {
-              // Иконка бригадира (используем fa-star из FontAwesome 4) и серый цвет для списка
-              teamListText = `<i class="fa fa-star" aria-hidden="true"></i> [${initials}]`;
+              teamListText = `<i class="fa fa-user" aria-hidden="true"></i> [${initials}]`;
           } else {
               teamListText = `[${initials}]`;
           }

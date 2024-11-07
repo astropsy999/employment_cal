@@ -43,8 +43,7 @@ const addMethodsToEventUI = (methodsArr: MethodParams[] | MethodObj[]): string =
         if (teamList) {
             const initials = initialsStr(teamList);
             if (isBrigadier) {
-                // Иконка бригадира (используем fa-star из FontAwesome 4) и серый цвет для списка
-                teamListText = `<span style="color: grey;"><i class="fa fa-star" aria-hidden="true"></i> [${initials}]</span>`;
+                teamListText = `<span style="color: grey;"><i class="fa fa-user" aria-hidden="true"></i> [${initials}]</span>`;
             } else {
                 teamListText = `[${initials}]`;
             }
