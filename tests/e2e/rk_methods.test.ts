@@ -211,6 +211,33 @@ test.describe('Тестирование календаря', () => {
         
             console.log('Валидация времени прошла успешно: поле wooTime получило класс is-invalid.');
         });
+
+        await test.step('Проверка валидации пустого списка работников бригады при добавлении метода', async () => {
+            // Ожидаем появления модального окна
+            const modal = page.locator('#addEventModal');
+            await expect(modal).toBeVisible();
+        
+            // Заполняем поле "время" (если требуется)
+            const wooTimeInput = modal.locator('#wooTime');
+            await wooTimeInput.fill('0.5'); // Заполняем значение, например, 1 час
+            await expect(wooTimeInput).toHaveValue('0.5');
+        
+            // Нажимаем на кнопку добавления метода
+            const addWooMetButton = modal.locator('#addWooMet');
+            await expect(addWooMetButton).toBeVisible();
+            await addWooMetButton.click();
+        
+            // Проверяем, что поле "brigadeSelect" получает класс "is-invalid"
+            const brigadeSelect = modal.locator('#brigadeSelect');
+            await expect(brigadeSelect).toHaveClass(/is-invalid/);
+        
+            // Проверяем, что появляется сообщение с классом "invalid-feedback"
+            const invalidFeedback = modal.locator('.invalid-feedback');
+            await expect(invalidFeedback).toBeVisible();
+            await expect(invalidFeedback).toHaveText('Необходимо выбрать хотя бы одного работника бригады.');
+        
+            console.log('Валидация пустого списка работников бригады прошла успешно.');
+        });
         
     });
 
