@@ -310,9 +310,60 @@ test.describe('Тестирование календаря', () => {
             console.log('Задача успешно добавлена и отображена в календаре.');
         });
 
-
-    
-      
+        await test.step('Проверка сохраненных данных задачи в календаре', async () => {
+            // Ожидаем появления лоадера
+            const loader = page.locator('.temploaderWrapper');
+            await expect(loader).toBeVisible({ timeout: 20000 });
+        
+            // Ожидание скрытия лоадера
+            await loader.waitFor({ state: 'hidden', timeout: 20000 });
+            console.log('Лоадер успешно исчез.');
+        
+            // Уточняем селектор задачи по её уникальным характеристикам
+            const taskInCalendar = page.locator('.fc-timegrid-event')
+                .filter({ has: page.locator('text=Тестовая задача') });
+            await expect(taskInCalendar).toBeVisible({ timeout: 10000 });
+        
+            // Проверяем отображение названия задачи
+            const taskTitle = taskInCalendar.locator('.title');
+            await expect(taskTitle).toBeVisible();
+            await expect(taskTitle).toHaveText('Тестовая задача');
+        
+            // Проверяем отображение времени
+            const taskTime = taskInCalendar.locator('.factTime b');
+            await expect(taskTime).toBeVisible();
+            await expect(taskTime).toHaveText('5.5');
+        
+            // Проверяем отображение локации (уточняем локатор)
+            const taskLocation = taskInCalendar.locator('div').filter({ hasText: 'Офис' }).first();
+            await expect(taskLocation).toBeVisible();
+            await expect(taskLocation).toHaveText('Офис');
+        
+            // Проверяем отображение объекта
+            const taskObject = taskInCalendar.locator('.eventObject');
+            await expect(taskObject).toBeVisible();
+            await expect(taskObject).toHaveText('АО "Глазовский завод "Химмаш"');
+        
+            // Проверяем отображение вида работ
+            const taskType = taskInCalendar.locator('.eventTaskType');
+            await expect(taskType).toBeVisible();
+            await expect(taskType).toHaveText('Техническое диагностирование');
+        
+            // Проверяем отображение метода контроля
+            const taskMethod = taskInCalendar.locator('.eventMethodsWrapper').locator('text=РК (Классический)-1ч');
+            await expect(taskMethod).toBeVisible();
+        
+            // Проверяем отображение сотрудника
+            const taskBrigadeMember = taskInCalendar.locator('.eventMethodsWrapper').locator('text=Абужаков Д.К.');
+            await expect(taskBrigadeMember).toBeVisible();
+        
+            // Проверяем наличие иконки fa-user (отвечает за чекбокс "Я бригадир")
+            const brigadirIcon = taskInCalendar.locator('.eventMethodsWrapper').locator('svg[data-icon="user"]');
+            await expect(brigadirIcon).toBeVisible();
+        
+            console.log('Все данные задачи в календаре успешно проверены.');
+        });
+        
         
     });
 
