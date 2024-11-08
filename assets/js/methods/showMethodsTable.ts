@@ -8,7 +8,7 @@ import { MethodData } from '../types/methods';
 import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
 import { hideBrigadeColumn, showBrigadeColumn } from './editModeUtils';
 import { cleanBregadeDataApi } from '../api/cleanBregadeDataApi';
-import { validateBrigadeSelectionOnEdit } from '../utils/validationUtils';
+import { validateBrigadeSelectionOnEdit, validateTimeFieldOnEdit } from '../utils/validationUtils';
 
 /**
  * Показ/скрытие таблицы с методами
@@ -252,17 +252,24 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
           const selMetSel = methSelTd?.querySelector('select') as HTMLSelectElement;
           const editedMethodName = selMetSel?.value;
         
-          // Вызываем функцию валидации
-          const isValid = validateBrigadeSelectionOnEdit(editedString, editedMethodName);
-        
-          if (!isValid) {
+          // Вызываем функцию валидации бригады
+          const isBrigadeValid = validateBrigadeSelectionOnEdit(editedString, editedMethodName);
+          if (!isBrigadeValid) {
             // Если валидация не пройдена, прерываем сохранение
             return;
           }
-          return
+        
+          // Вызываем функцию валидации времени
+          const isTimeValid = validateTimeFieldOnEdit(editedString);
+          if (!isTimeValid) {
+            // Если валидация не пройдена, прерываем сохранение
+            return;
+          }
+        
           // Продолжаем с сохранением изменений
           switchOffEditModeBase(e, initialEditingMethodName);
         });
+        
       }
     }
   };
