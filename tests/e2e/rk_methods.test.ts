@@ -31,12 +31,8 @@ test.describe('Тестирование календаря', () => {
         await expect(page.locator('.card-header')).toBeVisible();
     });
 
-    test('Проверка загрузки шапки календаря', async () => {
-        const calendarHeader = page.locator('.card-header');
-        await expect(calendarHeader).toBeVisible();
-    });
 
-    test('Проверка элементов в шапке календаря и календаря в недельном отображении', async () => {
+    test('Тестирование работы с методом РК', async () => {
 
         await test.step('Проверка элементов шапки', async () => {
             const header = page.locator('.card-header');
@@ -168,6 +164,34 @@ test.describe('Тестирование календаря', () => {
             await expect(wooContainer).toBeVisible();
         
         });
+
+        await test.step('Проверка появления полей для метода "РК (Классический)"', async () => {
+            // Ожидаем появления модального окна добавления задачи
+            const modal = page.locator('#addEventModal');
+            await expect(modal).toBeVisible();
+        
+            // Ожидаем, пока появится область методов контроля
+            const wooContainer = modal.locator('.woo');
+            await expect(wooContainer).toBeVisible();
+        
+            // Выбираем метод контроля "РК (Классический)"
+            const methodDropdown = modal.locator('#wooMethod');
+            await methodDropdown.selectOption({ label: 'РК (Классический)' });
+            console.log('Метод контроля "РК (Классический)" выбран.');
+        
+            // Ожидаем появления кастомного элемента селектора для бригады
+            const brigadeChoices = modal.locator('.choices__inner'); // Ищем кастомный элемент
+            await expect(brigadeChoices).toBeVisible();
+            console.log('Кастомный селектор для выбора сотрудников бригады виден.');
+        
+            // Проверяем чекбокс "Я бригадир"
+            const brigadirCheckbox = modal.locator('#brigadirCheckbox');
+            await expect(brigadirCheckbox).toBeVisible();
+            console.log('Чекбокс "Я бригадир" виден.');
+        
+            console.log('Дополнительные поля для метода "РК (Классический)" успешно проверены.');
+        });
+        
     });
 
    
