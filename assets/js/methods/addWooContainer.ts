@@ -14,6 +14,7 @@ import addMethodToClientTable from './addMethodToClientTable';
 import { showToast } from '../utils/toastifyUtil';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 import { populateBrigadeSelect } from '../utils/populateBrigadeSelect';
+import { validateBrigadeSelect, validateBrigadeSelectionOnEdit } from '../utils/validationUtils';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -154,8 +155,9 @@ const addWooContainer = (etarget: HTMLElement) => {
         if (brigadeChoicesInstance) {
           const selectedValues = brigadeChoicesInstance.getValue(true);
           const isEmptyBrigade = selectedValues.length === 0
-          
           if (isRK && isEmptyBrigade) {
+            const brigadeSelect = etarget.querySelector('#brigadeSelect') as HTMLSelectElement;
+            validateBrigadeSelect(brigadeSelect);
             showToast('Выберите работников бригады', 'error');
             return;
           } else {
