@@ -238,6 +238,81 @@ test.describe('Тестирование календаря', () => {
         
             console.log('Валидация пустого списка работников бригады прошла успешно.');
         });
+
+        await test.step('Добавление задачи: заполнение формы и сохранение', async () => {
+            const modal = page.locator('#addEventModal');
+            await expect(modal).toBeVisible();
+        
+            // Заполняем название задачи
+            const taskTitleInput = modal.locator('#eventTitle');
+            await taskTitleInput.fill('Тестовая задача');
+            await expect(taskTitleInput).toHaveValue('Тестовая задача');
+        
+            // Выбираем занятость
+            const employmentDropdown = modal.locator('#employment');
+            await employmentDropdown.selectOption('Работа');
+        
+            // Выбираем объект
+            const taskObjDropdown = modal.locator('#taskObj');
+            await taskObjDropdown.selectOption({ index: 1 });
+        
+            // Указываем локацию
+            const locObjDropdown = modal.locator('#locObj');
+            await locObjDropdown.selectOption('Офис');
+        
+            // Указываем дату начала
+            const startDateInput = modal.locator('#eventStartDate');
+            await startDateInput.fill('08.11.2024 09:00');
+        
+            // Указываем дату окончания
+            const endDateInput = modal.locator('#eventEndDate');
+            await endDateInput.fill('08.11.2024 14:30');
+        
+            // Выбираем вид работ
+            const kindOfTasksDropdown = modal.locator('#kindOfTasks');
+            await kindOfTasksDropdown.selectOption('Техническое диагностирование');
+        
+            // Выбираем метод контроля
+            const wooMethodDropdown = modal.locator('#wooMethod');
+            await wooMethodDropdown.selectOption('РК (Классический)');
+        
+            // Указываем длительность
+            const wooTimeInput = modal.locator('#wooTime');
+            await wooTimeInput.fill('1');
+        
+            // Убедимся, что список работников доступен
+            const brigadeDropdown = modal.locator('.choices__inner');
+            await expect(brigadeDropdown).toBeVisible();
+        
+            // Добавляем сотрудника в список работников
+            const brigadeSelect = modal.locator('#brigadeSelect');
+            await brigadeSelect.evaluate((select) => select.removeAttribute('hidden')); // Убираем атрибут "hidden", если он есть
+            await brigadeSelect.selectOption({ label: 'Абужаков Д.К.' });
+
+            // Отмечаем чекбокс "Я бригадир"
+            const brigadirCheckbox = modal.locator('#brigadirCheckbox');
+            await expect(brigadirCheckbox).toBeVisible();
+            await brigadirCheckbox.check();
+            await expect(brigadirCheckbox).toBeChecked();
+        
+            console.log('Форма заполнена успешно.');
+        
+            // Нажимаем кнопку "Добавить"
+            const addTaskButton = modal.locator('#addTaskToCalBtn');
+            await addTaskButton.click();
+        
+            // Проверяем, что модальное окно закрылось
+            await expect(modal).toBeHidden();
+        
+            // Проверяем, что задача добавилась в календарь
+            const taskInCalendar = page.locator('.fc-timegrid-event').locator('text=Тестовая задача');
+            await expect(taskInCalendar).toBeVisible();
+            console.log('Задача успешно добавлена и отображена в календаре.');
+        });
+
+
+    
+      
         
     });
 
