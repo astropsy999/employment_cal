@@ -1,2 +1,4 @@
 node_modules
 prod
+playwright-report
+test-results
