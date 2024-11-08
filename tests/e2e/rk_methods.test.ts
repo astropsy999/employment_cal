@@ -191,10 +191,30 @@ test.describe('Тестирование календаря', () => {
         
             console.log('Дополнительные поля для метода "РК (Классический)" успешно проверены.');
         });
+
+        await test.step('Проверка валидации времени (wooTime)', async () => {
+            // Ожидаем появления модального окна
+            const modal = page.locator('#addEventModal');
+            await expect(modal).toBeVisible();
+        
+            // Очищаем или вводим некорректное значение в поле "wooTime"
+            const wooTimeInput = modal.locator('#wooTime');
+            await wooTimeInput.fill(''); // Пустое значение
+        
+            // Нажимаем на кнопку добавления метода
+            const addWooMetButton = modal.locator('#addWooMet');
+            await expect(addWooMetButton).toBeVisible();
+            await addWooMetButton.click();
+        
+            // Проверяем, что поле получило класс "is-invalid"
+            await expect(wooTimeInput).toHaveClass(/is-invalid/);
+        
+            console.log('Валидация времени прошла успешно: поле wooTime получило класс is-invalid.');
+        });
         
     });
 
-   
+    
 
     test.afterAll(async () => {
         // Закрываем страницу и контекст после завершения всех тестов
