@@ -8,6 +8,7 @@ import { MethodData } from '../types/methods';
 import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
 import { hideBrigadeColumn, showBrigadeColumn } from './editModeUtils';
 import { cleanBregadeDataApi } from '../api/cleanBregadeDataApi';
+import { validateBrigadeSelectionOnEdit } from '../utils/validationUtils';
 
 /**
  * Показ/скрытие таблицы с методами
@@ -43,14 +44,12 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
    * @param {*} ev
    */
   const switchOffEditModeBase = (ev: Event, initialEditedMethodName: string) => {
-    console.log("🚀 ~ switchOffEditModeBase ~ initialEditedMethodName:", initialEditedMethodName)
     let edMetDataObj: MethodData = {} as MethodData;
 
     // Проверяем редактируется ли РК метод
     const isInitialRK = initialEditedMethodName === Methods.RK_CRG_NAME || initialEditedMethodName === Methods.RK_CLASSIC_NAME
 
     const editedString = (ev.target as HTMLElement)?.closest('tr');
-    console.log("🚀 ~ switchOffEditModeBase ~ editedString:", editedString)
     const editID = editedString?.getAttribute('editid');
     edMetDataObj['editID'] = editID!;
     let tdArray: HTMLTableCellElement[] = [];
@@ -247,7 +246,21 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         const saveEditedBtn = edString?.querySelector('.save-edited') as HTMLButtonElement;
   
         saveEditedBtn.addEventListener('click', (e) => {
-          // Ваш существующий код сохранения
+          const editedString = (e.target as HTMLElement)?.closest('tr') as HTMLTableRowElement;
+        
+          const methSelTd = editedString?.querySelector('.methods-select') as HTMLTableCellElement;
+          const selMetSel = methSelTd?.querySelector('select') as HTMLSelectElement;
+          const editedMethodName = selMetSel?.value;
+        
+          // Вызываем функцию валидации
+          const isValid = validateBrigadeSelectionOnEdit(editedString, editedMethodName);
+        
+          if (!isValid) {
+            // Если валидация не пройдена, прерываем сохранение
+            return;
+          }
+          return
+          // Продолжаем с сохранением изменений
           switchOffEditModeBase(e, initialEditingMethodName);
         });
       }
