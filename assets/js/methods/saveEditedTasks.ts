@@ -6,6 +6,7 @@ import {
 } from '../utils/mainGlobFunctions';
 import { EventEditObj } from '../types/events';
 import { MethodObj } from '../types/methods';
+import { TaskType } from '../enums/taskTypes';
 
 /**
  * Сохранение отредактированных данных в таблице методов
@@ -17,6 +18,7 @@ const saveEditedTasks = (
   updatedMethods: any,
   justRemovedMethods: any,
 ) => {
+
   const {
     delID,
     dataObjID,
@@ -60,7 +62,7 @@ const saveEditedTasks = (
   let maxViewTime = calendar.getOption('slotMaxTime');
 
   const isMethodsAvailable =
-    kindOfEditTasksVal === 'Техническое диагностирование';
+    kindOfEditTasksVal === TaskType.TECHNICAL_DIAGNOSTIC;
 
   /**
    * Удаление всех методов если был изменен Вид работ при редактировании

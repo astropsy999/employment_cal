@@ -5,7 +5,7 @@ import {
   transformDateTime,
   transformToMethods,
 } from '../utils/mainGlobFunctions';
-import addMethodToBase from '../methods/addMethodToBase';
+import addMethodToBase from '../api/addMethodToBase';
 import grabMethodsDataTable from '../methods/grabMethodsDataTable';
 import { buttonLoader } from '../ui/buttonLoader';
 import { tempLoader } from '../ui/tempLoader';

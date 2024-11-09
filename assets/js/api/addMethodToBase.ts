@@ -1,15 +1,23 @@
+import { Methods } from "../enums/methods";
+import { MethodsArr } from "../types/methods";
+import { addTeamToMethod } from "./addTeamToMethod";
+
 /**
  * Добавление методов в базу данных
  * @param {*} methodsArr
  * @param {*} delID
  * @param {*} api
  */
-export const addMethodToBase = (methodsArr, delID, api) => {
+export const addMethodToBase = (methodsArr: MethodsArr[], delID: string, api: {[key: string]: string}) => {
+console.log("🚀 ~ addMethodToBase ~ methodsArr:", methodsArr)
+
   const { srvv, createNodeUrl } = api;
 
   methodsArr.forEach((element, idx) => {
     const { method, params } = element;
-    const { duration, objects, zones } = params;
+    const { duration, objects, zones, teamList, isBrigadier } = params;
+
+    const isRK = method === Methods.RK_CRG_NAME || method === Methods.RK_CLASSIC_NAME;
 
     let formDataaddMet = new FormData();
 
@@ -26,7 +34,7 @@ export const addMethodToBase = (methodsArr, delID, api) => {
     formDataaddMet.append('Data[1][maninp]', 'false');
     formDataaddMet.append('Data[1][GroupID]', '2549');
     formDataaddMet.append('Data[2][name]', '8766');
-    formDataaddMet.append('Data[2][value]', objects);
+    formDataaddMet.append('Data[2][value]', objects || '');
     formDataaddMet.append('Data[2][isName]', 'false');
     formDataaddMet.append('Data[2][maninp]', 'false');
     formDataaddMet.append('Data[2][GroupID]', '2549');
@@ -51,7 +59,11 @@ export const addMethodToBase = (methodsArr, delID, api) => {
         return response.json();
       })
       .then((data) => {
-        const { object, parent } = data.results[0];
+        if (isRK && teamList!.length > 0) {
+          addTeamToMethod(teamList!, isBrigadier, data.results[0]);
+        }
+
+        // const { object, parent } = data.results[0];
 
         // if (idx == methodsArr.length - 1) {
         //   location.reload();

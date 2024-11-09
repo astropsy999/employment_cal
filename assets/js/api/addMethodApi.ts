@@ -16,7 +16,6 @@ const addMethodApi = (
   return new Promise((resolve, reject) => {
     const { method, params } = element;
     const { duration, objects, zones, teamList, isBrigadier } = params;
-    console.log("🚀 ~ returnnewPromise ~ isBrigadier:", isBrigadier)
     console.log("🚀 ~ returnnewPromise ~ teamList:", teamList)
 
     if (method !== 'Не выбрано' && duration !== '') {
@@ -58,7 +57,7 @@ const addMethodApi = (
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("🚀 ~ .then ~ data:", data)
+
           if (teamList) {
             addTeamToMethod(teamList, isBrigadier, data.results[0]);
           }

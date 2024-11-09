@@ -11,8 +11,7 @@ export let wooMethodsArray: MethStringObj[] = [];
  * Добавление методов в таблицу на клиенте
  */
 const addMethodToClientTable = (selectedTeam: string | string[] | undefined, isBrigadier: boolean) => {
-  console.log("🚀 ~ addMethodToClientTable ~ isBrigadier:", isBrigadier)
-  console.log("🚀 ~ addMethodToClientTable ~ selectedValues:", selectedTeam)
+
   const isRK = getLocalStorageItem('isRK');
 
   let isEditMode = false;

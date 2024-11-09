@@ -8,7 +8,7 @@ import * as C from '../config';
 import { Employment } from '../enums/employment';
 import { Locations } from '../enums/locations';
 import { TaskType } from '../enums/taskTypes';
-import addMethodToBase from '../methods/addMethodToBase';
+import addMethodToBase from '../api/addMethodToBase';
 import { grabJustAddedArray } from '../methods/grabMethodsDataTable';
 import saveEditedTasks from '../methods/saveEditedTasks';
 import showMethodsTable from '../methods/showMethodsTable';
