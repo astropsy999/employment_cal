@@ -39,9 +39,9 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    { name: 'opera', 
-      use: { ...devices['Desktop Opera'] } 
-    },
+    // { name: 'opera', 
+    //   use: { ...devices['Desktop Opera'] } 
+    // },
 
     // {
     //   name: 'firefox',

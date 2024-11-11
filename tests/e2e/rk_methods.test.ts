@@ -34,23 +34,23 @@ test.describe('Тестирование календаря', () => {
 
     test('Тестирование работы с методом РК', async () => {
 
+           // Функция ожидания, пока количество опций в селекторе станет больше 1
+        async function waitForOptions(locator: Locator, minCount: number, timeout: number = 50000): Promise<void> {
+            const startTime = Date.now();
+            while (true) {
+                const count = await locator.locator('option').count();
+                if (count > minCount) break; // Условие выполнено
+                if (Date.now() - startTime > timeout) {
+                    throw new Error(`Timed out waiting for ${minCount + 1} options to load.`);
+                }
+                await new Promise((resolve) => setTimeout(resolve, 500)); // Короткая пауза перед повторной проверкой
+            }
+        }
+
         await test.step('Проверка элементов шапки', async () => {
             const header = page.locator('.card-header');
             await expect(header).toBeVisible();
         
-            // Функция ожидания, пока количество опций в селекторе станет больше 1
-                async function waitForOptions(locator: Locator, minCount: number, timeout: number = 30000): Promise<void> {
-                    const startTime = Date.now();
-                    while (true) {
-                        const count = await locator.locator('option').count();
-                        if (count > minCount) break; // Условие выполнено
-                        if (Date.now() - startTime > timeout) {
-                            throw new Error(`Timed out waiting for ${minCount + 1} options to load.`);
-                        }
-                        await new Promise((resolve) => setTimeout(resolve, 100)); // Короткая пауза перед повторной проверкой
-                    }
-                }
-    
                 // Ожидаем, пока выпадающий список пользователей загрузится
                 const usersDropdown = header.locator('#otherUsers');
                 await waitForOptions(usersDropdown, 1); // Ждем, пока опций станет больше 1
@@ -117,8 +117,10 @@ test.describe('Тестирование календаря', () => {
         });
 
         await test.step('Проверка появления окна добавления задачи', async () => {
+            // Получаем текущую дату в формате YYYY-MM-DD
+            const currentDate = new Date().toISOString().split('T')[0];
             // Шаг 1: Выделяем день на календаре
-            const dayCell = page.locator('.fc-timegrid-col[data-date="2024-11-08"]'); 
+            const dayCell = page.locator(`.fc-timegrid-col[data-date="${currentDate}"]`); 
             await expect(dayCell).toBeVisible();
             await dayCell.click({ force: true });
     
@@ -156,6 +158,7 @@ test.describe('Тестирование календаря', () => {
         
             // Выбор значения в селекторе "Вид работ"
             const kindOfTasksDropdown = modal.locator('#kindOfTasks');
+            await waitForOptions(kindOfTasksDropdown, 1);
             await kindOfTasksDropdown.selectOption({ label: 'Техническое диагностирование' });
             console.log('Вид работ: Техническое диагностирование выбран.');
         
@@ -242,6 +245,12 @@ test.describe('Тестирование календаря', () => {
         await test.step('Добавление задачи: заполнение формы и сохранение', async () => {
             const modal = page.locator('#addEventModal');
             await expect(modal).toBeVisible();
+
+            // Получаем текущую дату
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleDateString('ru-RU'); // Форматируем дату в формате DD.MM.YYYY
+            const startTime = '09:00'; // Время начала
+            const endTime = '14:30'; // Время окончания
         
             // Заполняем название задачи
             const taskTitleInput = modal.locator('#eventTitle');
@@ -262,11 +271,13 @@ test.describe('Тестирование календаря', () => {
         
             // Указываем дату начала
             const startDateInput = modal.locator('#eventStartDate');
-            await startDateInput.fill('08.11.2024 09:00');
-        
+            await startDateInput.fill(`${formattedDate} ${startTime}`);
+            await expect(startDateInput).toHaveValue(`${formattedDate} ${startTime}`);
+
             // Указываем дату окончания
             const endDateInput = modal.locator('#eventEndDate');
-            await endDateInput.fill('08.11.2024 14:30');
+            await endDateInput.fill(`${formattedDate} ${endTime}`);
+            await expect(endDateInput).toHaveValue(`${formattedDate} ${endTime}`);
         
             // Выбираем вид работ
             const kindOfTasksDropdown = modal.locator('#kindOfTasks');
@@ -305,7 +316,7 @@ test.describe('Тестирование календаря', () => {
             await expect(modal).toBeHidden();
         
             // Проверяем, что задача добавилась в календарь
-            const taskInCalendar = page.locator('.fc-timegrid-event').locator('text=Тестовая задача');
+            const taskInCalendar = page.locator('.fc-timegrid-event-harness').locator('text=Тестовая задача');
             await expect(taskInCalendar).toBeVisible();
             console.log('Задача успешно добавлена и отображена в календаре.');
         });

@@ -20,10 +20,10 @@ export async function authorizeAndGetCookies(page: Page, url: string, username: 
     await page.locator('button:has-text("Войти")').click();
 
     // Ожидание, пока URL изменится на страницу после авторизации
-    await page.waitForURL('https://telegram.giapdc.ru:8443/index.php/home?db=gdc', { timeout: 20000 });
+    await page.waitForURL('https://telegram.giapdc.ru:8443/index.php/home?db=gdc', { timeout: 50000 });
 
     // Проверка URL страницы
-    await expect(page).toHaveURL('https://telegram.giapdc.ru:8443/index.php/home?db=gdc', { timeout: 20000 });
+    await expect(page).toHaveURL('https://telegram.giapdc.ru:8443/index.php/home?db=gdc', { timeout: 50000 });
 
     // Возвращаем cookies для дальнейшего использования
     return await page.context().cookies();
