@@ -23,8 +23,6 @@ const addEventWithMethods = (
   methodsArray: MethodsArr[],
   setViewAndDateToLS: (calendar: any) => void,
 ) => {
-  console.log("🚀 ~ methodsArray:", methodsArray)
-  console.log("🚀 ~ addEventWithMethods!!!")
 
   const {
     OBJTYPEID,
@@ -217,13 +215,11 @@ const addEventWithMethods = (
             },
           });
 
-          if (isRootUser) {
             tempLoader(true);
             setTimeout(() => {
               buttonLoader(eventTaskModalBtn, false);
               refreshBtnAction(calendar);
             }, 999);
-          }
         })
         .catch((error) => {
           console.error('Ошибка при добавлении методов:', error);
