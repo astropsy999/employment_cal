@@ -14,6 +14,7 @@ import { parseResievedDataToCal } from '../ui/parseResievedDataToCal';
 import { tempLoader } from '../ui/tempLoader';
 import { isInvalidElem, isValidElem } from './toggleElem';
 import { buttonLoader } from '../ui/buttonLoader';
+import { showToast } from './toastifyUtil';
 
 //  Функция форматирования даты из объекта даты в привычный вид дд.мм.гггг
 export function formatDate(date) {
@@ -600,8 +601,8 @@ console.log("🚀 ~ unblockBtnAddTitle ~ unblockBtnAddTitle:")
  * @param {Array} methodsArr - Массив методов, которые нужно преобразовать.
  * @returns {Array} Возвращает массив объектов, где каждый объект содержит информацию о методе и его параметрах.
  */
-export const transformToMethods = (methodsArr, editID) => {
-  const eventMeths = [];
+export const transformToMethods = (methodsArr: Array<any>, editID: string | number): Array<any> => {
+  const eventMeths: any[] = [];
   methodsArr?.forEach((meth, i) => {
     const { method, params } = meth;
 
@@ -759,9 +760,13 @@ export const validateTotalTimeOnObject = (mode) => {
     return acc + Number(arr.innerText);
   }, startValue);
 
-  if (wooTimeTotal > eventSpentTimeVal) {
+  console.log("🚀 ~ wooTimeTotal ~ wooTimeTotal:", wooTimeTotal)
+
+
+  if (wooTimeTotal > eventSpentTimeVal || wooTimeTotal == 0) {
     eventSpentTime.classList.add('is-invalid');
     eventSpentTime.style.color = 'red';
+    showToast('Некорректное время', 'error');
     return false;
   }
 

@@ -15,7 +15,7 @@ import { getLocalStorageItem } from '../utils/localStorageUtils';
 import * as mainFunc from '../utils/mainGlobFunctions';
 import { convertDateTime, handleWooTime, notChoosenCleaning } from '../utils/mainGlobFunctions';
 import { getFormElements, getKrState } from '../utils/uiUtils';
-import { checkEmploymentMode, validateCondition } from '../utils/validationUtils';
+import { checkEmploymentMode, validateBrigadeSelect, validateCondition } from '../utils/validationUtils';
 import { findParentID } from './eventsActions';
 
 
@@ -170,7 +170,7 @@ export const addEventToUser = (calendar: Calendar) => {
           localStorage.setItem('fcDefaultView', calendar.view.type);
           Modal?.getInstance(addEventModal)?.hide();
         } catch (error) {
-          console.error('Ошибка при добавлении события:', error);
+          console.error('Ошибка при добавлении задачи:', error);
           showError('Не удалось добавить задачу. Пожалуйста, попробуйте позже.');
         }
 
@@ -178,8 +178,13 @@ export const addEventToUser = (calendar: Calendar) => {
         e.preventDefault();
 
         const validateTotalTime = mainFunc.validateTotalTimeOnObject('single');
+        console.log("🚀 ~ validateTotalTime:", validateTotalTime)
 
-        if (validateTotalTime === true) {
+
+        const brigadeSelect = addEventModal!.querySelector('#brigadeSelect') as HTMLSelectElement;
+        const validateBrigade = validateBrigadeSelect(brigadeSelect);
+
+        if (validateTotalTime && validateBrigade) {
           const krStateValue = getKrState('#flexCheckDefault');
 
           // Формируем объект для передачи данных на сервер
@@ -256,6 +261,7 @@ export const addEventToUser = (calendar: Calendar) => {
           );
         } else {
           handleWooTime('single');
+          buttonLoader(eventTaskModalBtn, false);
         }
       }
     }
