@@ -1,4 +1,3 @@
-import { getLocalStorageItem } from './../utils/localStorageUtils';
 import Choices from 'choices.js';
 import 'choices.js/public/assets/styles/choices.min.css';
 import getBrigadeWorkers from '../api/getBrigadeWorkers';
@@ -9,12 +8,12 @@ import { Methods } from '../enums/methods';
 import { TaskType } from '../enums/taskTypes';
 import { setLocalStorageItem } from '../utils/localStorageUtils';
 import { selRemoveValidation, wooTimeIsOver } from '../utils/mainGlobFunctions';
-import { initials } from '../utils/textsUtils';
-import addMethodToClientTable from './addMethodToClientTable';
+import { populateBrigadeSelect } from '../utils/populateBrigadeSelect';
 import { showToast } from '../utils/toastifyUtil';
 import { isInvalidElem, isValidElem } from '../utils/toggleElem';
-import { populateBrigadeSelect } from '../utils/populateBrigadeSelect';
-import { validateBrigadeSelect, validateBrigadeSelectionOnEdit } from '../utils/validationUtils';
+import { validateBrigadeSelect } from '../utils/validationUtils';
+import { getLocalStorageItem } from './../utils/localStorageUtils';
+import addMethodToClientTable from './addMethodToClientTable';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -210,23 +209,97 @@ const addWooContainer = (etarget: HTMLElement) => {
 
   /**
    * Добавление чекбокса "Я бригадир" и селектора "бригада"
-   */
+  //  */
+  // const addBrigadirElements = async () => {
+  //   // Данные о выбранном методе в сторе
+  //   setLocalStorageItem('isRK', true);
+
+  //   const workOnObjectRow = wooElem?.querySelector('.work-on-object');
+  //   if (!workOnObjectRow) return;
+
+  //    // Проверяем, не добавлены ли уже элементы по наличию их ID в DOM
+  //   const existingBrigadirCheckbox = document.querySelector('#brigadirCheckbox');
+  //   const existingBrigadeSelect = document.querySelector('#brigadeSelect');
+
+  //   // Если элементы уже есть, выходим из функции
+  //   if (existingBrigadirCheckbox || existingBrigadeSelect) {
+  //     return;
+  //   }
+
+  //   // Создание чекбокса "Я бригадир"
+  //   brigadirCheckbox = document.createElement('div');
+  //   brigadirCheckbox.classList.add('col-md-2', 'mb-2', 'p-0', 'pr-1');
+  //   brigadirCheckbox.innerHTML = `
+  //     <div class="">
+  //       <label class="form-check-label" for="brigadirCheckbox">Я бригадир</label>
+  //       <input class="form-check-input" type="checkbox" id="brigadirCheckbox">
+  //     </div>
+
+  //   `;
+
+  //   // Создание селектора "бригада"
+  //   brigadeSelect = document.createElement('div');
+  //   brigadeSelect.classList.add('col-md-6', 'mb-2', 'pr-1');
+  //   brigadeSelect.innerHTML = `
+  //     <select class="form-select" id="brigadeSelect" multiple>
+  //       <!-- Опции будут динамически добавлены через TypeScript -->
+  //     </select>
+  //   `;
+
+  //    // Получаем список работников бригады
+  //   const brigadeWorkers = getLocalStorageItem('brigadeWorkers') || await getBrigadeWorkers();
+
+  //   const brigadeSelectElement = brigadeSelect?.querySelector('#brigadeSelect') as HTMLSelectElement;
+
+  //   // Заполняем селектор работниками бригады
+  //   if (brigadeWorkers && brigadeSelectElement) {
+  //     populateBrigadeSelect(brigadeSelectElement, brigadeWorkers);
+  //   }
+
+  //   // Проверяем, не инициализирован ли уже Choices.js на этом элементе
+  //     if (!brigadeSelectElement.dataset.choices) {
+  //       // Инициализируем Choices.js на селекторе "бригада"
+  //       brigadeChoicesInstance = new Choices(brigadeSelectElement, {
+  //         removeItemButton: true,
+  //         searchResultLimit: 100,
+  //         renderChoiceLimit: 100,
+  //         shouldSort: false,
+  //         placeholderValue: 'Выберите работников бригады',
+  //         noResultsText: 'Ничего не найдено',
+  //         itemSelectText: '',
+  //       });
+
+  //       // Маркируем, что Choices.js инициализирован
+  //       brigadeSelectElement.dataset.choices = 'true';
+  //     }
+
+  //   // Хранение экземпляра Choices для последующей очистки при удалении
+  //   brigadeSelect.dataset.choices = 'true'; // Маркируем, что Choices инициализирован
+
+  //   // Вставляем элементы после селектора 'wooMethod' (первый дочерний элемент строки)
+  //   const children = Array.from(workOnObjectRow.children);
+  //   if (children.length >= 1) {
+  //     workOnObjectRow.insertBefore(brigadeSelect, children[1]);
+  //     workOnObjectRow.insertBefore(brigadirCheckbox, children[1]);
+  //   }
+  // };
+
   const addBrigadirElements = async () => {
     // Данные о выбранном методе в сторе
     setLocalStorageItem('isRK', true);
-
+  
     const workOnObjectRow = wooElem?.querySelector('.work-on-object');
     if (!workOnObjectRow) return;
-
-     // Проверяем, не добавлены ли уже элементы по наличию их ID в DOM
+  
+    // Проверяем, не добавлены ли уже элементы по наличию их ID в DOM
     const existingBrigadirCheckbox = document.querySelector('#brigadirCheckbox');
     const existingBrigadeSelect = document.querySelector('#brigadeSelect');
-
+  
     // Если элементы уже есть, выходим из функции
     if (existingBrigadirCheckbox || existingBrigadeSelect) {
       return;
     }
-
+  
     // Создание чекбокса "Я бригадир"
     brigadirCheckbox = document.createElement('div');
     brigadirCheckbox.classList.add('col-md-2', 'mb-2', 'p-0', 'pr-1');
@@ -235,56 +308,57 @@ const addWooContainer = (etarget: HTMLElement) => {
         <label class="form-check-label" for="brigadirCheckbox">Я бригадир</label>
         <input class="form-check-input" type="checkbox" id="brigadirCheckbox">
       </div>
-
     `;
-
+  
     // Создание селектора "бригада"
     brigadeSelect = document.createElement('div');
     brigadeSelect.classList.add('col-md-6', 'mb-2', 'pr-1');
     brigadeSelect.innerHTML = `
       <select class="form-select" id="brigadeSelect" multiple>
-        <!-- Опции будут динамически добавлены через TypeScript -->
+        <option disabled>Загрузка...</option>
       </select>
     `;
-
-     // Получаем список работников бригады
-    const brigadeWorkers = getLocalStorageItem('brigadeWorkers') || await getBrigadeWorkers();
-
-    const brigadeSelectElement = brigadeSelect?.querySelector('#brigadeSelect') as HTMLSelectElement;
-
-    // Заполняем селектор работниками бригады
-    if (brigadeWorkers && brigadeSelectElement) {
-      populateBrigadeSelect(brigadeSelectElement, brigadeWorkers);
-    }
-
-    // Проверяем, не инициализирован ли уже Choices.js на этом элементе
-      if (!brigadeSelectElement.dataset.choices) {
-        // Инициализируем Choices.js на селекторе "бригада"
-        brigadeChoicesInstance = new Choices(brigadeSelectElement, {
-          removeItemButton: true,
-          searchResultLimit: 100,
-          renderChoiceLimit: 100,
-          shouldSort: false,
-          placeholderValue: 'Выберите работников бригады',
-          noResultsText: 'Ничего не найдено',
-          itemSelectText: '',
-        });
-
-        // Маркируем, что Choices.js инициализирован
-        brigadeSelectElement.dataset.choices = 'true';
-      }
-
-    // Хранение экземпляра Choices для последующей очистки при удалении
-    brigadeSelect.dataset.choices = 'true'; // Маркируем, что Choices инициализирован
-
-    // Вставляем элементы после селектора 'wooMethod' (первый дочерний элемент строки)
+  
+    // Вставляем селектор и чекбокс в правильном порядке
     const children = Array.from(workOnObjectRow.children);
     if (children.length >= 1) {
+      // Сначала вставляем brigadeSelect
       workOnObjectRow.insertBefore(brigadeSelect, children[1]);
-      workOnObjectRow.insertBefore(brigadirCheckbox, children[1]);
+      // Затем вставляем brigadirCheckbox сразу после brigadeSelect
+      workOnObjectRow.insertBefore(brigadirCheckbox, brigadeSelect.nextSibling);
+    }
+  
+    // Получаем список работников бригады
+    const brigadeWorkers =
+      getLocalStorageItem('brigadeWorkers') || (await getBrigadeWorkers());
+  
+    const brigadeSelectElement = brigadeSelect?.querySelector('#brigadeSelect') as HTMLSelectElement;
+  
+    // Убираем "Загрузка..." и заполняем селектор работниками бригады
+    if (brigadeWorkers && brigadeSelectElement) {
+      brigadeSelectElement.innerHTML = ''; // Очистка существующих опций
+      populateBrigadeSelect(brigadeSelectElement, brigadeWorkers);
+    }
+  
+    // Проверяем, не инициализирован ли уже Choices.js на этом элементе
+    if (brigadeSelectElement && !brigadeSelectElement.dataset.choices) {
+      // Инициализируем Choices.js на селекторе "бригада"
+      brigadeChoicesInstance = new Choices(brigadeSelectElement, {
+        removeItemButton: true,
+        searchResultLimit: 100,
+        renderChoiceLimit: 100,
+        shouldSort: false,
+        placeholderValue: 'Выберите работников бригады',
+        noResultsText: 'Ничего не найдено',
+        itemSelectText: '',
+      });
+  
+      // Маркируем, что Choices.js инициализирован
+      brigadeSelectElement.dataset.choices = 'true';
     }
   };
-
+  
+  
   /**
    * Удаление чекбокса "Я бригадир" и селектора "бригада"
    */

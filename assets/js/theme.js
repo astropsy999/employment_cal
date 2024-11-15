@@ -99,7 +99,7 @@ const employmentCalendar = async () => {
 
   const idDB = await getUserID();
   console.log('idDB: ', idDB);
-
+  localStorage.removeItem('brigadeWorkers');
   localStorage.setItem('iddb', idDB);
 
   usersForManagersSelector(idDB);
