@@ -17,12 +17,14 @@ const saveEditedMethodToBaseApi = ({
   editSaveTaskBtn,
   editedSpentTime,
 }: SaveEditedMethodApiParams): void => {
-  console.log("🚀 ~ methData:", methData)
   const { methVal, durVal, objqVal, zonesVal, editID, teamList, isBrigadier } = methData;
 
   const isBrigadeMode = teamList?.length! > 0 || isBrigadier?.length! > 0
 
   const isBrigadierValue = isBrigadier === 'Да' ? 'true' : 'false'
+
+  // Валидация списка работников бригады
+  
 
   
 

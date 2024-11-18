@@ -167,6 +167,8 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
       if(isInitialRK && currentMethodIsNotRK) {
         cleanBregadeDataApi(edMetDataObj.editID)
       }
+
+      
       
       saveEditedMethodToBaseApi({ methData: edMetDataObj, editSaveTaskBtn, editedSpentTime });
   };
@@ -254,6 +256,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         
           // Вызываем функцию валидации бригады
           const isBrigadeValid = validateBrigadeSelectionOnEdit(editedString, editedMethodName);
+          console.log("🚀 ~ saveEditedBtn.addEventListener ~ isBrigadeValid:", isBrigadeValid)
           if (!isBrigadeValid) {
             // Если валидация не пройдена, прерываем сохранение
             return;
@@ -261,6 +264,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         
           // Вызываем функцию валидации времени
           const isTimeValid = validateTimeFieldOnEdit(editedString);
+          console.log("🚀 ~ saveEditedBtn.addEventListener ~ isTimeValid:", isTimeValid)
           if (!isTimeValid) {
             // Если валидация не пройдена, прерываем сохранение
             return;

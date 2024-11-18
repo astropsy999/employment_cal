@@ -96,13 +96,14 @@ export const validateCondition = (
 export function validateBrigadeSelectionOnEdit(editedString: HTMLTableRowElement, editedMethodName: string): boolean {
     const isRK =
       editedMethodName === Methods.RK_CRG_NAME || editedMethodName === Methods.RK_CLASSIC_NAME;
-  
+
     if (isRK) {
       // Получаем селектор бригады
       const brigadeSelect = editedString.querySelector('#brigadeSelectEdit') as HTMLSelectElement;
+      console.log("🚀 ~ validateBrigadeSelectionOnEdit ~ brigadeSelect:", brigadeSelect)
   
       if (brigadeSelect) {
-        validateBrigadeSelect(brigadeSelect);
+        return validateBrigadeSelect(brigadeSelect);
       }
     }
   

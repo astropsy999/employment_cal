@@ -108,7 +108,7 @@ const grabMethodsDataTable = (tbody: HTMLTableSectionElement): MethodsArr[] => {
  * @param {*} tbody
  * @returns
  */
-const grabJustAddedArray = (tbody: HTMLTableSectionElement) => {
+const grabJustAddedArray = (tbody: HTMLTableSectionElement | HTMLTableElement) => {
   let grabJAMethodsArray: any = [];
   const methodsArr = Array.from(tbody.querySelectorAll('.justadded'));
   methodsArr.forEach((item) => {

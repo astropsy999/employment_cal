@@ -7,6 +7,7 @@ import {
 import { EventEditObj } from '../types/events';
 import { MethodObj } from '../types/methods';
 import { TaskType } from '../enums/taskTypes';
+import { validateBrigadeSelect } from '../utils/validationUtils';
 
 /**
  * Сохранение отредактированных данных в таблице методов
@@ -64,6 +65,7 @@ const saveEditedTasks = (
   const isMethodsAvailable =
     kindOfEditTasksVal === TaskType.TECHNICAL_DIAGNOSTIC;
 
+
   /**
    * Удаление всех методов если был изменен Вид работ при редактировании
    * @param {*} methodsFromServer
@@ -72,9 +74,8 @@ const saveEditedTasks = (
   const deleteAllMethodsIfChangedType = (methodsFromServer: MethodObj[]) => {
     const methDelIDArr: string[] = [];
     methodsFromServer.forEach((delId) => {
-      methDelIDArr.push(Object.values(delId)[0]['editID']);
+      methDelIDArr.push(Object.values(delId)[0]['editID']!);
     });
-    console.log("🚀 ~ deleteAllMethodsIfChangedType ~ methDelIDArr:", methDelIDArr)
 
     methDelIDArr.forEach((methDelID) => {
       fetch(
