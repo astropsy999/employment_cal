@@ -23,17 +23,13 @@ const saveEditedMethodToBaseApi = ({
 
   const isBrigadierValue = isBrigadier === 'Да' ? 'true' : 'false'
 
-  // Валидация списка работников бригады
-  
-
-  
-
   const editEventModal = document.querySelector('#editEventModal');
   const delID = editEventModal?.getAttribute('delID') as string;
 
   const methodsTbody = editEventModal?.querySelector('.methods-tbody') as HTMLElement;
 
-  const allMethodsTimeSum = sumUneditedMethodsTime(methodsTbody);
+  const allMethodsTimeSum = Number(sumUneditedMethodsTime(methodsTbody));
+  console.log("🚀 ~ allMethodsTimeSum:", allMethodsTimeSum)
   const editedSpentTimeValue = parseFloat(editedSpentTime.value);
 
   if (allMethodsTimeSum > editedSpentTimeValue) {
@@ -42,10 +38,10 @@ const saveEditedMethodToBaseApi = ({
     const timeHeader = document.querySelector(
       'th[scope="col"]:nth-of-type(2)',
     ) as HTMLTableCellElement;
-    timeHeader.textContent = `Время методов не может быть > ${editedSpentTimeValue}ч`;
+    timeHeader.textContent = `Общее время методов не может быть > ${editedSpentTimeValue}ч`;
     timeHeader.style.border = '2px solid red';
     timeHeader.style.color = 'red';
-    editSaveTaskBtn?.setAttribute('disabled', 'disabled');
+    // editSaveTaskBtn?.setAttribute('disabled', 'disabled');
 
     return;
   }

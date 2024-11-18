@@ -8,7 +8,7 @@ import { MethodData } from '../types/methods';
 import { createMethodsTableBody, createMethodsTableHead } from '../utils/methodsUtils';
 import { hideBrigadeColumn, showBrigadeColumn } from './editModeUtils';
 import { cleanBregadeDataApi } from '../api/cleanBregadeDataApi';
-import { validateBrigadeSelectionOnEdit, validateTimeFieldOnEdit } from '../utils/validationUtils';
+import { validateBrigadeSelectionOnEdit, validateTimeFieldOnEdit, validateTotalTimeFieldOnEdit } from '../utils/validationUtils';
 
 /**
  * Показ/скрытие таблицы с методами
@@ -44,6 +44,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
    * @param {*} ev
    */
   const switchOffEditModeBase = (ev: Event, initialEditedMethodName: string) => {
+
     let edMetDataObj: MethodData = {} as MethodData;
 
     // Проверяем редактируется ли РК метод
@@ -97,6 +98,8 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
     tdArray.forEach((tdItem, idx) => {
       if (tdItem.classList.contains('ed')) {
         const tdItemChildren = tdItem.children[0] as HTMLSelectElement;
+        console.log("🚀 ~ tdArray.forEach ~ idx:", idx)
+        console.log("🚀 ~ tdArray.forEach ~ tdItem:", tdItem)
 
         if (tdItem.classList.contains('methods-select')) {
           const selectedMethodText = tdItemChildren.options[tdItemChildren.selectedIndex].text;
@@ -115,13 +118,24 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
           edMetDataObj['isBrigadier'] = brigadeData.isBrigadier;
         } else if (tdItem.innerText = tdItemChildren.value) 
         {
-            if (tdItem.classList.contains('duration-cell')) {
-              edMetDataObj['durVal'] = tdItemChildren.value;
-            } else if (tdItem.classList.contains('objects-cell')) {
-              edMetDataObj['objqVal'] = tdItemChildren.value;
-            } else if (tdItem.classList.contains('zones-cell')) {
-              edMetDataObj['zonesVal'] = tdItemChildren.value;
+            if(edMetDataObj['methVal'] === Methods.RK_CRG_NAME || edMetDataObj['methVal'] === Methods.RK_CLASSIC_NAME) {
+              if (idx === 2) {
+                edMetDataObj['durVal'] = tdItemChildren.value;
+              } else if (idx === 3) {
+                edMetDataObj['objqVal'] = tdItemChildren.value;
+              } else if (idx === 4) {
+                edMetDataObj['zonesVal'] = tdItemChildren.value;
+              }
+            } else {
+              if (idx === 1) {
+                edMetDataObj['durVal'] = tdItemChildren.value;
+              } else if (idx === 2) {
+                edMetDataObj['objqVal'] = tdItemChildren.value;
+              } else if (idx === 3) {
+                edMetDataObj['zonesVal'] = tdItemChildren.value;
+              }
             }
+
         }
         } else if (tdItem.classList.contains('brigade-edit-td')) {
           tdItem.remove();
@@ -167,9 +181,8 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
       if(isInitialRK && currentMethodIsNotRK) {
         cleanBregadeDataApi(edMetDataObj.editID)
       }
+      console.log("🚀 ~ switchOffEditModeBase ~ edMetDataObj:", edMetDataObj)
 
-      
-      
       saveEditedMethodToBaseApi({ methData: edMetDataObj, editSaveTaskBtn, editedSpentTime });
   };
 
@@ -246,8 +259,8 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         });
   
         const saveEditedBtn = edString?.querySelector('.save-edited') as HTMLButtonElement;
-  
-        saveEditedBtn.addEventListener('click', (e) => {
+
+        function saveEditedBtnClickHandler(e: Event) {
           const editedString = (e.target as HTMLElement)?.closest('tr') as HTMLTableRowElement;
         
           const methSelTd = editedString?.querySelector('.methods-select') as HTMLTableCellElement;
@@ -256,7 +269,7 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         
           // Вызываем функцию валидации бригады
           const isBrigadeValid = validateBrigadeSelectionOnEdit(editedString, editedMethodName);
-          console.log("🚀 ~ saveEditedBtn.addEventListener ~ isBrigadeValid:", isBrigadeValid)
+          console.log("🚀 ~ saveEditedBtnClickHandler ~ isBrigadeValid:", isBrigadeValid)
           if (!isBrigadeValid) {
             // Если валидация не пройдена, прерываем сохранение
             return;
@@ -264,15 +277,25 @@ const showMethodsTable = (eventInfo: EventDef, wooElem: HTMLElement, api:{[key:s
         
           // Вызываем функцию валидации времени
           const isTimeValid = validateTimeFieldOnEdit(editedString);
-          console.log("🚀 ~ saveEditedBtn.addEventListener ~ isTimeValid:", isTimeValid)
+
           if (!isTimeValid) {
             // Если валидация не пройдена, прерываем сохранение
+            return;
+          }
+
+          const editedSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
+          const isTotalTimeValid = validateTotalTimeFieldOnEdit(editedString, editedSpentTime, saveEditedBtn);
+
+          if (!isTotalTimeValid) {
             return;
           }
         
           // Продолжаем с сохранением изменений
           switchOffEditModeBase(e, initialEditingMethodName);
-        });
+        }
+        
+        saveEditedBtn.removeEventListener('click', saveEditedBtnClickHandler);
+        saveEditedBtn.addEventListener('click', saveEditedBtnClickHandler);
         
       }
     }

@@ -1,4 +1,6 @@
 import { Methods } from "../enums/methods";
+import { sumUneditedMethodsTime } from "./methodsUtils";
+import { isInvalidElem } from "./toggleElem";
 
 export const validateCondition = (
     valC: boolean | 'onRoad',
@@ -118,6 +120,8 @@ export function validateBrigadeSelectionOnEdit(editedString: HTMLTableRowElement
   export function validateTimeFieldOnEdit(editedString: HTMLTableRowElement): boolean {
     // Находим ячейку с полем времени
     const timeTd = editedString.querySelector('.wootime') as HTMLTableCellElement;
+    let tBody = document.querySelector('.methods-tbody') as HTMLElement;
+    const editedSpentTime = document.querySelector('#eventEditSpentTime') as HTMLInputElement;
     if (!timeTd) {
       // Если ячейка не найдена, считаем, что валидация не пройдена
       return false;
@@ -158,6 +162,7 @@ export function validateBrigadeSelectionOnEdit(editedString: HTMLTableRowElement
       });
   
       return false; // Валидация не пройдена
+    
     } else {
       // Убираем класс валидации и сообщение об ошибке, если они были
       timeInput.classList.remove('is-invalid');
@@ -169,5 +174,36 @@ export function validateBrigadeSelectionOnEdit(editedString: HTMLTableRowElement
   
     return true; // Валидация пройдена
   }
+
+  /**
+   * Валидация общего времени в режиме редактирования
+   * @param editedString 
+   * @returns
+   */
   
+
+  export const validateTotalTimeFieldOnEdit = (methodsTbody: HTMLElement, editedSpentTime: HTMLInputElement, editSaveTaskBtn: HTMLButtonElement): boolean => {
+    const allMethodsTimeSum = Number(sumUneditedMethodsTime(methodsTbody));
+    const editedSpentTimeValue = Number(editedSpentTime?.value.trim());
+
+    const editedMethodTime = Array.from(document.querySelectorAll('.wootime'));
+    const editedMethodTimeInput = editedMethodTime.filter((el) => el.querySelector('input'))[0] as HTMLInputElement;
+
+    const editedMethodTimeValue = Number(editedMethodTimeInput.textContent);
+
+    if ((allMethodsTimeSum + editedMethodTimeValue) > editedSpentTimeValue) {
+      isInvalidElem(editedSpentTime);
+
+      const timeHeader = document.querySelector(
+        'th[scope="col"]:nth-of-type(2)',
+      ) as HTMLTableCellElement;
+      timeHeader.textContent = `Общее время методов не может быть > ${editedSpentTimeValue}ч`;
+      timeHeader.style.border = '2px solid red';
+      timeHeader.style.color = 'red';
+      // editSaveTaskBtn?.setAttribute('disabled', 'disabled');
+
+      return false;
+    }
+    return true
+  }
   
