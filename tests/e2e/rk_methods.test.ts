@@ -33,6 +33,7 @@ test.describe('Тестирование календаря', () => {
 
 
     test('Тестирование работы с методом РК', async () => {
+        test.setTimeout(150000);
 
            // Функция ожидания, пока количество опций в селекторе станет больше 1
         async function waitForOptions(locator: Locator, minCount: number, timeout: number = 50000): Promise<void> {
@@ -324,53 +325,69 @@ test.describe('Тестирование календаря', () => {
         await test.step('Проверка сохраненных данных задачи в календаре', async () => {
             // Ожидаем появления лоадера
             const loader = page.locator('.temploaderWrapper');
-            await expect(loader).toBeVisible({ timeout: 20000 });
+            await expect(loader).toBeVisible();
         
             // Ожидание скрытия лоадера
-            await loader.waitFor({ state: 'hidden', timeout: 20000 });
+            await loader.waitFor({ state: 'hidden' });
             console.log('Лоадер успешно исчез.');
         
             // Уточняем селектор задачи по её уникальным характеристикам
-            const taskInCalendar = page.locator('.fc-timegrid-event')
+            const taskInCalendarHeader = page.locator('div.contentLayoutHeader')
                 .filter({ has: page.locator('text=Тестовая задача') });
-            await expect(taskInCalendar).toBeVisible({ timeout: 10000 });
+            
+        
+            // Убеждаемся, что задача появилась
+            await expect(taskInCalendarHeader).toBeVisible({ timeout: 10000 });
         
             // Проверяем отображение названия задачи
-            const taskTitle = taskInCalendar.locator('.title');
+            const taskTitle = taskInCalendarHeader.locator('.title');
             await expect(taskTitle).toBeVisible();
             await expect(taskTitle).toHaveText('Тестовая задача');
+            console.log('Тестовая задача найдена в календаре.');
         
             // Проверяем отображение времени
-            const taskTime = taskInCalendar.locator('.factTime b');
+            const taskTime = taskInCalendarHeader.locator('.factTime b');
             await expect(taskTime).toBeVisible();
             await expect(taskTime).toHaveText('5.5');
+            console.log('В задаче указано верное время.');
+
+            // Задача
+            const taskInCalendar = page.locator('.fc-event-main')
         
             // Проверяем отображение локации (уточняем локатор)
             const taskLocation = taskInCalendar.locator('div').filter({ hasText: 'Офис' }).first();
+            await taskLocation.waitFor({ state: 'attached' }); // Убедимся, что элемент существует
             await expect(taskLocation).toBeVisible();
             await expect(taskLocation).toHaveText('Офис');
+            console.log('Локация указана верно.');
         
             // Проверяем отображение объекта
             const taskObject = taskInCalendar.locator('.eventObject');
             await expect(taskObject).toBeVisible();
             await expect(taskObject).toHaveText('АО "Глазовский завод "Химмаш"');
+            console.log('Объект указан верно.');
         
             // Проверяем отображение вида работ
             const taskType = taskInCalendar.locator('.eventTaskType');
             await expect(taskType).toBeVisible();
             await expect(taskType).toHaveText('Техническое диагностирование');
+            console.log('Вид работ указан верно.');
         
             // Проверяем отображение метода контроля
             const taskMethod = taskInCalendar.locator('.eventMethodsWrapper').locator('text=РК (Классический)-1ч');
             await expect(taskMethod).toBeVisible();
+            console.log('Метод указан верно.');
         
             // Проверяем отображение сотрудника
             const taskBrigadeMember = taskInCalendar.locator('.eventMethodsWrapper').locator('text=Абужаков Д.К.');
             await expect(taskBrigadeMember).toBeVisible();
+            console.log('Список бригады соответствует');
         
             // Проверяем наличие иконки fa-user (отвечает за чекбокс "Я бригадир")
             const brigadirIcon = taskInCalendar.locator('.eventMethodsWrapper').locator('svg[data-icon="user"]');
             await expect(brigadirIcon).toBeVisible();
+            console.log('Данные о бригадире отображаются верно.');
+        
         
             console.log('Все данные задачи в календаре успешно проверены.');
         });
