@@ -392,11 +392,25 @@ test.describe('Тестирование календаря', () => {
             console.log('Все данные задачи в календаре успешно проверены.');
         });
 
-        // await test.step('Удаление тестовой задачи', async () => {
+        await test.step('Удаление тестовой задачи', async () => {
+            //Находим тестовую задачу и кликаем на нее
+            const taskInCalendar = page.locator('.fc-timegrid-event-harness').locator('text=Тестовая задача');
+            taskInCalendar.click()
+            //Проверяем что открылось окно с детальной информацией
+            const eventDetailsModal = page.locator('#eventDetailsModal')
+            await expect(eventDetailsModal).toBeVisible()
+            //Находим кнопку Удалить и кликаем на нее
+            const delEventBtn = eventDetailsModal.locator('#delEventBtn')
+            await expect(delEventBtn).toBeVisible()
 
+            delEventBtn.click()
+            //Проверяем что окно с детальной информацией скрылось
+            await expect(eventDetailsModal).toBeHidden()
+            //Проверяем что тестовая задача отсутствует
+            await expect(taskInCalendar).toBeHidden()
 
-        //     console.log('Тестовая задача успешно удалена.');
-        // })
+            console.log('Тестовая задача успешно удалена.');
+        })
         
         
     });
