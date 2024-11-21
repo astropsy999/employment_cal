@@ -14,6 +14,7 @@ import { isInvalidElem, isValidElem } from '../utils/toggleElem';
 import { validateBrigadeSelect } from '../utils/validationUtils';
 import { getLocalStorageItem } from './../utils/localStorageUtils';
 import addMethodToClientTable from './addMethodToClientTable';
+import { addRKmethodOffsets, removeRKmethodOffsets } from '../utils/uiUtils';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -66,25 +67,25 @@ const addWooContainer = (etarget: HTMLElement) => {
     wooElemDiv.innerHTML = `
       <h5 class="modal-title woo-title">Методы контроля</h5>
       <div class="row work-on-object m-1 d-flex align-items-stretch">
-        <div class="col-md-2 mb-2 p-0 pr-1">
+        <div class="col-md-2 mb-2 p-0 pr-1 method-container">
           <select class="form-select" id="wooMethod" role="tooltip" title="Метод контроля" data-placement="bottom">
             <option value="Не выбрано" selected="selected">Не выбрано</option>
           </select>
         </div>
-        <div class="col-md-3 mb-2 pr-0">
-          <input class="form-control" id="wooTime" type="number" placeholder="Продолжительность, ч" step="0.5" min="0.5" max="24" onkeyup="if(this.value<0){this.value = this.value * -1}" />
-        </div>
-        <div class="col mb-2 pr-1">
-          <input class="form-control" id="wooObjects" type="number"  min="1" placeholder="Кол-во объектов" onkeyup="if(this.value<0){this.value = this.value * -1}" />
-        </div>
-        <div class="col mb-2 p-0">
-          <input class="form-control" id="wooZones" type="number" min="1" placeholder="Кол-во зон/стыков" onkeyup="if(this.value<0){this.value = this.value * -1}" />
-        </div>
-        <div class="col-md-1 mb-2">
-          <button class="btn btn-success" type="button" id="addWooMet">
-            <span class="fas fa-plus"></span>
-          </button>
-        </div>
+          <div class="col-md-3 mb-2 pr-0">
+            <input class="form-control" id="wooTime" type="number" placeholder="Продолжительность, ч" step="0.5" min="0.5" max="24" onkeyup="if(this.value<0){this.value = this.value * -1}" />
+          </div>
+          <div class="col mb-2 pr-1">
+            <input class="form-control" id="wooObjects" type="number"  min="1" placeholder="Кол-во объектов" onkeyup="if(this.value<0){this.value = this.value * -1}" />
+          </div>
+          <div class="col mb-2 p-0">
+            <input class="form-control" id="wooZones" type="number" min="1" placeholder="Кол-во зон/стыков" onkeyup="if(this.value<0){this.value = this.value * -1}" />
+          </div>
+          <div class="col-md-1 mb-2">
+            <button class="btn btn-success" type="button" id="addWooMet">
+              <span class="fas fa-plus"></span>
+            </button>
+          </div>
       </div>
     `;
     wooElem?.append(wooElemDiv);
@@ -209,80 +210,7 @@ const addWooContainer = (etarget: HTMLElement) => {
 
   /**
    * Добавление чекбокса "Я бригадир" и селектора "бригада"
-  //  */
-  // const addBrigadirElements = async () => {
-  //   // Данные о выбранном методе в сторе
-  //   setLocalStorageItem('isRK', true);
-
-  //   const workOnObjectRow = wooElem?.querySelector('.work-on-object');
-  //   if (!workOnObjectRow) return;
-
-  //    // Проверяем, не добавлены ли уже элементы по наличию их ID в DOM
-  //   const existingBrigadirCheckbox = document.querySelector('#brigadirCheckbox');
-  //   const existingBrigadeSelect = document.querySelector('#brigadeSelect');
-
-  //   // Если элементы уже есть, выходим из функции
-  //   if (existingBrigadirCheckbox || existingBrigadeSelect) {
-  //     return;
-  //   }
-
-  //   // Создание чекбокса "Я бригадир"
-  //   brigadirCheckbox = document.createElement('div');
-  //   brigadirCheckbox.classList.add('col-md-2', 'mb-2', 'p-0', 'pr-1');
-  //   brigadirCheckbox.innerHTML = `
-  //     <div class="">
-  //       <label class="form-check-label" for="brigadirCheckbox">Я бригадир</label>
-  //       <input class="form-check-input" type="checkbox" id="brigadirCheckbox">
-  //     </div>
-
-  //   `;
-
-  //   // Создание селектора "бригада"
-  //   brigadeSelect = document.createElement('div');
-  //   brigadeSelect.classList.add('col-md-6', 'mb-2', 'pr-1');
-  //   brigadeSelect.innerHTML = `
-  //     <select class="form-select" id="brigadeSelect" multiple>
-  //       <!-- Опции будут динамически добавлены через TypeScript -->
-  //     </select>
-  //   `;
-
-  //    // Получаем список работников бригады
-  //   const brigadeWorkers = getLocalStorageItem('brigadeWorkers') || await getBrigadeWorkers();
-
-  //   const brigadeSelectElement = brigadeSelect?.querySelector('#brigadeSelect') as HTMLSelectElement;
-
-  //   // Заполняем селектор работниками бригады
-  //   if (brigadeWorkers && brigadeSelectElement) {
-  //     populateBrigadeSelect(brigadeSelectElement, brigadeWorkers);
-  //   }
-
-  //   // Проверяем, не инициализирован ли уже Choices.js на этом элементе
-  //     if (!brigadeSelectElement.dataset.choices) {
-  //       // Инициализируем Choices.js на селекторе "бригада"
-  //       brigadeChoicesInstance = new Choices(brigadeSelectElement, {
-  //         removeItemButton: true,
-  //         searchResultLimit: 100,
-  //         renderChoiceLimit: 100,
-  //         shouldSort: false,
-  //         placeholderValue: 'Выберите работников бригады',
-  //         noResultsText: 'Ничего не найдено',
-  //         itemSelectText: '',
-  //       });
-
-  //       // Маркируем, что Choices.js инициализирован
-  //       brigadeSelectElement.dataset.choices = 'true';
-  //     }
-
-  //   // Хранение экземпляра Choices для последующей очистки при удалении
-  //   brigadeSelect.dataset.choices = 'true'; // Маркируем, что Choices инициализирован
-
-  //   // Вставляем элементы после селектора 'wooMethod' (первый дочерний элемент строки)
-  //   const children = Array.from(workOnObjectRow.children);
-  //   if (children.length >= 1) {
-  //     workOnObjectRow.insertBefore(brigadeSelect, children[1]);
-  //     workOnObjectRow.insertBefore(brigadirCheckbox, children[1]);
-  //   }
-  // };
+   */
 
   const addBrigadirElements = async () => {
     // Данные о выбранном методе в сторе
@@ -304,9 +232,9 @@ const addWooContainer = (etarget: HTMLElement) => {
     brigadirCheckbox = document.createElement('div');
     brigadirCheckbox.classList.add('col-md-2', 'mb-2', 'p-0', 'pr-1');
     brigadirCheckbox.innerHTML = `
-      <div class="">
-        <label class="form-check-label" for="brigadirCheckbox">Я бригадир</label>
-        <input class="form-check-input" type="checkbox" id="brigadirCheckbox">
+      <div class="form-check d-flex align-items-center brigadier-checkbox">
+        <input class="form-check-input large-checkbox" type="checkbox" id="brigadirCheckbox">
+        <label class="form-check-label fs-0 ml-1 brigadier-label" for="brigadirCheckbox">Я бригадир</label>
       </div>
     `;
   
@@ -356,6 +284,8 @@ const addWooContainer = (etarget: HTMLElement) => {
       // Маркируем, что Choices.js инициализирован
       brigadeSelectElement.dataset.choices = 'true';
     }
+
+    addRKmethodOffsets()
   };
   
   
@@ -372,6 +302,8 @@ const addWooContainer = (etarget: HTMLElement) => {
       brigadeSelect.remove();
       brigadeSelect = null;
     }
+
+    removeRKmethodOffsets()
   };
 
   /**

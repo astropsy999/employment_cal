@@ -27946,3 +27946,41 @@ div[data-collapse] + .kanban-item {
 .choices .choices__list--multiple .choices__item {
   margin-top: 1px !important;
 }
+
+/* Увеличение размера чекбокса */
+.large-checkbox {
+  transform: scale(2.2); 
+  margin-right: 1em;
+  border: 0.5px solid var(--falcon-input-border-color);
+}   
+
+/* Переход для плавного изменения размера */
+.large-checkbox {
+  transition: transform 0.2s;
+}
+
+.form-check-input[type=checkbox] {
+  border-radius: 0.1em;
+}
+
+.brigadier-label {
+  margin-top: 4px !important;
+  margin-bottom: 3px;
+}
+
+.brigadier-checkbox .form-check-input {
+  margin-top: 0.45em !important;
+  margin-left: -1em !important;
+}
+
+.is-rk-offset {
+  margin-left: -15px !important;
+}
+
+.is-rk-method-container {
+  width: 260px !important;
+}
+
+.is-rk-method {
+  width: 94% !important;
+}

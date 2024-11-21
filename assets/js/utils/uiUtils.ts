@@ -12,10 +12,10 @@ export const getKrState = (selector: string): string => {
     return '';
   };
 
-  /**
-   * Набор селекторов для формы добавления задачи в режиме недели
-   */
-  export const getFormElements = () => {
+/**
+ * Набор селекторов для формы добавления задачи в режиме недели
+ */
+export const getFormElements = () => {
     return {
       kindOfTasks: document.querySelector('#kindOfTasks') as HTMLSelectElement,
       kindOfSubTask: document.querySelector('#kindOfSubTask') as HTMLSelectElement,
@@ -37,3 +37,23 @@ export const getKrState = (selector: string): string => {
       methodsTable: document.querySelector('.methods-tbody') as HTMLElement,
     };
   };
+
+/**
+ * Добавление отступов при выборе метода РК
+ */
+export const addRKmethodOffsets = () => {
+    document.querySelector('#wooTime')?.classList.add('is-rk-offset');
+    document.querySelector('#wooObjects')?.classList.add('is-rk-offset');
+    document.querySelector('.method-container')?.classList.add('is-rk-method-container');
+    document.querySelector('#wooMethod')?.classList.add('is-rk-method');
+}
+
+/**
+ * Удаление отпступов добавленных при выборе метода РК
+ */
+export const removeRKmethodOffsets = () => {
+    document.querySelector('#wooTime')?.classList.remove('is-rk-offset')
+    document.querySelector('#wooObjects')?.classList.remove('is-rk-offset')
+    document.querySelector('.method-container')?.classList.remove('is-rk-method-container')
+    document.querySelector('#wooMethod')?.classList.remove('is-rk-method');
+}
