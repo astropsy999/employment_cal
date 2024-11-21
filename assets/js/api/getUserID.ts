@@ -1,5 +1,7 @@
 // @ts-ignore
 import { srvv, getTableData } from '../config';
+import { setLocalStorageItem } from '../utils/localStorageUtils';
+import { initials } from '../utils/textsUtils';
 
 /**
  * Получение ID пользователя
@@ -25,6 +27,8 @@ export const getUserID = async () => {
     }).then((response) => response.json());
 
     const data0 = res.data
+    const currentUserName = initials(data0[0][0].ObjName);
+    setLocalStorageItem('currentUserName', currentUserName);
 
     return data0[0][0].ObjID.toString();
 
