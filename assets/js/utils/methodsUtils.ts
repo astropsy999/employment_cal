@@ -1,5 +1,7 @@
 import { method } from "lodash";
 import { MethodObj } from "../types/methods";
+import Choices from "choices.js";
+import { getLocalStorageItem } from "./localStorageUtils";
 
 /**
  * Функция создает шапку для таблицы с методами
@@ -214,4 +216,26 @@ export function sumUneditedMethodsTime(methodsTbody: HTMLElement): number {
         }
     });
     return sum;
+}
+
+/**
+ * Автоматическая подстановка текущего сотрудника в селектор бригады
+ */
+export function addCurrentUserToBrigadeselector(brigadeChoicesInstance: Choices , brigadeSelectElement: HTMLSelectElement){
+
+    const currentUserName = getLocalStorageItem('currentUserName');
+    const selectedUserName = getLocalStorageItem('selectedUserName');
+    const isMan = getLocalStorageItem('isMan');
+    const userName = (!isMan && currentUserName) ? currentUserName : (isMan && selectedUserName) ? selectedUserName : '';
+    // Найдём опцию с текстом, совпадающим с userName
+    const matchingOption = Array.from(brigadeSelectElement.options).find(
+        option => option?.textContent?.trim() === userName.trim()
+    );
+    
+    if (matchingOption) {
+        console.log(`Найдено совпадение: value="${matchingOption.value}"`);
+        brigadeChoicesInstance.setChoiceByValue(matchingOption.value);
+    } else {
+        console.warn(`Значение "${userName}" не найдено в селекторе бригады.`);
+    }
 }

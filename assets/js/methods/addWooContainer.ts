@@ -15,6 +15,7 @@ import { validateBrigadeSelect } from '../utils/validationUtils';
 import { getLocalStorageItem } from './../utils/localStorageUtils';
 import addMethodToClientTable from './addMethodToClientTable';
 import { addRKmethodOffsets, removeRKmethodOffsets } from '../utils/uiUtils';
+import { addCurrentUserToBrigadeselector } from '../utils/methodsUtils';
 
 /**
  * Добавление контейнера для монтажа таблицы методов в модальное окно
@@ -267,8 +268,6 @@ const addWooContainer = (etarget: HTMLElement) => {
       brigadeSelectElement.innerHTML = ''; // Очистка существующих опций
       populateBrigadeSelect(brigadeSelectElement, brigadeWorkers);
     }
-
-    
   
     // Проверяем, не инициализирован ли уже Choices.js на этом элементе
     if (brigadeSelectElement && !brigadeSelectElement.dataset.choices) {
@@ -285,39 +284,8 @@ const addWooContainer = (etarget: HTMLElement) => {
   
       // Маркируем, что Choices.js инициализирован
       brigadeSelectElement.dataset.choices = 'true';
+      addCurrentUserToBrigadeselector(brigadeChoicesInstance, brigadeSelectElement);
 
-      const currentUserName = getLocalStorageItem('currentUserName');
-      const selectedUserName = getLocalStorageItem('selectedUserName');
-      const isMan = getLocalStorageItem('isMan');
-      // Автоматически выбираем текущего пользователя, если он существует
-      if (!isMan && currentUserName) {
-        // Найдём опцию с текстом, совпадающим с currentUserName
-        const matchingOption = Array.from(brigadeSelectElement.options).find(
-            option => option?.textContent?.trim() === currentUserName.trim()
-        );
-        
-        if (matchingOption) {
-            console.log(`Найдено совпадение: value="${matchingOption.value}"`);
-            brigadeChoicesInstance.setChoiceByValue(matchingOption.value);
-        } else {
-            console.warn(`Значение "${currentUserName}" не найдено в селекторе бригады.`);
-        }
-      } 
-
-      //Автоматическая подстановка для менеджеров
-      if(isMan && selectedUserName) {
-        // Найдём опцию с текстом, совпадающим с selectedUserName
-        const matchingOption = Array.from(brigadeSelectElement.options).find(
-            option => option?.textContent?.trim() === selectedUserName.trim()
-        );
-        
-        if (matchingOption) {
-            console.log(`Найдено совпадение: value="${matchingOption.value}"`);
-            brigadeChoicesInstance.setChoiceByValue(matchingOption.value);
-        } else {
-            console.warn(`Значение "${currentUserName}" не найдено в селекторе бригады.`);
-        }
-      }
     }
 
     addRKmethodOffsets()
