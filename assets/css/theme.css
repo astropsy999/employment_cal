@@ -27930,3 +27930,19 @@ div[data-collapse] + .kanban-item {
   background-color: #bbd2f1 !important;
   color: #47576b !important;
 }
+
+.choices {
+  height: 100%;
+}
+
+.choices__inner {
+  min-height: 100% !important;
+}
+
+.choices .choices__input--cloned {
+  margin-top: 1px !important;
+}
+
+.choices .choices__list--multiple .choices__item {
+  margin-top: 1px !important;
+}

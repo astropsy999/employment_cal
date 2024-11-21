@@ -65,7 +65,7 @@ const addWooContainer = (etarget: HTMLElement) => {
     const wooElemDiv = document.createElement('div') as HTMLDivElement;
     wooElemDiv.innerHTML = `
       <h5 class="modal-title woo-title">Методы контроля</h5>
-      <div class="row work-on-object m-1">
+      <div class="row work-on-object m-1 d-flex align-items-stretch">
         <div class="col-md-2 mb-2 p-0 pr-1">
           <select class="form-select" id="wooMethod" role="tooltip" title="Метод контроля" data-placement="bottom">
             <option value="Не выбрано" selected="selected">Не выбрано</option>
