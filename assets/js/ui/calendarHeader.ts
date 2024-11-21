@@ -77,5 +77,7 @@ export const usersForManagersSelector = async (userID: string) => {
               <i class="bi bi-unlock-fill text-success"></i><span class="mobile-hide-text"></span>
             </button>`;
     otherUsersWrapperID!.insertAdjacentElement('afterbegin', lockBtn);
+  } else {
+    setLocalStorageItem('isMan', false);
   }
 };
