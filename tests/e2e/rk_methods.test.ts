@@ -1,38 +1,37 @@
-import { test, expect, BrowserContext, Page, Locator } from '@playwright/test';
-import { authorizeAndGetCookies } from './helpers/auth';
-import { CONFIG } from './config.e2e';
+import { BrowserContext, expect, Locator, Page } from '@playwright/test';
+import test from './fixtures';
 
 let context: BrowserContext;
 let page: Page;
 
 test.describe('Тестирование календаря', () => {
-    test.beforeAll(async ({ browser }) => {
-        // Создаем контекст
-        context = await browser.newContext();
+    // test.beforeAll(async ({ browser }) => {
+    //     // Создаем контекст
+    //     context = await browser.newContext();
 
-        // Создаем страницу для авторизации
-        page = await context.newPage();
+    //     // Создаем страницу для авторизации
+    //     page = await context.newPage();
 
-        // Авторизация и получение cookies
-        const cookies = await authorizeAndGetCookies(
-            page,
-            CONFIG.AUTH.url,
-            CONFIG.AUTH.username,
-            CONFIG.AUTH.password
-        );
+    //     // Авторизация и получение cookies
+    //     const cookies = await authorizeAndGetCookies(
+    //         page,
+    //         CONFIG.AUTH.url,
+    //         CONFIG.AUTH.username,
+    //         CONFIG.AUTH.password
+    //     );
 
-        // Добавляем cookies в контекст
-        await context.addCookies(cookies);
+    //     // Добавляем cookies в контекст
+    //     await context.addCookies(cookies);
 
-        // Переход на страницу календаря
-        await page.goto(CONFIG.APP.url);
+    //     // Переход на страницу календаря
+    //     await page.goto(CONFIG.APP.url);
 
-        // Проверяем, что шапка календаря видна
-        await expect(page.locator('.card-header')).toBeVisible();
-    });
+    //     // Проверяем, что шапка календаря видна
+    //     await expect(page.locator('.card-header')).toBeVisible();
+    // });
 
 
-    test('Тестирование работы с методом РК', async () => {
+    test('Тестирование работы с методом РК', async ({authenticatedPage}) => {
         test.setTimeout(150000);
 
            // Функция ожидания, пока количество опций в селекторе станет больше 1
@@ -49,7 +48,7 @@ test.describe('Тестирование календаря', () => {
         }
 
         await test.step('Проверка элементов шапки', async () => {
-            const header = page.locator('.card-header');
+            const header = authenticatedPage.locator('.card-header');
             await expect(header).toBeVisible();
         
                 // Ожидаем, пока выпадающий список пользователей загрузится
@@ -102,7 +101,7 @@ test.describe('Тестирование календаря', () => {
 
         await test.step('Проверка недельного отображения календаря', async () => {
              // Проверка загрузки календаря в недельном отображении
-                const weekViewContainer = page.locator('.fc-timeGridWeek-view');
+                const weekViewContainer = authenticatedPage.locator('.fc-timeGridWeek-view');
                 await expect(weekViewContainer).toBeVisible();
 
                 const days = weekViewContainer.locator('[role="columnheader"]');
@@ -121,12 +120,12 @@ test.describe('Тестирование календаря', () => {
             // Получаем текущую дату в формате YYYY-MM-DD
             const currentDate = new Date().toISOString().split('T')[0];
             // Шаг 1: Выделяем день на календаре
-            const dayCell = page.locator(`.fc-timegrid-col[data-date="${currentDate}"]`); 
+            const dayCell = authenticatedPage.locator(`.fc-timegrid-col[data-date="${currentDate}"]`); 
             await expect(dayCell).toBeVisible();
             await dayCell.click({ force: true });
     
             // Шаг 2: Проверяем, что окно добавления задачи появилось
-            const addTaskModal = page.locator('#addEventModal');
+            const addTaskModal = authenticatedPage.locator('#addEventModal');
             await expect(addTaskModal).toBeVisible();
     
             // Шаг 3: Проверяем элементы внутри модального окна
@@ -149,7 +148,7 @@ test.describe('Тестирование календаря', () => {
 
         await test.step('Добавление задачи: выбор значений и проверка методов', async () => {
             // Ожидаем появления модального окна добавления задачи
-            const modal = page.locator('#addEventModal');
+            const modal = authenticatedPage.locator('#addEventModal');
             await expect(modal).toBeVisible();
         
             // Выбор значения в селекторе "Локация"
@@ -171,7 +170,7 @@ test.describe('Тестирование календаря', () => {
 
         await test.step('Проверка появления полей для метода "РК (Классический)"', async () => {
             // Ожидаем появления модального окна добавления задачи
-            const modal = page.locator('#addEventModal');
+            const modal = authenticatedPage.locator('#addEventModal');
             await expect(modal).toBeVisible();
         
             // Ожидаем, пока появится область методов контроля
@@ -198,7 +197,7 @@ test.describe('Тестирование календаря', () => {
 
         await test.step('Проверка валидации времени (wooTime)', async () => {
             // Ожидаем появления модального окна
-            const modal = page.locator('#addEventModal');
+            const modal = authenticatedPage.locator('#addEventModal');
             await expect(modal).toBeVisible();
         
             // Очищаем или вводим некорректное значение в поле "wooTime"
@@ -218,7 +217,7 @@ test.describe('Тестирование календаря', () => {
 
         await test.step('Проверка валидации пустого списка работников бригады при добавлении метода', async () => {
             // Ожидаем появления модального окна
-            const modal = page.locator('#addEventModal');
+            const modal = authenticatedPage.locator('#addEventModal');
             await expect(modal).toBeVisible();
         
             // Заполняем поле "время" (если требуется)
@@ -244,7 +243,7 @@ test.describe('Тестирование календаря', () => {
         });
 
         await test.step('Добавление задачи: заполнение формы и сохранение', async () => {
-            const modal = page.locator('#addEventModal');
+            const modal = authenticatedPage.locator('#addEventModal');
             await expect(modal).toBeVisible();
 
             // Получаем текущую дату
@@ -298,7 +297,7 @@ test.describe('Тестирование календаря', () => {
         
             // Добавляем сотрудника в список работников
             const brigadeSelect = modal.locator('#brigadeSelect');
-            await brigadeSelect.evaluate((select) => select.removeAttribute('hidden')); // Убираем атрибут "hidden", если он есть
+            await brigadeSelect.evaluate((select: any) => select.removeAttribute('hidden')); // Убираем атрибут "hidden", если он есть
             await brigadeSelect.selectOption({ label: 'Абужаков Д.К.' });
 
             // Отмечаем чекбокс "Я бригадир"
@@ -317,14 +316,14 @@ test.describe('Тестирование календаря', () => {
             await expect(modal).toBeHidden();
         
             // Проверяем, что задача добавилась в календарь
-            const taskInCalendar = page.locator('.fc-timegrid-event-harness').locator('text=Тестовая задача');
+            const taskInCalendar = authenticatedPage.locator('.fc-timegrid-event-harness').locator('text=Тестовая задача');
             await expect(taskInCalendar).toBeVisible();
             console.log('Задача успешно добавлена и отображена в календаре.');
         });
 
         await test.step('Проверка сохраненных данных задачи в календаре', async () => {
             // Ожидаем появления лоадера
-            const loader = page.locator('.temploaderWrapper');
+            const loader = authenticatedPage.locator('.temploaderWrapper');
             await expect(loader).toBeVisible();
         
             // Ожидание скрытия лоадера
@@ -332,8 +331,8 @@ test.describe('Тестирование календаря', () => {
             console.log('Лоадер успешно исчез.');
         
             // Уточняем селектор задачи по её уникальным характеристикам
-            const taskInCalendarHeader = page.locator('div.contentLayoutHeader')
-                .filter({ has: page.locator('text=Тестовая задача') });
+            const taskInCalendarHeader = authenticatedPage.locator('div.contentLayoutHeader')
+                .filter({ has: authenticatedPage.locator('text=Тестовая задача') });
             
         
             // Убеждаемся, что задача появилась
@@ -352,7 +351,7 @@ test.describe('Тестирование календаря', () => {
             console.log('В задаче указано верное время.');
 
             // Задача
-            const taskInCalendar = page.locator('.fc-event-main')
+            const taskInCalendar = authenticatedPage.locator('.fc-event-main')
         
             // Проверяем отображение локации (уточняем локатор)
             const taskLocation = taskInCalendar.locator('div').filter({ hasText: 'Офис' }).first();
@@ -394,10 +393,10 @@ test.describe('Тестирование календаря', () => {
 
         await test.step('Удаление тестовой задачи', async () => {
             //Находим тестовую задачу и кликаем на нее
-            const taskInCalendar = page.locator('.fc-timegrid-event-harness').locator('text=Тестовая задача');
+            const taskInCalendar = authenticatedPage.locator('.fc-timegrid-event-harness').locator('text=Тестовая задача');
             taskInCalendar.click()
             //Проверяем что открылось окно с детальной информацией
-            const eventDetailsModal = page.locator('#eventDetailsModal')
+            const eventDetailsModal = authenticatedPage.locator('#eventDetailsModal')
             await expect(eventDetailsModal).toBeVisible()
             //Находим кнопку Удалить и кликаем на нее
             const delEventBtn = eventDetailsModal.locator('#delEventBtn')
@@ -412,14 +411,13 @@ test.describe('Тестирование календаря', () => {
             console.log('Тестовая задача успешно удалена.');
         })
         
-        
     });
 
     
 
-    test.afterAll(async () => {
-        // Закрываем страницу и контекст после завершения всех тестов
-        await page.close();
-        await context.close();
-    });
+    // test.afterAll(async () => {
+    //     // Закрываем страницу и контекст после завершения всех тестов
+    //     await page.close();
+    //     await context.close();
+    // });
 });
