@@ -6,7 +6,7 @@ import { initials } from '../utils/textsUtils';
  * Проверка на Руководителя, параметром подставляется ID пользователя
  */
 
-export const isManager = async (userID: string) => {
+export const isManager = async (userID: string): Promise<{ isMan: boolean, managerName: string, managerLevel: string } | boolean> => {
   let isManagerFD = new FormData();
 
   isManagerFD.append('InterfaceID', c.ParentTabID);

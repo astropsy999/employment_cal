@@ -1,6 +1,13 @@
+/**
+ * Функция фильтрует опции в селекторе сотрудников 
+ * для руководителя в зависимости от выбранного отдела
+ * (если выбран отдел, то отображаются только сотрудники 
+ *  из этого отдела, если выбрано "Все отделы", то отображаются 
+ *  все сотрудники) 
+ */
 export const filterUsersFormanagers = () => {
-  const userSelectorEl = document.querySelector('#otherUsers');
-  const depSelectorEl = document.querySelector('#otherUsersDepths');
+  const userSelectorEl = document.querySelector('#otherUsers') as HTMLSelectElement;
+  const depSelectorEl = document.querySelector('#otherUsersDepths') as HTMLSelectElement;
   const selectedDep = depSelectorEl.value;
 
   userSelectorEl.querySelectorAll('option').forEach((option) => {
@@ -22,9 +29,10 @@ export const filterUsersFormanagers = () => {
   chooseUserOption.value = chooseUserOption.innerText = 'Выберите сотрудника';
   chooseUserOption.setAttribute('selected', 'selected');
   chooseUserOption.setAttribute('disabled', 'disabled');
-  const allOptions = [...userSelectorEl.options].filter(
+  const allOptions = Array.from(userSelectorEl.options).filter(
     (o) => o.innerText === 'Выберите сотрудника',
   );
+  //@ts-ignore
   userSelectorEl.remove(allOptions[0]);
 
   userSelectorEl.insertAdjacentElement('afterbegin', chooseUserOption);

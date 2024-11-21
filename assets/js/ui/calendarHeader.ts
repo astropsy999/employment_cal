@@ -1,9 +1,8 @@
 import { isManager } from '../api/isManager';
-// @ts-ignore
 import { getUsersForManagers } from '../api/getDropDownData';
-// @ts-ignore
-import { filterUsersFormanagers } from './filterUsersFormanagers';
 import { setLocalStorageItem } from '../utils/localStorageUtils';
+import { filterUsersFormanagers } from './filterUsersFormanagers';
+
 
 /**
  * Функция проверяет статус пользователя (Руководитель или Нет) и добавляет для руководителя
@@ -16,7 +15,7 @@ export const usersForManagersSelector = async (userID: string) => {
    * Проверка на Руководителя
    */
 
-  let { isMan, managerName, managerLevel } =  await isManager(userID);
+  let { isMan, managerName, managerLevel } =  await isManager(userID) as { isMan: boolean; managerName: string; managerLevel: string; };
 
   sessionStorage.setItem('isMan', JSON.stringify(isMan));
   sessionStorage.setItem('managerName', JSON.stringify(managerName));
@@ -27,7 +26,7 @@ export const usersForManagersSelector = async (userID: string) => {
     localStorage.setItem('currentManagerLevel', managerLevel!);
     setLocalStorageItem('managerName', managerName!);
     setLocalStorageItem('selectedUserName', managerName!);
-    localStorage.setItem('isMan', isMan);
+    setLocalStorageItem('isMan', isMan);
     /**
      * Получения элемента , куда будет помещен новый селектор сотрудников и добавление в него селектора
      */
