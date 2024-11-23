@@ -43,7 +43,7 @@ import {
   getTemplateNoFooterNoDelete,
 } from './ui/templates';
 import { tempLoader } from './ui/tempLoader';
-import { docReady, utils } from './utils/docReady.js';
+import { docReady, utils } from './utils/docReady';
 import { fullCalendarInit, renderCalendar } from './utils/fullcalendar';
 import {
   addTotalTimeToMonthCells,
