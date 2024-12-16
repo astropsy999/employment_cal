@@ -21,7 +21,7 @@ export async function waitForOptions(locator: Locator, minCount: number, timeout
  * @param {string} selector - Селектор элемента селектора.
  * @param {string} [value] - Значение, которое необходимо выбрать. Если не указано, выбирается первое значение.
  */
-export async function chooseValueInSelector(page: Page, selector: string, value: string | undefined = undefined) {
+export async function chooseValueInSelect(page: Page, selector: string, value: string | undefined = undefined) {
     const dropdown = page.locator(selector);
 
     // Убедимся, что селектор видим
@@ -49,10 +49,17 @@ export async function chooseValueInSelector(page: Page, selector: string, value:
         // Выбор первой доступной опции пропуская Не выбрано (индекс 1)
         await dropdown.selectOption({ index: 1 });
         const selectedOption = await options[0].textContent();
-        console.log(`В селекторе "${selector}" выбрано первое значение: "${selectedOption!.trim()}".`);
+        console.log(`В селекторе "${selector}" выбрано первое значение.`);
     }
 }
 
+/**
+ * Заполнение поля "Время" (wooTime) в модальном окне добавления задачи.
+ * 
+ * @param {Page} page - Страница, на которой необходимо заполнить поле.
+ * @param {string} timeValue - Значение, которое необходимо ввести в поле.
+ * @returns {Promise<Locator>} - Locator на заполненный input.
+ */
 export async function fillMethodTime(page:Page, timeValue: string) {
     const modal = await isMethodsAreaAvailable(page)
 
@@ -61,3 +68,50 @@ export async function fillMethodTime(page:Page, timeValue: string) {
 
     return wooTimeInput;
 }
+
+export async function fillInputValue(page: Page, selector: string, value: string) {
+    const input = page.locator(selector);
+    await input.fill(value);
+    await expect(input).toHaveValue(value);
+}
+
+/**
+ * Устанавливает дату и время начала и окончания события в модальном окне.
+ *
+ * @param {Locator} modal - Локатор модального окна, содержащего поля для ввода дат.
+ * @param {string} startTime - Время начала события в формате `HH:mm` (например, "09:00").
+ * @param {string} endTime - Время окончания события в формате `HH:mm` (например, "14:30").
+ * @param {string|null} [date=null] - Дата события в формате `DD.MM.YYYY`. Если не указана, используется текущая дата.
+ *
+ * @throws {Error} Если значения полей не совпадают с ожидаемыми.
+ *
+ * @example
+ * // Установить дату и время на сегодня:
+ * await chooseDateTime(modal, '09:00', '14:30');
+ *
+ * @example
+ * // Установить дату и время на заданный день:
+ * await chooseDateTime(modal, '09:00', '14:30', '25.11.2024');
+ */
+export async function fillDateTime(
+    modal: Locator,
+    startTime: string,
+    endTime: string,
+    date: string | null = null
+) {
+    // Если дата не указана, используем текущую дату
+    const currentDate = date || new Date().toLocaleDateString('ru-RU');
+
+    // Указываем дату и время начала
+    const startDateInput = modal.locator('#eventStartDate');
+    await startDateInput.fill(`${currentDate} ${startTime}`);
+    await expect(startDateInput).toHaveValue(`${currentDate} ${startTime}`);
+
+    // Указываем дату и время окончания
+    const endDateInput = modal.locator('#eventEndDate');
+    await endDateInput.fill(`${currentDate} ${endTime}`);
+    await expect(endDateInput).toHaveValue(`${currentDate} ${endTime}`);
+}
+
+
+

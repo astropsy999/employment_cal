@@ -1,10 +1,12 @@
 import { BrowserContext, expect, Locator, Page } from '@playwright/test';
 import test from './fixtures';
-import { chooseValueInSelector, fillMethodTime, waitForOptions } from './helpers/selectors';
+import { chooseValueInSelect, fillDateTime, fillInputValue, fillMethodTime, waitForOptions } from './helpers/selectors';
 import { checkAllHeaderElementsLoaded, checkHeaderSelectorsAreLoaded } from './helpers/header';
 import { checkCalendarIsInWeekMode } from './helpers/calendar';
 import { checkAddTaskModal, isAddEventModalAvailable } from './helpers/modals';
-import { isMethodsAreaAvailable, selectCurrentDateAndOpenAddTaskModal, selectMethod } from './helpers/tasks';
+import { checkTaskInCalendar, deleteTestTask, isMethodsAreaAvailable, selectCurrentDateAndOpenAddTaskModal, selectMethod } from './helpers/tasks';
+import { clickAddMethodButton, clickAddTaskButton, toggleCheckbox } from './helpers/buttons';
+import { add } from 'lodash';
 
 let context: BrowserContext;
 let page: Page;
@@ -43,11 +45,11 @@ test.describe('Тестирование календаря', () => {
             await selectCurrentDateAndOpenAddTaskModal(authenticatedPage);
         
             // Выбор значения в селекторе "Локация"
-            await chooseValueInSelector(authenticatedPage, '#locObj', 'Офис');
+            await chooseValueInSelect(authenticatedPage, '#locObj', 'Офис');
             console.log('Локация выбрана.');
 
             // Выбор значения в селекторе "Вид работ" с указанием конкретного значения
-            await chooseValueInSelector(authenticatedPage, '#kindOfTasks', 'Техническое диагностирование');
+            await chooseValueInSelect(authenticatedPage, '#kindOfTasks', 'Техническое диагностирование');
             console.log('Вид работ: Техническое диагностирование выбран.');
         
             await isMethodsAreaAvailable(authenticatedPage)
@@ -69,9 +71,7 @@ test.describe('Тестирование календаря', () => {
             const wooTimeInput = await fillMethodTime(authenticatedPage, '');
         
             // Нажимаем на кнопку добавления метода
-            const addWooMetButton = modal.locator('#addWooMet');
-            await expect(addWooMetButton).toBeVisible();
-            await addWooMetButton.click();
+            await clickAddMethodButton(modal);
         
             // Проверяем, что поле получило класс "is-invalid"
             await expect(wooTimeInput).toHaveClass(/is-invalid/);
@@ -81,18 +81,13 @@ test.describe('Тестирование календаря', () => {
 
         await test.step('Проверка валидации пустого списка работников бригады при добавлении метода', async () => {
             // Ожидаем появления модального окна
-            const modal = authenticatedPage.locator('#addEventModal');
-            await expect(modal).toBeVisible();
+            const modal = await isAddEventModalAvailable(authenticatedPage);
         
-            // Заполняем поле "время" (если требуется)
-            const wooTimeInput = modal.locator('#wooTime');
-            await wooTimeInput.fill('0.5'); // Заполняем значение, например, 1 час
-            await expect(wooTimeInput).toHaveValue('0.5');
+            // Заполняем поле "время" 
+            await fillMethodTime(authenticatedPage, '0.5');
         
             // Нажимаем на кнопку добавления метода
-            const addWooMetButton = modal.locator('#addWooMet');
-            await expect(addWooMetButton).toBeVisible();
-            await addWooMetButton.click();
+            await clickAddMethodButton(modal);
         
             // Проверяем, что поле "brigadeSelect" получает класс "is-invalid"
             const brigadeSelect = modal.locator('#brigadeSelect');
@@ -108,51 +103,31 @@ test.describe('Тестирование календаря', () => {
 
         await test.step('Добавление задачи: заполнение формы и сохранение', async () => {
             const modal = await isAddEventModalAvailable(authenticatedPage);
-
-            // Получаем текущую дату
-            const currentDate = new Date();
-            const formattedDate = currentDate.toLocaleDateString('ru-RU'); // Форматируем дату в формате DD.MM.YYYY
-            const startTime = '09:00'; // Время начала
-            const endTime = '14:30'; // Время окончания
         
             // Заполняем название задачи
-            const taskTitleInput = modal.locator('#eventTitle');
-            await taskTitleInput.fill('Тестовая задача');
-            await expect(taskTitleInput).toHaveValue('Тестовая задача');
+            await fillInputValue(authenticatedPage, '#eventTitle', 'Тестовая задача');
         
             // Выбираем занятость
-            const employmentDropdown = modal.locator('#employment');
-            await employmentDropdown.selectOption('Работа');
+            await chooseValueInSelect(authenticatedPage, '#employment', 'Работа');
         
             // Выбираем объект
-            const taskObjDropdown = modal.locator('#taskObj');
-            await taskObjDropdown.selectOption({ index: 1 });
+            chooseValueInSelect(authenticatedPage, '#taskObj');
         
             // Указываем локацию
-            const locObjDropdown = modal.locator('#locObj');
-            await locObjDropdown.selectOption('Офис');
-        
-            // Указываем дату начала
-            const startDateInput = modal.locator('#eventStartDate');
-            await startDateInput.fill(`${formattedDate} ${startTime}`);
-            await expect(startDateInput).toHaveValue(`${formattedDate} ${startTime}`);
+            await chooseValueInSelect(authenticatedPage, '#locObj', 'Офис');
 
-            // Указываем дату окончания
-            const endDateInput = modal.locator('#eventEndDate');
-            await endDateInput.fill(`${formattedDate} ${endTime}`);
-            await expect(endDateInput).toHaveValue(`${formattedDate} ${endTime}`);
-        
+            // Вводим дату-время начала и окончания
+
+            await fillDateTime(modal, '09:00', '14:30');
+
             // Выбираем вид работ
-            const kindOfTasksDropdown = modal.locator('#kindOfTasks');
-            await kindOfTasksDropdown.selectOption('Техническое диагностирование');
+            await chooseValueInSelect(authenticatedPage, '#kindOfTasks', 'Техническое диагностирование');
         
             // Выбираем метод контроля
-            const wooMethodDropdown = modal.locator('#wooMethod');
-            await wooMethodDropdown.selectOption('РК (Классический)');
+            await chooseValueInSelect(authenticatedPage, '#wooMethod', 'РК (Классический)');
         
             // Указываем длительность
-            const wooTimeInput = modal.locator('#wooTime');
-            await wooTimeInput.fill('1');
+            await fillMethodTime(authenticatedPage, '1');
         
             // Убедимся, что список работников доступен
             const brigadeDropdown = modal.locator('.choices__inner');
@@ -165,22 +140,19 @@ test.describe('Тестирование календаря', () => {
 
             // Отмечаем чекбокс "Я бригадир"
             const brigadirCheckbox = modal.locator('#brigadirCheckbox');
-            await expect(brigadirCheckbox).toBeVisible();
-            await brigadirCheckbox.check();
-            await expect(brigadirCheckbox).toBeChecked();
+
+            await toggleCheckbox(brigadirCheckbox);
         
             console.log('Форма заполнена успешно.');
         
             // Нажимаем кнопку "Добавить"
-            const addTaskButton = modal.locator('#addTaskToCalBtn');
-            await addTaskButton.click();
+            await clickAddTaskButton(modal);
         
             // Проверяем, что модальное окно закрылось
             await expect(modal).toBeHidden();
         
-            // Проверяем, что задача добавилась в календарь
-            const taskInCalendar = authenticatedPage.locator('.fc-timegrid-event-harness').locator('text=Тестовая задача');
-            await expect(taskInCalendar).toBeVisible();
+            // // Проверяем, что задача добавилась в календарь
+            await checkTaskInCalendar(authenticatedPage, 'Тестовая задача');
             console.log('Задача успешно добавлена и отображена в календаре.');
         });
 
@@ -191,12 +163,11 @@ test.describe('Тестирование календаря', () => {
         
             // Ожидание скрытия лоадера
             await loader.waitFor({ state: 'hidden' });
-            console.log('Лоадер успешно исчез.');
+            console.log('Лоадер скрыт.');
         
             // Уточняем селектор задачи по её уникальным характеристикам
             const taskInCalendarHeader = authenticatedPage.locator('div.contentLayoutHeader')
                 .filter({ has: authenticatedPage.locator('text=Тестовая задача') });
-            
         
             // Убеждаемся, что задача появилась
             await expect(taskInCalendarHeader).toBeVisible({ timeout: 10000 });
@@ -255,23 +226,7 @@ test.describe('Тестирование календаря', () => {
         });
 
         await test.step('Удаление тестовой задачи', async () => {
-            //Находим тестовую задачу и кликаем на нее
-            const taskInCalendar = authenticatedPage.locator('.fc-timegrid-event-harness').locator('text=Тестовая задача');
-            taskInCalendar.click()
-            //Проверяем что открылось окно с детальной информацией
-            const eventDetailsModal = authenticatedPage.locator('#eventDetailsModal')
-            await expect(eventDetailsModal).toBeVisible()
-            //Находим кнопку Удалить и кликаем на нее
-            const delEventBtn = eventDetailsModal.locator('#delEventBtn')
-            await expect(delEventBtn).toBeVisible()
-
-            delEventBtn.click()
-            //Проверяем что окно с детальной информацией скрылось
-            await expect(eventDetailsModal).toBeHidden()
-            //Проверяем что тестовая задача отсутствует
-            await expect(taskInCalendar).toBeHidden()
-
-            console.log('Тестовая задача успешно удалена.');
+            await deleteTestTask(authenticatedPage, 'Тестовая задача');
         })
         
     });
