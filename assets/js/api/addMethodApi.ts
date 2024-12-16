@@ -24,7 +24,7 @@ const addMethodApi = (
       formDataaddMet.append('ObjTypeID', '1149');
       formDataaddMet.append('ParentID', parentObject);
       formDataaddMet.append('Data[0][name]', '8764');
-      formDataaddMet.append('Data[0][value]', method);
+      formDataaddMet.append('Data[0][value]', method.trim());
       formDataaddMet.append('Data[0][isName]', 'true');
       formDataaddMet.append('Data[0][maninp]', 'false');
       formDataaddMet.append('Data[0][GroupID]', '2549');

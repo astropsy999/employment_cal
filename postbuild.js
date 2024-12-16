@@ -5,7 +5,7 @@ const path = require('path');
 
 // Определяем пути
 const sourceDir = path.resolve(__dirname, 'prod'); // Папка с результатами сборки
-const targetDir = 'C:\\gdc\\portal\\emplcal'; // Целевая директория на продакшен
+const targetDir = 'C:\\OSPanel\\domains\\gdclocal\\htdocs\\assets\\views\\modules\\emplcal'; // Целевая директория на продакшен
 
 async function deploy() {
   try {
